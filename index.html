@@ -318,18 +318,12 @@ function charts(){
       }
     }
   });
-  const inflColors=B.map(b=>{
-    const tg=targets[b.id];
-    if(tg==null)return '#94A3B8';
-    const diff=b.infl-tg;
-    if(Math.abs(diff)<=0.3)return '#2563EB';
-    return diff>0?'#C2410C':'#059669';
-  });
+  const inflColors=B.map(b=>BANK_COLORS[b.id]);
   ic=new Chart(document.getElementById('inflation'),{
     type:'bar',
     data:{labels:B.map(b=>b.short),datasets:[
-      {label:'Latest inflation',data:B.map(b=>b.infl),backgroundColor:inflColors,borderRadius:6,borderSkipped:false},
-      {label:'Target',data:B.map(b=>targets[b.id]),backgroundColor:'#CBD5E1',borderRadius:6,borderSkipped:false}
+      {label:'Latest inflation',data:B.map(b=>b.infl),backgroundColor:inflColors,borderColor:inflColors,borderWidth:1,borderRadius:6,borderSkipped:false},
+      {label:'Target',data:B.map(b=>targets[b.id]),backgroundColor:'#CBD5E1',borderColor:'#94A3B8',borderWidth:1,borderRadius:6,borderSkipped:false}
     ]},
     options:{
       responsive:true,maintainAspectRatio:false,
