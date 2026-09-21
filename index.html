@@ -25,7 +25,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 
 .snap{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
 .snap .panel{padding:9px 10px 8px;border-radius:8px;border-top:3px solid var(--bank)}
-.bankline{display:flex;align-items:center;gap:7px}.flag{font-size:17px}.bankbadge{font-weight:850;font-size:11px;color:#19345F}
+.bankline{display:flex;align-items:center;gap:7px}.flag{font-size:16px;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;overflow:hidden;background:#F8FAFC;border:1px solid #D9E2EF;line-height:1}.bankbadge{font-weight:850;font-size:11px;color:#19345F}
 .country{font-size:9px;color:#6C7F98;margin-top:1px}
 .rate{font-size:18px;font-weight:900;line-height:1.05;margin:6px 0 3px;color:#112B57}
 .mini{font-size:9px;color:#63758D;line-height:1.25}
@@ -39,7 +39,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .compact-table td:first-child{font-weight:800;color:#1D365F;width:30%}
 .compact-table .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bank);margin-right:7px}
 .compact-table .strong{font-weight:850;color:#132B54}
-.compact-table .dir{font-weight:800;color:var(--bank)}
+.compact-table .dir{font-weight:850}.compact-table .tightening{color:#DC2626}.compact-table .holding{color:#64748B}.compact-table .framework{color:#7C3AED}
 .takeaway-list{display:grid;gap:7px}
 .takeaway-item{display:grid;grid-template-columns:34px 1fr;gap:8px;align-items:center}
 .takeaway-icon{width:31px;height:31px;border-radius:7px;background:#F3F7FC;display:flex;align-items:center;justify-content:center;font-size:18px;color:#2A64D6}
@@ -66,9 +66,9 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .num{font-weight:900;color:#122C57}.main{font-weight:650}.muted{color:#71839A;font-size:8px}
 .pill{display:inline-block;padding:1px 4px;border:1px solid #D9E2EE;border-radius:99px;background:#F8FAFC;margin:1px;font-size:7.5px}
 
-.charts-grid{display:grid;grid-template-columns:1.8fr .95fr .95fr;gap:8px}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.charts-grid .chart-card:first-child{grid-column:1/-1}.charts-grid .chart-card:first-child .chartbox{height:390px}
 .chart-card{padding:10px}.chart-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:5px}.chart-head h3{font-size:13px;margin:0;color:#17305A}.chart-head .sub{margin:2px 0 0}
-.chartbox{height:235px}.chartbox.small{height:220px}
+.chartbox{height:235px}.chartbox.small{height:255px}
 .controls{display:flex;gap:3px}.controls button{border:1px solid #D5DEEA;background:#fff;color:#38506F;border-radius:5px;padding:5px 8px;font-size:9px;font-weight:800;cursor:pointer}.controls .active{background:#2563EB;color:#fff;border-color:#2563EB}
 .note{font-size:8.5px;color:#697C95;line-height:1.35;margin-top:5px}
 .masnote{font-size:8px;color:#6E5A73;line-height:1.3;margin-top:3px}
@@ -94,7 +94,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
     <h1 data-en="Seven Central Banks — One Comparative View" data-zh="七大中央銀行 — 一頁比較">Seven Central Banks — One Comparative View</h1>
     <p data-en="A visual comparison of mandates, policy settings, inflation and decisions" data-zh="以視覺方式比較職責、政策設定、通脹與決策">A visual comparison of mandates, policy settings, inflation and decisions</p>
   </div>
-  <div class="header-right"><span>Updated: 21 Sep 2026 · HKT</span><button class="lang" id="lang">繁體中文</button></div>
+  <div class="header-right"><span>Updated: 21 Sep 2026 · HKT</span></div>
 </header>
 
 <section><div class="snap" id="snap"></div></section>
@@ -195,7 +195,7 @@ function renderSnap(){
   document.getElementById('snap').innerHTML=B.map(b=>'<div class="panel" '+bankStyle(b.id)+'><div class="bankline"><span class="flag">'+FLAGS[b.id]+'</span><span class="bankbadge">'+b.short+'</span></div><div class="rate">'+(b.id==='mas'?'S$NEER':b.setting)+'</div><div class="status">'+b.latest+'</div><div class="mini">'+(b.id==='mas'?b.setting:b.dir.replace('↑ ','').replace('— ',''))+'</div></div>').join('')
 }
 function renderPolicySummary(){
-  document.getElementById('policySummary').innerHTML=B.map(b=>'<tr '+bankStyle(b.id)+'><td><span class="dot"></span>'+b.short+'</td><td class="strong">'+(b.id==='mas'?'S$NEER':b.setting)+'</td><td class="dir">'+(b.id==='mas'?'FX Framework':b.dir)+'</td></tr>').join('')
+  document.getElementById('policySummary').innerHTML=B.map(b=>{const cls=b.dir.includes('Tightening')?'tightening':(b.id==='mas'?'framework':'holding');const pos=b.id==='mas'?'FX Framework':b.dir.replace('↑ ','').replace('— ','');return '<tr '+bankStyle(b.id)+'><td><span class="flag">'+FLAGS[b.id]+'</span><span class="strong">'+b.name+'</span></td><td class="strong">'+(b.id==='mas'?'S$NEER':b.setting)+'</td><td class="dir '+cls+'">'+pos+'</td></tr>'}).join('')
 }
 function renderInflSummary(){
   document.getElementById('inflSummary').innerHTML=B.map(b=>{
@@ -284,21 +284,20 @@ function charts(){
   });
   let rb=B.filter(b=>b.plot!=null).sort((a,b)=>b.plot-a.plot);
   cc=new Chart(document.getElementById('current'),{
-    type:'bar',data:{labels:rb.map(b=>b.short),datasets:[{data:rb.map(b=>b.plot),backgroundColor:rb.map(b=>BANK_COLORS[b.id]),borderRadius:3,barThickness:15}]},
+    type:'bar',data:{labels:rb.map(b=>b.name),datasets:[{data:rb.map(b=>b.plot),backgroundColor:rb.map(b=>BANK_COLORS[b.id]),borderRadius:3,barThickness:15}]},
     options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#102A55',padding:8}},
-      scales:{x:{beginAtZero:true,grid:{color:'#EDF2F7'},ticks:{font:{size:8},color:'#63758D'}},y:{grid:{display:false},ticks:{font:{size:8,weight:'700'},color:'#304865'}}}}
+      scales:{x:{beginAtZero:true,grid:{color:'#EDF2F7'},ticks:{font:{size:8},color:'#63758D'}},y:{grid:{display:false},ticks:{font:{size:8,weight:'700'},color:'#304865',autoSkip:false}}}}
   });
   ic=new Chart(document.getElementById('inflation'),{
     type:'bar',
-    data:{labels:B.map(b=>b.short),datasets:[
+    data:{labels:B.map(b=>b.name),datasets:[
       {label:'Inflation',data:B.map(b=>b.infl),backgroundColor:B.map(b=>BANK_COLORS[b.id]),borderRadius:3,barThickness:12},
       {label:'Target',data:B.map(b=>targets[b.id]),backgroundColor:'rgba(255,255,255,.01)',borderColor:B.map(b=>BANK_COLORS[b.id]),borderWidth:1.2,borderRadius:3,barThickness:12}
     ]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,boxWidth:6,font:{size:8},color:'#526681'}},tooltip:{backgroundColor:'#102A55',padding:8}},
-      scales:{y:{beginAtZero:true,grid:{color:'#EDF2F7'},ticks:{font:{size:8},color:'#63758D'},title:{display:true,text:'Inflation rate (%)',font:{size:8},color:'#63758D'}},x:{grid:{display:false},ticks:{font:{size:8},color:'#526681'}}}}
+      scales:{y:{beginAtZero:true,grid:{color:'#EDF2F7'},ticks:{font:{size:8},color:'#63758D'},title:{display:true,text:'Inflation rate (%)',font:{size:8},color:'#63758D'}},x:{grid:{display:false},ticks:{font:{size:8},color:'#526681',maxRotation:25,minRotation:25}}}}
   })
 }
 document.getElementById('ranges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#ranges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');hc.data=makeHistory(+e.target.dataset.y);hc.update()});
-document.getElementById('lang').onclick=()=>{lang=lang==='en'?'zh':'en';document.getElementById('lang').textContent=lang==='en'?'繁體中文':'English';document.querySelectorAll('[data-en]').forEach(x=>x.textContent=x.dataset[lang]);renderMatrix()};
 renderSnap();renderPolicySummary();renderInflSummary();renderTakeaways();renderCards();renderMatrix();renderDecisionTable();renderMeetings();charts();
 </script></body></html>
