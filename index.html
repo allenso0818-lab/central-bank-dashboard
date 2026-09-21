@@ -6,205 +6,172 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
 :root{
-  --bg:#F5F7FB;--card:#FFFFFF;--ink:#0F172A;--muted:#64748B;--line:#E2E8F0;
-  --navy:#16325C;--navy2:#24466F;--soft-blue:#EEF4FB;
-  --fed:#2563EB;--ecb:#7C3AED;--boe:#0891B2;--boj:#DC2626;--pboc:#D97706;--rbi:#059669;--mas:#DB2777;
-  --above:#C2410C;--near:#2563EB;--below:#059669;--neutral:#94A3B8;
+  --bg:#F5F7FB;--card:#FFFFFF;--ink:#10244A;--text:#233A5E;--muted:#64748B;--line:#D9E2EF;
+  --soft:#EEF3F9;--group:#E6EEF8;--navy:#0F2A55;
+  --fed:#2563EB;--ecb:#7C3AED;--boe:#0891B2;--boj:#DC2626;--pboc:#F59E0B;--rbi:#16A34A;--mas:#DB2777;
 }
 *{box-sizing:border-box}
-body{
-  margin:0;background:var(--bg);color:var(--ink);
-  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-  -webkit-font-smoothing:antialiased;
-}
-.container{max-width:1540px;margin:auto;padding:28px}
-.panel{
-  background:rgba(255,255,255,.98);border:1px solid var(--line);border-radius:18px;
-  box-shadow:0 8px 28px rgba(15,23,42,.055);
-}
-header{
-  position:relative;overflow:hidden;display:flex;justify-content:space-between;gap:22px;align-items:center;
-  padding:26px 28px;border:1px solid #DCE5F1;
-  background:linear-gradient(135deg,#FFFFFF 0%,#F7FAFE 58%,#EEF4FB 100%);
-}
-header:after{
-  content:"";position:absolute;right:-70px;top:-90px;width:280px;height:280px;border-radius:50%;
-  background:radial-gradient(circle,rgba(37,99,235,.10),rgba(37,99,235,0) 68%);pointer-events:none
-}
-.title{position:relative;z-index:1}.title h1{font-size:31px;letter-spacing:-.025em;margin:0;color:#10233F;font-weight:820}
-.title p{margin:7px 0 0;color:var(--muted);font-size:14px}
-.lang{
-  position:relative;z-index:1;border:1px solid #CBD5E1;background:#fff;border-radius:10px;padding:9px 13px;
-  font-weight:750;color:#1E3A5F;cursor:pointer;box-shadow:0 2px 7px rgba(15,23,42,.04);
-  transition:.18s ease
-}
-.lang:hover{border-color:#94A3B8;transform:translateY(-1px)}
-section{margin-top:26px}
-h2{font-size:20px;letter-spacing:-.01em;margin:0 0 5px;color:#12233D;font-weight:800}
-.sub{font-size:12px;color:var(--muted);margin-bottom:12px}
-section>h2:after{content:"";display:block;width:32px;height:3px;border-radius:999px;background:#B8C7DB;margin-top:7px}
+body{margin:0;background:linear-gradient(180deg,#F8FAFD,#F3F6FA);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink);font-size:13px}
+.container{max-width:1500px;margin:auto;padding:16px 18px 24px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 4px 14px rgba(15,42,85,.045)}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:4px 2px 10px;border:0;background:transparent;box-shadow:none}
+.title h1{font-size:31px;line-height:1.05;margin:0;color:#0D2450;letter-spacing:-.03em;font-weight:850}
+.title p{font-size:14px;margin:4px 0 0;color:#526681}
+.header-right{display:flex;align-items:center;gap:12px;color:#526681;font-size:11px}
+.lang{border:1px solid #CAD6E5;background:#fff;color:#19345F;border-radius:6px;padding:7px 11px;font-weight:800;cursor:pointer}
+section{margin-top:11px}
+h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
+.sub{font-size:10.5px;color:#6C7F98;margin:-2px 0 7px}
 
-.snap{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
-.snap>div{
-  position:relative;overflow:hidden;padding:14px 14px 13px;min-height:118px;
-  border-top:4px solid var(--bank,#CBD5E1);transition:.18s ease
-}
-.snap>div:before{
-  content:"";position:absolute;inset:0;background:linear-gradient(180deg,color-mix(in srgb,var(--bank) 5%,white),transparent 40%);
-  pointer-events:none
-}
-.snap>div:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(15,23,42,.075)}
-.bankline{display:flex;align-items:center;justify-content:space-between;gap:8px;position:relative}
-.bankbadge{
-  display:inline-flex;align-items:center;gap:6px;font-weight:850;font-size:11px;color:var(--bank);
-  background:color-mix(in srgb,var(--bank) 9%,white);border:1px solid color-mix(in srgb,var(--bank) 22%,white);
-  padding:4px 7px;border-radius:999px
-}
-.bankbadge:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--bank)}
-.country{font-size:10px;color:var(--muted);margin-top:6px;position:relative}
-.rate{font-size:20px;font-weight:850;letter-spacing:-.02em;color:#0F2747;margin:10px 0 3px;position:relative}
-.mini{font-size:10px;color:var(--muted);line-height:1.4}
-.status{
-  display:inline-flex;align-items:center;margin-top:8px;padding:3px 7px;border-radius:999px;
-  font-size:9.5px;font-weight:800;color:var(--bank);
-  background:color-mix(in srgb,var(--bank) 8%,white);border:1px solid color-mix(in srgb,var(--bank) 18%,white)
-}
+.snap{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.snap .panel{padding:9px 10px 8px;border-radius:8px;border-top:3px solid var(--bank)}
+.bankline{display:flex;align-items:center;gap:7px}.flag{font-size:17px}.bankbadge{font-weight:850;font-size:11px;color:#19345F}
+.country{font-size:9px;color:#6C7F98;margin-top:1px}
+.rate{font-size:18px;font-weight:900;line-height:1.05;margin:6px 0 3px;color:#112B57}
+.mini{font-size:9px;color:#63758D;line-height:1.25}
+.status{font-size:9.5px;font-weight:800;margin-top:4px;color:var(--bank)}
 
-.scroll{overflow-x:auto;overflow-y:hidden;max-height:none;height:auto;border-radius:18px}
-.matrix{
-  border-collapse:separate;border-spacing:0;min-width:1450px;width:100%;table-layout:fixed;font-size:10.5px
-}
-.matrix th,.matrix td{
-  padding:10px 11px;height:46px;border-right:1px solid #E8EDF3;border-bottom:1px solid #E8EDF3;
-  vertical-align:middle;background:#fff
-}
-.matrix thead th{
-  position:sticky;top:0;z-index:4;color:#fff;text-align:center;width:180px;
-  background:linear-gradient(180deg,var(--bank,#193A63),color-mix(in srgb,var(--bank,#193A63) 80%,#10233F));
-  box-shadow:inset 0 -1px rgba(255,255,255,.12)
-}
-.matrix thead th:first-child{
-  left:0;z-index:6;width:195px;text-align:left;background:linear-gradient(180deg,#1B3B63,#122B49)
-}
-.matrix thead th .muted{color:rgba(255,255,255,.75)!important}
-.matrix tbody th{
-  position:sticky;left:0;z-index:3;background:#F8FAFC;color:#253550;text-align:left;width:195px;
-  font-weight:760;box-shadow:1px 0 0 #E8EDF3
-}
-.matrix tbody tr:nth-child(even):not(.group) td{background:#FBFCFE}
-.matrix tbody tr:hover:not(.group) td{background:#F7FAFD}
-.matrix tbody tr:hover:not(.group) th{background:#F2F6FA}
-.group th,.group td{
-  background:linear-gradient(90deg,#E8F0F9,#F2F6FB)!important;color:#234A75!important;
-  height:31px;font-size:9px;text-transform:uppercase;letter-spacing:.085em;font-weight:900;
-  border-bottom:1px solid #CFDBE8
-}
-.group th{border-left:4px solid #5C7EA8}
-.num{font-size:12.5px;font-weight:850;color:#102A4A}
-.main{font-weight:650;line-height:1.35}
-.muted{color:var(--muted);font-size:9px}
-.pill{
-  display:inline-block;padding:3px 7px;border-radius:999px;border:1px solid #D8E1EC;background:#F8FAFC;
-  color:#40536D;font-size:9px;margin:2px 2px 0 0
-}
+.summary-grid{display:grid;grid-template-columns:1.15fr 1.15fr .75fr;gap:8px;margin-top:8px}
+.summary-panel{padding:10px 12px;min-height:166px}
+.summary-panel h3{font-size:13px;margin:0 0 6px;color:#17305A}
+.compact-table{width:100%;border-collapse:collapse;font-size:10px}
+.compact-table td{padding:4px 5px;border-top:1px solid #E5EBF3;vertical-align:middle}
+.compact-table td:first-child{font-weight:800;color:#1D365F;width:30%}
+.compact-table .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bank);margin-right:7px}
+.compact-table .strong{font-weight:850;color:#132B54}
+.compact-table .dir{font-weight:800;color:var(--bank)}
+.takeaway-list{display:grid;gap:7px}
+.takeaway-item{display:grid;grid-template-columns:34px 1fr;gap:8px;align-items:center}
+.takeaway-icon{width:31px;height:31px;border-radius:7px;background:#F3F7FC;display:flex;align-items:center;justify-content:center;font-size:18px;color:#2A64D6}
+.takeaway-item b{display:block;font-size:16px;line-height:1;color:#142D58}.takeaway-item span{font-size:9px;color:#667A95;line-height:1.25}
 
-.grid2{display:grid;grid-template-columns:1.18fr .82fr;gap:16px}
-.chart{padding:20px 20px 16px}
-.chartbox{height:410px}.chartbox.short{height:330px}
-.controls{
-  width:max-content;display:flex;gap:0;padding:3px;margin-bottom:13px;background:#EEF2F7;border:1px solid #DCE3EC;border-radius:11px
-}
-.controls button{
-  border:0;background:transparent;border-radius:8px;padding:7px 12px;font-size:11px;font-weight:800;color:#64748B;
-  cursor:pointer;transition:.16s ease
-}
-.controls button:hover{color:#233D5B;background:rgba(255,255,255,.7)}
-.controls .active{background:#fff;color:#17375E;box-shadow:0 2px 6px rgba(15,23,42,.09)}
-.note{
-  font-size:10px;color:var(--muted);margin-top:10px;line-height:1.5;padding-top:9px;border-top:1px dashed #E2E8F0
-}
-.masnote{
-  margin-top:10px;padding:10px 12px;background:#FBF6FC;border:1px solid #F2D8EC;border-left:3px solid var(--mas);
-  border-radius:9px;color:#7A315E;font-size:10.5px;line-height:1.45
-}
+.cards{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.profile{padding:8px;border-top:3px solid var(--bank);border-radius:8px;min-height:265px}
+.profile h3{font-size:11px;margin:0 0 4px;color:#17315B}.profile h3 .flag{margin-right:5px}.profile .fullbank{font-size:8.5px;color:#6A7C94;margin-bottom:5px}
+.photo{height:108px;border-radius:6px;overflow:hidden;background:#EEF2F6;border:1px solid #E0E6EE}.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.leader{font-size:9px;line-height:1.22;min-height:47px;margin-top:5px;color:#314966}.leader b{font-size:10.5px;color:#132B54}
+.profile-facts{margin-top:4px;display:grid;gap:3px}
+.profile-row{display:grid;grid-template-columns:42px 1fr;gap:4px;font-size:9px;line-height:1.25}
+.profile-row .k{color:#7A899D}.profile-row .v{font-weight:780;color:#1D355D}.profile-row .v.decision{color:var(--bank)}
 
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
-.profile{
-  position:relative;overflow:hidden;padding:15px;min-height:410px;border-top:4px solid var(--bank,#CBD5E1);
-  transition:.18s ease
-}
-.profile:after{
-  content:"";position:absolute;right:-38px;top:-45px;width:110px;height:110px;border-radius:50%;
-  background:radial-gradient(circle,color-mix(in srgb,var(--bank) 10%,white),transparent 70%);pointer-events:none
-}
-.profile:hover{transform:translateY(-2px);box-shadow:0 13px 34px rgba(15,23,42,.075)}
-.profile h3{font-size:14px;margin:0;color:#14253E;font-weight:850;position:relative}
-.profile h3 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--bank);margin-right:7px}
-.photos{display:grid;grid-template-columns:42% 58%;gap:8px;margin:11px 0}
-.photo{height:132px;border-radius:11px;overflow:hidden;background:#EEF2F6;border:1px solid #DCE4ED}
-.photo img{width:100%;height:100%;object-fit:cover;display:block}
-.leader{font-size:11px;line-height:1.35;min-height:60px}.leader b{font-size:12px;color:#17263C}
-.facts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.fact{
-  padding:9px;border:1px solid #E5EAF0;background:linear-gradient(180deg,#FBFCFE,#F7F9FC);
-  border-radius:9px;min-height:58px
-}
-.label{font-size:8px;text-transform:uppercase;letter-spacing:.045em;color:#7B899B;font-weight:850}
-.value{font-size:10.5px;font-weight:720;margin-top:4px;color:#17263C}
+.matrix-wrap{overflow-x:auto;overflow-y:hidden}
+.matrix{border-collapse:collapse;min-width:1330px;width:100%;font-size:9px;table-layout:fixed}
+.matrix th,.matrix td{border:1px solid #DBE3EE;padding:5px 7px;vertical-align:top;background:#fff;line-height:1.22}
+.matrix thead th{background:#F8FAFD;color:#17315B;font-weight:850;text-align:center}
+.matrix thead th:first-child{text-align:left;width:175px}
+.matrix tbody th{width:175px;text-align:left;background:#FAFBFD;color:#1D355D;font-weight:760}
+.matrix tbody tr:nth-child(even):not(.group) td{background:#FCFDFE}
+.group th,.group td{background:linear-gradient(90deg,#DDE8F5,#EAF1F8)!important;color:#31547E!important;font-weight:900;text-transform:uppercase;font-size:8px;letter-spacing:.04em;padding:4px 7px}
+.group th{border-left:3px solid #2F64A3}
+.num{font-weight:900;color:#122C57}.main{font-weight:650}.muted{color:#71839A;font-size:8px}
+.pill{display:inline-block;padding:1px 4px;border:1px solid #D9E2EE;border-radius:99px;background:#F8FAFC;margin:1px;font-size:7.5px}
 
-.decisions{display:grid;grid-template-columns:repeat(7,1fr);gap:9px}
-.decision{
-  position:relative;overflow:hidden;padding:12px;min-height:108px;border-top:3px solid var(--bank,#CBD5E1)
-}
-.decision b{font-size:12px;color:#15263E}.decision .date{font-size:9.5px;color:var(--muted);margin:5px 0 7px}
-.action{font-size:13px;font-weight:850;color:var(--bank)}
-.meetings{display:grid;gap:8px}
-.meeting{
-  position:relative;display:grid;grid-template-columns:140px 1fr 1fr;gap:10px;padding:11px 13px;font-size:11px;
-  align-items:center;border-left:4px solid var(--bank,#CBD5E1)
-}
-.meeting b{color:#17304F}
-.take{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.take>div{
-  position:relative;padding:14px 14px 14px 16px;border-left:4px solid #3D6D9F;font-size:11px;line-height:1.5;
-  background:linear-gradient(180deg,#FFFFFF,#FAFCFE)
-}
-.take>div:before{content:"";position:absolute;width:5px;height:5px;border-radius:50%;background:#3D6D9F;left:7px;top:20px}
-.sources{
-  font-size:10.5px;color:var(--muted);line-height:1.65;padding:16px 18px;background:linear-gradient(180deg,#FFFFFF,#FBFCFE)
-}
-.sources b{color:#203650;font-size:11px}
-@media(max-width:1100px){
-  .snap{grid-template-columns:repeat(4,1fr)}.cards{grid-template-columns:repeat(2,1fr)}
-  .grid2{grid-template-columns:1fr}.decisions{grid-template-columns:repeat(4,1fr)}
+.charts-grid{display:grid;grid-template-columns:1.8fr .95fr .95fr;gap:8px}
+.chart-card{padding:10px}.chart-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:5px}.chart-head h3{font-size:13px;margin:0;color:#17305A}.chart-head .sub{margin:2px 0 0}
+.chartbox{height:235px}.chartbox.small{height:220px}
+.controls{display:flex;gap:3px}.controls button{border:1px solid #D5DEEA;background:#fff;color:#38506F;border-radius:5px;padding:5px 8px;font-size:9px;font-weight:800;cursor:pointer}.controls .active{background:#2563EB;color:#fff;border-color:#2563EB}
+.note{font-size:8.5px;color:#697C95;line-height:1.35;margin-top:5px}
+.masnote{font-size:8px;color:#6E5A73;line-height:1.3;margin-top:3px}
+
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:8px}
+.bottom-card{padding:10px 12px}.bottom-card h3{font-size:12px;margin:0 0 6px;color:#17305A}
+.bottom-table{width:100%;border-collapse:collapse;font-size:9px}.bottom-table th,.bottom-table td{padding:4px 4px;border-top:1px solid #E2E8F0;text-align:left}.bottom-table th{color:#6D8098;font-size:8px}.bottom-table td:first-child{font-weight:780;color:#19345F}
+.sources{font-size:8.7px;color:#5F7188;line-height:1.45}.sources ul{margin:4px 0 0 14px;padding:0}.sources li{margin:3px 0}
+
+@media(max-width:1200px){
+  .snap{grid-template-columns:repeat(4,1fr)}.cards{grid-template-columns:repeat(4,1fr)}
+  .summary-grid,.charts-grid,.bottom-grid{grid-template-columns:1fr}
 }
 @media(max-width:700px){
-  .container{padding:14px}.snap{grid-template-columns:repeat(2,1fr)}.cards,.take{grid-template-columns:1fr}
-  .decisions{grid-template-columns:repeat(2,1fr)}header{align-items:flex-start;padding:21px}.title h1{font-size:25px}
-  .meeting{grid-template-columns:105px 1fr}.meeting span:last-child{display:none}
+  .container{padding:12px}.snap{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:repeat(2,1fr)}
+  .title h1{font-size:25px}.header-right{flex-direction:column;align-items:flex-end}
 }
 </style>
 </head>
 <body><div class="container">
-<header class="panel"><div class="title"><h1 data-en="Seven Central Banks — One Comparative View" data-zh="七大中央銀行 — 一頁比較">Seven Central Banks — One Comparative View</h1><p data-en="A visual comparison of mandates, policy settings, inflation and decisions" data-zh="以視覺方式比較職責、政策設定、通脹與決策">A visual comparison of mandates, policy settings, inflation and decisions</p><div class="mini" style="margin-top:7px">Updated: 21 Sep 2026 · HKT</div></div><button class="lang" id="lang">繁體中文</button></header>
+<header>
+  <div class="title">
+    <h1 data-en="Seven Central Banks — One Comparative View" data-zh="七大中央銀行 — 一頁比較">Seven Central Banks — One Comparative View</h1>
+    <p data-en="A visual comparison of mandates, policy settings, inflation and decisions" data-zh="以視覺方式比較職責、政策設定、通脹與決策">A visual comparison of mandates, policy settings, inflation and decisions</p>
+  </div>
+  <div class="header-right"><span>Updated: 21 Sep 2026 · HKT</span><button class="lang" id="lang">繁體中文</button></div>
+</header>
 
-<section><h2 data-en="Central Bank Snapshot" data-zh="中央銀行快覽">Central Bank Snapshot</h2><div class="sub" data-en="Current settings at a glance" data-zh="一眼比較目前政策設定">Current settings at a glance</div><div class="snap" id="snap"></div></section>
+<section><div class="snap" id="snap"></div></section>
 
-<section><h2 data-en="Central Bank Profiles" data-zh="中央銀行概覽卡">Central Bank Profiles</h2><div class="sub" data-en="Compact profiles without repeating the matrix" data-zh="精簡卡片，避免重複矩陣內容">Compact profiles without repeating the matrix</div><div class="cards" id="cards"></div></section>
-
-<section><h2 data-en="Central Bank Comparison Matrix" data-zh="中央銀行比較矩陣">Central Bank Comparison Matrix</h2><div class="sub" data-en="Seven central banks as columns; comparison criteria as rows" data-zh="七大央行為欄，主要比較項目為列">Seven central banks as columns; comparison criteria as rows</div><div class="panel scroll"><table class="matrix" id="matrix"></table></div></section>
-
-<section><h2 data-en="Policy Rate Paths" data-zh="政策利率路徑">Policy Rate Paths</h2><div class="sub" data-en="How major central-bank policy rates have changed over time" data-zh="主要中央銀行政策利率隨時間的變化">How major central-bank policy rates have changed over time</div><div class="panel chart"><div class="controls" id="ranges"><button data-y="1">1Y</button><button class="active" data-y="3">3Y</button><button data-y="5">5Y</button><button data-y="10">10Y</button></div><div class="chartbox"><canvas id="history"></canvas></div><div class="note" data-en="Fed = target-range midpoint for plotting only; ECB = deposit facility rate; BoE = Bank Rate; BoJ = policy rate; PBoC = 7-day reverse repo; RBI = repo rate." data-zh="Fed僅以目標區間中點作圖；ECB為存款便利利率；BoE為Bank Rate；BoJ為政策利率；PBoC為7日逆回購利率；RBI為Repo Rate。">Fed = target-range midpoint for plotting only; ECB = deposit facility rate; BoE = Bank Rate; BoJ = policy rate; PBoC = 7-day reverse repo; RBI = repo rate.</div><div class="masnote" data-en="MAS is not plotted: Singapore uses the S$NEER policy band under an exchange-rate-centred monetary framework, so it is not directly comparable with benchmark policy rates." data-zh="MAS不列入利率圖：新加坡採用以匯率為中心的貨幣政策框架，以S$NEER政策區間作主要工具，因此不可與傳統基準政策利率直接比較。">MAS is not plotted: Singapore uses the S$NEER policy band under an exchange-rate-centred monetary framework, so it is not directly comparable with benchmark policy rates.</div></div></section>
-
-<section class="grid2">
-<div><h2 data-en="Current Policy Rate Comparison" data-zh="目前政策利率比較">Current Policy Rate Comparison</h2><div class="panel chart"><div class="chartbox short"><canvas id="current"></canvas></div><div class="note" data-en="Fed bar uses the midpoint for visual comparison only; the official target range is shown in the matrix." data-zh="Fed圖表僅以中點作視覺比較；官方目標區間已在矩陣顯示。">Fed bar uses the midpoint for visual comparison only; the official target range is shown in the matrix.</div></div></div>
-<div><h2 data-en="Inflation vs Target" data-zh="通脹 vs 目標">Inflation vs Target</h2><div class="panel chart"><div class="chartbox short"><canvas id="inflation"></canvas></div></div></div>
+<section class="summary-grid">
+  <div class="panel summary-panel">
+    <h3>Policy Position (Current Setting)</h3>
+    <table class="compact-table" id="policySummary"></table>
+  </div>
+  <div class="panel summary-panel">
+    <h3>Inflation Snapshot (Latest)</h3>
+    <table class="compact-table" id="inflSummary"></table>
+  </div>
+  <div class="panel summary-panel">
+    <h3>Key Takeaways</h3>
+    <div class="takeaway-list" id="takeaways"></div>
+  </div>
 </section>
 
-<section><h2 data-en="Upcoming Meetings" data-zh="即將舉行的政策會議">Upcoming Meetings</h2><div class="meetings" id="meetings"></div></section>
+<section>
+  <h2>Central Bank Profiles</h2>
+  <div class="cards" id="cards"></div>
+</section>
+
+<section>
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px"><h2>Central Bank Comparison Matrix</h2><div class="sub" style="margin-bottom:7px">Seven central banks as columns; comparison criteria as rows</div></div>
+  <div class="panel matrix-wrap"><table class="matrix" id="matrix"></table></div>
+</section>
+
+<section class="charts-grid">
+  <div class="panel chart-card">
+    <div class="chart-head">
+      <div><h3>Policy Rate Paths</h3><div class="sub">How major central-bank policy rates have changed over time</div></div>
+      <div class="controls" id="ranges"><button data-y="1">1Y</button><button class="active" data-y="3">3Y</button><button data-y="5">5Y</button><button data-y="10">10Y</button></div>
+    </div>
+    <div class="chartbox"><canvas id="history"></canvas></div>
+    <div class="note">Fed = target-range midpoint for plotting only. ECB = deposit facility rate. BoE = Bank Rate. BoJ = policy rate. PBoC = 7-day reverse repo rate. RBI = repo rate.</div>
+    <div class="masnote">MAS is not plotted as it uses the S$NEER policy band under an exchange-rate-centred framework.</div>
+  </div>
+  <div class="panel chart-card">
+    <div class="chart-head"><div><h3>Current Policy Rate Comparison</h3><div class="sub">Current policy rate (%, latest)</div></div></div>
+    <div class="chartbox small"><canvas id="current"></canvas></div>
+  </div>
+  <div class="panel chart-card">
+    <div class="chart-head"><div><h3>Inflation vs Target</h3><div class="sub">Latest inflation and target (where applicable)</div></div></div>
+    <div class="chartbox small"><canvas id="inflation"></canvas></div>
+  </div>
+</section>
+
+<section class="bottom-grid">
+  <div class="panel bottom-card">
+    <h3>Recent Policy Decisions</h3>
+    <table class="bottom-table" id="decisionTable"></table>
+  </div>
+  <div class="panel bottom-card">
+    <h3>Upcoming Meetings</h3>
+    <table class="bottom-table" id="meetingTable"></table>
+  </div>
+  <div class="panel bottom-card sources">
+    <h3>Sources & Methodology</h3>
+    <ul>
+      <li>Central bank websites and official statements (latest available as of 21 Sep 2026).</li>
+      <li>Policy rates are the headline policy instruments for each central bank.</li>
+      <li>Fed rate uses the target-range midpoint for charting purposes.</li>
+      <li>MAS is not plotted in the policy-rate chart because it uses an exchange-rate-centred framework.</li>
+      <li>This dashboard is for informational and educational purposes only.</li>
+    </ul>
+  </div>
+</section>
 </div>
 <script>
 let lang='en';
+const BANK_COLORS={fed:'#2563EB',ecb:'#7C3AED',boe:'#0891B2',boj:'#DC2626',pboc:'#F59E0B',rbi:'#16A34A',mas:'#DB2777'};
+const FLAGS={fed:'🇺🇸',ecb:'🇪🇺',boe:'🇬🇧',boj:'🇯🇵',pboc:'🇨🇳',rbi:'🇮🇳',mas:'🇸🇬'};
+const FULL={fed:'Federal Reserve System',ecb:'European Central Bank',boe:'Bank of England',boj:'Bank of Japan',pboc:'People’s Bank of China',rbi:'Reserve Bank of India',mas:'Monetary Authority of Singapore'};
+function bankStyle(id){return 'style="--bank:'+BANK_COLORS[id]+'"'}
+
 const BANK_COLORS={fed:'#2563EB',ecb:'#7C3AED',boe:'#0891B2',boj:'#DC2626',pboc:'#D97706',rbi:'#059669',mas:'#DB2777'};
 function bankStyle(id){return 'style="--bank:'+BANK_COLORS[id]+'"'}
 
@@ -227,7 +194,28 @@ pboc:[['2017-01',2.25],['2022-01',2.1],['2023-08',1.8],['2024-09',1.5],['2025-05
 rbi:[['2017-01',6.25],['2019-10',5.15],['2020-05',4],['2022-05',4.4],['2023-02',6.5],['2025-02',6.25],['2025-06',5.5],['2026-08',5.25]]
 };
 function t(en,zh){return lang==='en'?en:zh}
-function renderSnap(){document.getElementById('snap').innerHTML=B.map(b=>'<div class="panel" '+bankStyle(b.id)+'><div><div class="bankline"><span class="bankbadge">'+b.short+'</span></div><div class="country">'+b.name+'</div><div class="mini" style="margin-top:2px">'+b.country+'</div><div class="rate">'+b.setting+'</div><div class="mini">'+b.instrument+'</div></div><div class="status">'+b.dir+'</div></div>').join('')}
+function renderSnap(){
+  document.getElementById('snap').innerHTML=B.map(b=>'<div class="panel" '+bankStyle(b.id)+'><div class="bankline"><span class="flag">'+FLAGS[b.id]+'</span><span class="bankbadge">'+b.short+'</span></div><div class="rate">'+(b.id==='mas'?'S$NEER':b.setting)+'</div><div class="status">'+b.latest+'</div><div class="mini">'+(b.id==='mas'?b.setting:b.dir.replace('↑ ','').replace('— ',''))+'</div></div>').join('')
+}
+function renderPolicySummary(){
+  document.getElementById('policySummary').innerHTML=B.map(b=>'<tr '+bankStyle(b.id)+'><td><span class="dot"></span>'+b.short+'</td><td class="strong">'+(b.id==='mas'?'S$NEER':b.setting)+'</td><td class="dir">'+(b.id==='mas'?'FX Framework':b.dir)+'</td></tr>').join('')
+}
+function renderInflSummary(){
+  document.getElementById('inflSummary').innerHTML=B.map(b=>{
+    const tg=targets[b.id];
+    let note=b.id==='fed'?'Target: 2% PCE':b.id==='ecb'?'Target: 2% medium term':b.id==='boe'?'Target: 2% CPI':b.id==='boj'?'Target: 2% CPI':b.id==='pboc'?'Objective: government inflation target':b.id==='rbi'?'Target range':'No formal target';
+    return '<tr '+bankStyle(b.id)+'><td><span class="dot"></span>'+b.short+'</td><td class="strong">'+b.infl.toFixed(1)+'%</td><td class="muted">('+note+')</td></tr>'
+  }).join('')
+}
+function renderTakeaways(){
+  const items=[
+    ['▥','5.25%','Highest comparable policy rate','RBI'],
+    ['↗','3 Banks','Latest decision = tightening','Fed · ECB · BoJ'],
+    ['%','3.8%','Highest inflation shown','United Kingdom'],
+    ['⚙','FX-based','Different policy framework','MAS']
+  ];
+  document.getElementById('takeaways').innerHTML=items.map(x=>'<div class="takeaway-item"><div class="takeaway-icon">'+x[0]+'</div><div><b>'+x[1]+'</b><span>'+x[2]+'<br><strong>'+x[3]+'</strong></span></div></div>').join('')
+}
 const rows=[
 ['Institutional',null],['Economy / Jurisdiction','country'],['Current Head','head'],['Official Position','position'],['Policy-Setting Committee','committee'],
 ['Monetary Policy Framework',null],['Official Mandate / Objective','mandate'],['Inflation Target','target'],['Main Policy Instrument','instrument'],['Current Setting','setting'],
@@ -238,10 +226,24 @@ const rows=[
 function change(b){if(b.latest.includes('+25'))return '↑ +25 bp';if(b.latest.includes('0 bp'))return '— 0 bp';if(b.latest.includes('FX'))return 'FX Framework';return b.latest}
 function gap(b){let x=targets[b.id];if(x==null)return 'Not directly comparable';let d=b.infl-x;return (d>0?'Above target ':'Below target ')+(d>0?'+':'')+d.toFixed(1)+' pp'}
 function val(b,k){if(k==='infl')return '<span class="num">'+b.infl.toFixed(1)+'%</span>';if(k==='gap')return gap(b);if(k==='change')return '<span class="num">'+change(b)+'</span>';if(k==='ind')return b.ind.map(x=>'<span class="pill">'+x+'</span>').join('');if(k==='position')return '<div class="main">'+b.position+'</div>'+(b.chair?'<div class="muted">'+b.chair+'</div>':'');if(k==='setting')return '<span class="num">'+b.setting+'</span>';return '<div class="main">'+(b[k]??'—')+'</div>'}
-function renderMatrix(){let h='<thead><tr><th>'+t('Compare','比較項目')+'</th>'+B.map(b=>'<th '+bankStyle(b.id)+'>'+b.short+'<div class="muted" style="font-size:8.5px;margin-top:2px">'+b.name+'</div><div class="muted">'+b.country+'</div></th>').join('')+'</tr></thead><tbody>';for(const [label,k] of rows){if(!k){h+='<tr class="group"><th>'+label+'</th>'+B.map(()=>'<td></td>').join('')+'</tr>'}else{h+='<tr><th>'+label+'</th>'+B.map(b=>'<td>'+val(b,k)+'</td>').join('')+'</tr>'}}h+='</tbody>';document.getElementById('matrix').innerHTML=h}
-function renderCards(){document.getElementById('cards').innerHTML=B.map(b=>'<div class="panel profile" '+bankStyle(b.id)+'><h3><span class="dot"></span>'+b.short+' · '+b.country+'</h3><div class="mini" style="margin-top:3px;font-weight:700;color:#475569">'+b.name+'</div><div class="photos"><div class="photo"><img src="'+b.photo+'" alt="'+b.head+'"></div><div class="photo"><img src="'+b.building+'" alt="'+b.short+' building"></div></div><div class="leader"><b>'+b.head+'</b><br>'+b.position+(b.chair?'<br><span class="mini">'+b.chair+'</span>':'')+'</div><div class="facts"><div class="fact"><div class="label">Current setting</div><div class="value">'+b.setting+'</div></div><div class="fact"><div class="label">Inflation</div><div class="value">'+b.infl.toFixed(1)+'%</div></div><div class="fact"><div class="label">Latest decision</div><div class="value">'+b.latest+'</div></div><div class="fact"><div class="label">Next meeting</div><div class="value">'+b.next+'</div></div></div></div>').join('')}
+function renderMatrix(){
+  let h='<thead><tr><th>Category</th>'+B.map(b=>'<th>'+b.short+'<div class="muted">('+b.country+')</div></th>').join('')+'</tr></thead><tbody>';
+  for(const [label,k] of rows){
+    if(!k){h+='<tr class="group"><th>'+label+'</th>'+B.map(()=>'<td></td>').join('')+'</tr>'}
+    else{h+='<tr><th>'+label+'</th>'+B.map(b=>'<td>'+val(b,k)+'</td>').join('')+'</tr>'}
+  }
+  h+='</tbody>';document.getElementById('matrix').innerHTML=h
+}
+function renderCards(){
+  document.getElementById('cards').innerHTML=B.map(b=>'<div class="panel profile" '+bankStyle(b.id)+'><h3><span class="flag">'+FLAGS[b.id]+'</span>'+b.short+'</h3><div class="photo"><img src="'+b.photo+'" alt="'+b.head+'"></div><div class="leader"><b>'+b.head+'</b><br>'+b.position+'</div><div class="profile-facts"><div class="profile-row"><span class="k">Rate</span><span class="v">'+(b.id==='mas'?'S$NEER':b.setting)+'</span></div><div class="profile-row"><span class="k">Inflation</span><span class="v">'+b.infl.toFixed(1)+'%</span></div><div class="profile-row"><span class="k">Latest</span><span class="v decision">'+b.latest+'</span></div><div class="profile-row"><span class="k">Next</span><span class="v">'+b.next+'</span></div></div></div>').join('')
+}
 function renderDecisions(){document.getElementById('decisions').innerHTML=B.map(b=>'<div class="panel decision" '+bankStyle(b.id)+'><b>'+b.short+'</b><div class="date">'+b.date+'</div><div class="action">'+b.latest+'</div><div class="mini">'+b.prev+' → '+b.setting+'</div></div>').join('')}
-function renderMeetings(){document.getElementById('meetings').innerHTML=B.map(b=>'<div class="panel meeting" '+bankStyle(b.id)+'><b>'+b.next+'</b><span>'+b.short+'</span><span>'+b.setting+'</span></div>').join('')}
+function renderMeetings(){
+  document.getElementById('meetingTable').innerHTML='<tr><th>Bank</th><th>Date</th></tr>'+B.slice().sort((a,b)=>a.next.localeCompare(b.next)).map(b=>'<tr '+bankStyle(b.id)+'><td><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bank);margin-right:6px"></span>'+b.short+'</td><td>'+b.next+'</td></tr>').join('')
+}
+function renderDecisionTable(){
+  document.getElementById('decisionTable').innerHTML='<tr><th>Bank</th><th>Date</th><th>Decision</th></tr>'+B.map(b=>'<tr '+bankStyle(b.id)+'><td><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bank);margin-right:6px"></span>'+b.short+'</td><td>'+b.date+'</td><td style="font-weight:800;color:var(--bank)">'+b.latest+'</td></tr>').join('')
+}
 function renderTake(){let x=['RBI currently has the highest directly comparable policy rate among the six rate-based frameworks.','Fed, ECB and BoJ are shown as tightening in the latest-decision snapshot, while BoE and RBI are holding.','Inflation remains above 2% in the US, euro area and UK in this dashboard snapshot.','MAS is structurally different because monetary policy is centred on the S$NEER exchange-rate band.'];document.getElementById('take').innerHTML=x.map(v=>'<div class="panel">'+v+'</div>').join('')}
 function months(y){let a=[],e=new Date(2026,8,1),s=new Date(e);s.setFullYear(s.getFullYear()-y);for(let d=new Date(s.getFullYear(),s.getMonth(),1);d<=e;d.setMonth(d.getMonth()+1))a.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));return a}
 function at(ev,m){let v=null;for(const [d,x] of ev){if(d<=m)v=x;else break}return v}
@@ -279,63 +281,27 @@ Chart.register(valueLabelPlugin);
 function charts(){
   hc=new Chart(document.getElementById('history'),{
     type:'line',data:makeHistory(3),
-    options:{
-      responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      layout:{padding:{top:10,right:18,bottom:4,left:4}},
-      plugins:{
-        legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',boxWidth:8,boxHeight:8,padding:18,color:'#475569',font:{size:11,weight:'700'}}},
-        tooltip:{backgroundColor:'#0F172A',titleColor:'#fff',bodyColor:'#E2E8F0',padding:11,cornerRadius:9,displayColors:true,boxPadding:5},
-        valueLabels:{enabled:true,onlyLast:true}
-      },
-      scales:{
-        x:{grid:{display:false},ticks:{maxTicksLimit:12,color:'#64748B',font:{size:10}},border:{color:'#CBD5E1'}},
-        y:{grid:{color:'#E8EDF3'},ticks:{color:'#64748B',font:{size:10}},border:{display:false},title:{display:true,text:'Policy rate (%)',color:'#475569',font:{size:10,weight:'700'}}}
-      }
-    }
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:6,padding:11,font:{size:9},color:'#526681'}},tooltip:{backgroundColor:'#102A55',padding:8,cornerRadius:6}},
+      scales:{x:{grid:{color:'#EEF2F6'},ticks:{maxTicksLimit:8,font:{size:8},color:'#63758D'}},y:{grid:{color:'#E6ECF3'},ticks:{font:{size:8},color:'#63758D'},title:{display:true,text:'Policy rate (%)',font:{size:8},color:'#63758D'}}}}
   });
-  let rateBanks=B.filter(b=>b.plot!=null).sort((a,b)=>b.plot-a.plot);
+  let rb=B.filter(b=>b.plot!=null).sort((a,b)=>b.plot-a.plot);
   cc=new Chart(document.getElementById('current'),{
-    type:'bar',
-    data:{labels:rateBanks.map(b=>b.short),datasets:[{
-      data:rateBanks.map(b=>b.plot),
-      backgroundColor:rateBanks.map(b=>BANK_COLORS[b.id]),
-      borderRadius:7,borderSkipped:false,barThickness:20
-    }]},
-    options:{
-      indexAxis:'y',responsive:true,maintainAspectRatio:false,
-      layout:{padding:{right:42}},
-      plugins:{
-        legend:{display:false},
-        tooltip:{backgroundColor:'#0F172A',padding:10,cornerRadius:8,callbacks:{label:(ctx)=>' '+ctx.raw.toFixed(3).replace(/0+$/,'').replace(/.$/,'')+'%'}},
-        valueLabels:{enabled:true,onlyLast:false}
-      },
-      scales:{
-        x:{beginAtZero:true,grid:{color:'#EDF1F5'},ticks:{color:'#64748B',font:{size:10}},border:{display:false}},
-        y:{grid:{display:false},ticks:{color:'#334155',font:{size:11,weight:'700'}},border:{display:false}}
-      }
-    }
+    type:'bar',data:{labels:rb.map(b=>b.short),datasets:[{data:rb.map(b=>b.plot),backgroundColor:rb.map(b=>BANK_COLORS[b.id]),borderRadius:3,barThickness:15}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#102A55',padding:8}},
+      scales:{x:{beginAtZero:true,grid:{color:'#EDF2F7'},ticks:{font:{size:8},color:'#63758D'}},y:{grid:{display:false},ticks:{font:{size:8,weight:'700'},color:'#304865'}}}}
   });
-  const inflColors=B.map(b=>BANK_COLORS[b.id]);
   ic=new Chart(document.getElementById('inflation'),{
     type:'bar',
     data:{labels:B.map(b=>b.short),datasets:[
-      {label:'Latest inflation',data:B.map(b=>b.infl),backgroundColor:inflColors,borderColor:inflColors,borderWidth:1,borderRadius:6,borderSkipped:false},
-      {label:'Target',data:B.map(b=>targets[b.id]),backgroundColor:'#CBD5E1',borderColor:'#94A3B8',borderWidth:1,borderRadius:6,borderSkipped:false}
+      {label:'Inflation',data:B.map(b=>b.infl),backgroundColor:B.map(b=>BANK_COLORS[b.id]),borderRadius:3,barThickness:12},
+      {label:'Target',data:B.map(b=>targets[b.id]),backgroundColor:'rgba(255,255,255,.01)',borderColor:B.map(b=>BANK_COLORS[b.id]),borderWidth:1.2,borderRadius:3,barThickness:12}
     ]},
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{
-        legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:8,padding:16,color:'#475569',font:{size:10,weight:'700'}}},
-        tooltip:{backgroundColor:'#0F172A',padding:10,cornerRadius:8}
-      },
-      scales:{
-        y:{beginAtZero:true,grid:{color:'#EDF1F5'},ticks:{color:'#64748B',font:{size:10}},border:{display:false}},
-        x:{grid:{display:false},ticks:{color:'#475569',font:{size:10,weight:'700'}},border:{display:false}}
-      }
-    }
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,boxWidth:6,font:{size:8},color:'#526681'}},tooltip:{backgroundColor:'#102A55',padding:8}},
+      scales:{y:{beginAtZero:true,grid:{color:'#EDF2F7'},ticks:{font:{size:8},color:'#63758D'},title:{display:true,text:'Inflation rate (%)',font:{size:8},color:'#63758D'}},x:{grid:{display:false},ticks:{font:{size:8},color:'#526681'}}}}
   })
 }
 document.getElementById('ranges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#ranges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');hc.data=makeHistory(+e.target.dataset.y);hc.update()});
 document.getElementById('lang').onclick=()=>{lang=lang==='en'?'zh':'en';document.getElementById('lang').textContent=lang==='en'?'繁體中文':'English';document.querySelectorAll('[data-en]').forEach(x=>x.textContent=x.dataset[lang]);renderMatrix()};
-renderSnap();renderMatrix();renderCards();renderMeetings();charts();
+renderSnap();renderPolicySummary();renderInflSummary();renderTakeaways();renderCards();renderMatrix();renderDecisionTable();renderMeetings();charts();
 </script></body></html>
