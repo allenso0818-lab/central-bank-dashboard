@@ -5,27 +5,184 @@
 <title>Seven Central Banks — One Comparative View</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
-:root{--bg:#eef2f7;--card:#fff;--ink:#101828;--muted:#667085;--line:#e4e7ec;--navy:#17375e;--blue:#2457c5;--green:#087443;--red:#b42318;--purple:#6941c6}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink)}
-.container{max-width:1500px;margin:auto;padding:24px}.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 20px rgba(16,24,40,.05)}
-header{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:22px 24px}.title h1{font-size:30px;margin:0;color:#102a43}.title p{margin:6px 0 0;color:var(--muted);font-size:14px}.lang{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 12px;font-weight:700;cursor:pointer}
-section{margin-top:22px}h2{font-size:20px;margin:0 0 5px;color:#162b49}.sub{font-size:12px;color:var(--muted);margin-bottom:10px}
-.snap{display:grid;grid-template-columns:repeat(7,1fr);gap:9px}.snap>div{padding:12px;min-height:105px}.bank{font-weight:800;font-size:12px}.country{font-size:10px;color:var(--muted);margin-top:2px}.rate{font-size:19px;font-weight:850;color:#102a43;margin:9px 0 3px}.mini{font-size:10px;color:var(--muted);line-height:1.35}.status{font-size:10px;font-weight:800;margin-top:6px}
-.scroll{overflow:auto;max-height:720px;border-radius:15px}.matrix{border-collapse:separate;border-spacing:0;min-width:1450px;width:100%;table-layout:fixed;font-size:10.5px}
-.matrix th,.matrix td{padding:9px 10px;height:44px;border-right:1px solid #edf0f4;border-bottom:1px solid #edf0f4;vertical-align:middle;background:#fff}
-.matrix thead th{position:sticky;top:0;z-index:4;background:var(--navy);color:#fff;text-align:center;width:180px}.matrix thead th:first-child{left:0;z-index:6;width:190px;text-align:left}
-.matrix tbody th{position:sticky;left:0;z-index:3;background:#f7f9fc;color:#344054;text-align:left;width:190px}.matrix tbody tr:nth-child(even):not(.group) td{background:#fbfcfe}
-.group th,.group td{background:#dfe9f6!important;color:#214b7f!important;height:28px;font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-weight:850}
-.num{font-size:12px;font-weight:850;color:#102a43}.main{font-weight:650;line-height:1.3}.muted{color:var(--muted);font-size:9px}.pill{display:inline-block;padding:3px 6px;border-radius:999px;border:1px solid #d8dee8;background:#f8fafc;font-size:9px;margin:2px 2px 0 0}
-.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}.chart{padding:18px}.chartbox{height:380px}.chartbox.short{height:310px}
-.controls{display:flex;gap:4px;margin-bottom:8px}.controls button{border:1px solid var(--line);background:#fff;border-radius:7px;padding:6px 9px;font-size:11px;font-weight:700;cursor:pointer}.controls .active{background:var(--navy);color:#fff}
-.note{font-size:10px;color:var(--muted);margin-top:8px;line-height:1.45}.masnote{margin-top:9px;padding:8px 10px;background:#f7f4ff;border:1px solid #e4dcff;border-radius:8px;color:#5f3aa8;font-size:10.5px}
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.profile{padding:14px;min-height:400px}.profile h3{font-size:14px;margin:0}.photos{display:grid;grid-template-columns:42% 58%;gap:7px;margin:10px 0}.photo{height:128px;border-radius:9px;overflow:hidden;background:#eef2f6;border:1px solid var(--line)}.photo img{width:100%;height:100%;object-fit:cover}.leader{font-size:11px;line-height:1.3;min-height:56px}.leader b{font-size:12px}.facts{display:grid;grid-template-columns:1fr 1fr;gap:7px}.fact{padding:8px;border:1px solid #e9edf3;background:#f9fbfd;border-radius:8px;min-height:54px}.label{font-size:8px;text-transform:uppercase;color:#7a8595;font-weight:800}.value{font-size:10.5px;font-weight:650;margin-top:3px}
-.decisions{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}.decision{padding:10px;min-height:100px}.decision b{font-size:12px}.decision .date{font-size:9.5px;color:var(--muted);margin:4px 0}.action{font-size:12px;font-weight:850}
-.meetings{display:grid;gap:7px}.meeting{display:grid;grid-template-columns:130px 1fr 1fr;gap:10px;padding:10px 12px;font-size:11px}.take{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.take>div{padding:12px;border-left:3px solid var(--blue);font-size:11px;line-height:1.45}
-.sources{font-size:10.5px;color:var(--muted);line-height:1.6;padding:14px}
-@media(max-width:1100px){.snap{grid-template-columns:repeat(4,1fr)}.cards{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.decisions{grid-template-columns:repeat(4,1fr)}}
-@media(max-width:700px){.container{padding:12px}.snap{grid-template-columns:repeat(2,1fr)}.cards,.take{grid-template-columns:1fr}.decisions{grid-template-columns:repeat(2,1fr)}header{align-items:flex-start}.title h1{font-size:25px}}
+:root{
+  --bg:#F5F7FB;--card:#FFFFFF;--ink:#0F172A;--muted:#64748B;--line:#E2E8F0;
+  --navy:#16325C;--navy2:#24466F;--soft-blue:#EEF4FB;
+  --fed:#2563EB;--ecb:#7C3AED;--boe:#0891B2;--boj:#DC2626;--pboc:#D97706;--rbi:#059669;--mas:#DB2777;
+  --above:#C2410C;--near:#2563EB;--below:#059669;--neutral:#94A3B8;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.container{max-width:1540px;margin:auto;padding:28px}
+.panel{
+  background:rgba(255,255,255,.98);border:1px solid var(--line);border-radius:18px;
+  box-shadow:0 8px 28px rgba(15,23,42,.055);
+}
+header{
+  position:relative;overflow:hidden;display:flex;justify-content:space-between;gap:22px;align-items:center;
+  padding:26px 28px;border:1px solid #DCE5F1;
+  background:linear-gradient(135deg,#FFFFFF 0%,#F7FAFE 58%,#EEF4FB 100%);
+}
+header:after{
+  content:"";position:absolute;right:-70px;top:-90px;width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(37,99,235,.10),rgba(37,99,235,0) 68%);pointer-events:none
+}
+.title{position:relative;z-index:1}.title h1{font-size:31px;letter-spacing:-.025em;margin:0;color:#10233F;font-weight:820}
+.title p{margin:7px 0 0;color:var(--muted);font-size:14px}
+.lang{
+  position:relative;z-index:1;border:1px solid #CBD5E1;background:#fff;border-radius:10px;padding:9px 13px;
+  font-weight:750;color:#1E3A5F;cursor:pointer;box-shadow:0 2px 7px rgba(15,23,42,.04);
+  transition:.18s ease
+}
+.lang:hover{border-color:#94A3B8;transform:translateY(-1px)}
+section{margin-top:26px}
+h2{font-size:20px;letter-spacing:-.01em;margin:0 0 5px;color:#12233D;font-weight:800}
+.sub{font-size:12px;color:var(--muted);margin-bottom:12px}
+section>h2:after{content:"";display:block;width:32px;height:3px;border-radius:999px;background:#B8C7DB;margin-top:7px}
+
+.snap{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+.snap>div{
+  position:relative;overflow:hidden;padding:14px 14px 13px;min-height:118px;
+  border-top:4px solid var(--bank,#CBD5E1);transition:.18s ease
+}
+.snap>div:before{
+  content:"";position:absolute;inset:0;background:linear-gradient(180deg,color-mix(in srgb,var(--bank) 5%,white),transparent 40%);
+  pointer-events:none
+}
+.snap>div:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(15,23,42,.075)}
+.bankline{display:flex;align-items:center;justify-content:space-between;gap:8px;position:relative}
+.bankbadge{
+  display:inline-flex;align-items:center;gap:6px;font-weight:850;font-size:11px;color:var(--bank);
+  background:color-mix(in srgb,var(--bank) 9%,white);border:1px solid color-mix(in srgb,var(--bank) 22%,white);
+  padding:4px 7px;border-radius:999px
+}
+.bankbadge:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--bank)}
+.country{font-size:10px;color:var(--muted);margin-top:6px;position:relative}
+.rate{font-size:20px;font-weight:850;letter-spacing:-.02em;color:#0F2747;margin:10px 0 3px;position:relative}
+.mini{font-size:10px;color:var(--muted);line-height:1.4}
+.status{
+  display:inline-flex;align-items:center;margin-top:8px;padding:3px 7px;border-radius:999px;
+  font-size:9.5px;font-weight:800;color:var(--bank);
+  background:color-mix(in srgb,var(--bank) 8%,white);border:1px solid color-mix(in srgb,var(--bank) 18%,white)
+}
+
+.scroll{overflow:auto;max-height:735px;border-radius:18px}
+.matrix{
+  border-collapse:separate;border-spacing:0;min-width:1450px;width:100%;table-layout:fixed;font-size:10.5px
+}
+.matrix th,.matrix td{
+  padding:10px 11px;height:46px;border-right:1px solid #E8EDF3;border-bottom:1px solid #E8EDF3;
+  vertical-align:middle;background:#fff
+}
+.matrix thead th{
+  position:sticky;top:0;z-index:4;color:#fff;text-align:center;width:180px;
+  background:linear-gradient(180deg,var(--bank,#193A63),color-mix(in srgb,var(--bank,#193A63) 80%,#10233F));
+  box-shadow:inset 0 -1px rgba(255,255,255,.12)
+}
+.matrix thead th:first-child{
+  left:0;z-index:6;width:195px;text-align:left;background:linear-gradient(180deg,#1B3B63,#122B49)
+}
+.matrix thead th .muted{color:rgba(255,255,255,.75)!important}
+.matrix tbody th{
+  position:sticky;left:0;z-index:3;background:#F8FAFC;color:#253550;text-align:left;width:195px;
+  font-weight:760;box-shadow:1px 0 0 #E8EDF3
+}
+.matrix tbody tr:nth-child(even):not(.group) td{background:#FBFCFE}
+.matrix tbody tr:hover:not(.group) td{background:#F7FAFD}
+.matrix tbody tr:hover:not(.group) th{background:#F2F6FA}
+.group th,.group td{
+  background:linear-gradient(90deg,#E8F0F9,#F2F6FB)!important;color:#234A75!important;
+  height:31px;font-size:9px;text-transform:uppercase;letter-spacing:.085em;font-weight:900;
+  border-bottom:1px solid #CFDBE8
+}
+.group th{border-left:4px solid #5C7EA8}
+.num{font-size:12.5px;font-weight:850;color:#102A4A}
+.main{font-weight:650;line-height:1.35}
+.muted{color:var(--muted);font-size:9px}
+.pill{
+  display:inline-block;padding:3px 7px;border-radius:999px;border:1px solid #D8E1EC;background:#F8FAFC;
+  color:#40536D;font-size:9px;margin:2px 2px 0 0
+}
+
+.grid2{display:grid;grid-template-columns:1.18fr .82fr;gap:16px}
+.chart{padding:20px 20px 16px}
+.chartbox{height:410px}.chartbox.short{height:330px}
+.controls{
+  width:max-content;display:flex;gap:0;padding:3px;margin-bottom:13px;background:#EEF2F7;border:1px solid #DCE3EC;border-radius:11px
+}
+.controls button{
+  border:0;background:transparent;border-radius:8px;padding:7px 12px;font-size:11px;font-weight:800;color:#64748B;
+  cursor:pointer;transition:.16s ease
+}
+.controls button:hover{color:#233D5B;background:rgba(255,255,255,.7)}
+.controls .active{background:#fff;color:#17375E;box-shadow:0 2px 6px rgba(15,23,42,.09)}
+.note{
+  font-size:10px;color:var(--muted);margin-top:10px;line-height:1.5;padding-top:9px;border-top:1px dashed #E2E8F0
+}
+.masnote{
+  margin-top:10px;padding:10px 12px;background:#FBF6FC;border:1px solid #F2D8EC;border-left:3px solid var(--mas);
+  border-radius:9px;color:#7A315E;font-size:10.5px;line-height:1.45
+}
+
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
+.profile{
+  position:relative;overflow:hidden;padding:15px;min-height:410px;border-top:4px solid var(--bank,#CBD5E1);
+  transition:.18s ease
+}
+.profile:after{
+  content:"";position:absolute;right:-38px;top:-45px;width:110px;height:110px;border-radius:50%;
+  background:radial-gradient(circle,color-mix(in srgb,var(--bank) 10%,white),transparent 70%);pointer-events:none
+}
+.profile:hover{transform:translateY(-2px);box-shadow:0 13px 34px rgba(15,23,42,.075)}
+.profile h3{font-size:14px;margin:0;color:#14253E;font-weight:850;position:relative}
+.profile h3 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--bank);margin-right:7px}
+.photos{display:grid;grid-template-columns:42% 58%;gap:8px;margin:11px 0}
+.photo{height:132px;border-radius:11px;overflow:hidden;background:#EEF2F6;border:1px solid #DCE4ED}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.leader{font-size:11px;line-height:1.35;min-height:60px}.leader b{font-size:12px;color:#17263C}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fact{
+  padding:9px;border:1px solid #E5EAF0;background:linear-gradient(180deg,#FBFCFE,#F7F9FC);
+  border-radius:9px;min-height:58px
+}
+.label{font-size:8px;text-transform:uppercase;letter-spacing:.045em;color:#7B899B;font-weight:850}
+.value{font-size:10.5px;font-weight:720;margin-top:4px;color:#17263C}
+
+.decisions{display:grid;grid-template-columns:repeat(7,1fr);gap:9px}
+.decision{
+  position:relative;overflow:hidden;padding:12px;min-height:108px;border-top:3px solid var(--bank,#CBD5E1)
+}
+.decision b{font-size:12px;color:#15263E}.decision .date{font-size:9.5px;color:var(--muted);margin:5px 0 7px}
+.action{font-size:13px;font-weight:850;color:var(--bank)}
+.meetings{display:grid;gap:8px}
+.meeting{
+  position:relative;display:grid;grid-template-columns:140px 1fr 1fr;gap:10px;padding:11px 13px;font-size:11px;
+  align-items:center;border-left:4px solid var(--bank,#CBD5E1)
+}
+.meeting b{color:#17304F}
+.take{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.take>div{
+  position:relative;padding:14px 14px 14px 16px;border-left:4px solid #3D6D9F;font-size:11px;line-height:1.5;
+  background:linear-gradient(180deg,#FFFFFF,#FAFCFE)
+}
+.take>div:before{content:"";position:absolute;width:5px;height:5px;border-radius:50%;background:#3D6D9F;left:7px;top:20px}
+.sources{
+  font-size:10.5px;color:var(--muted);line-height:1.65;padding:16px 18px;background:linear-gradient(180deg,#FFFFFF,#FBFCFE)
+}
+.sources b{color:#203650;font-size:11px}
+@media(max-width:1100px){
+  .snap{grid-template-columns:repeat(4,1fr)}.cards{grid-template-columns:repeat(2,1fr)}
+  .grid2{grid-template-columns:1fr}.decisions{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:700px){
+  .container{padding:14px}.snap{grid-template-columns:repeat(2,1fr)}.cards,.take{grid-template-columns:1fr}
+  .decisions{grid-template-columns:repeat(2,1fr)}header{align-items:flex-start;padding:21px}.title h1{font-size:25px}
+  .meeting{grid-template-columns:105px 1fr}.meeting span:last-child{display:none}
+}
 </style>
 </head>
 <body><div class="container">
@@ -51,6 +208,9 @@ section{margin-top:22px}h2{font-size:20px;margin:0 0 5px;color:#162b49}.sub{font
 </div>
 <script>
 let lang='en';
+const BANK_COLORS={fed:'#2563EB',ecb:'#7C3AED',boe:'#0891B2',boj:'#DC2626',pboc:'#D97706',rbi:'#059669',mas:'#DB2777'};
+function bankStyle(id){return 'style="--bank:'+BANK_COLORS[id]+'"'}
+
 const B=[
 {id:'fed',short:'Fed',country:'United States',head:'Kevin Warsh',position:'Chair of the Board of Governors of the Federal Reserve System; Chair of the FOMC',committee:'Federal Open Market Committee (FOMC)',mandate:'Maximum employment and stable prices',target:'2% PCE inflation',instrument:'Federal funds target range',setting:'3.75–4.00%',plot:3.875,infl:2.7,latest:'↑ +25 bp',prev:'3.50–3.75%',date:'16 Sep 2026',dir:'↑ Tightening',next:'28 Oct 2026',ind:['PCE','Payrolls','GDP','Wages'],photo:'https://cdnph.upi.com/svc/sv/upi/4111781703944/2026/1/db91a46184db51bfe4d9ea38e95151a1/New-Fed-chair-Kevin-Warsh-leads-first-Open-Market-Committee-meeting.jpg',building:'https://i.epochtimes.com/assets/uploads/2025/05/id14519874-EpochImages-2968722995-xl.jpg'},
 {id:'ecb',short:'ECB',country:'Euro Area',head:'Christine Lagarde',position:'President of the European Central Bank',committee:'Governing Council',mandate:'Price stability',target:'2% medium term',instrument:'Deposit facility rate',setting:'2.50%',plot:2.5,infl:2.4,latest:'↑ +25 bp',prev:'2.25%',date:'10 Sep 2026',dir:'↑ Tightening',next:'29 Oct 2026',ind:['HICP','Wages','GDP','PMI'],photo:'https://commons.wikimedia.org/wiki/Special:FilePath/Lagarde%20ECB%20Portrait%202019.jpg?width=500',building:'https://www.vle.lt/Image.php?p=%2F385611%2F53751-1.jpg'},
@@ -70,7 +230,7 @@ pboc:[['2017-01',2.25],['2022-01',2.1],['2023-08',1.8],['2024-09',1.5],['2025-05
 rbi:[['2017-01',6.25],['2019-10',5.15],['2020-05',4],['2022-05',4.4],['2023-02',6.5],['2025-02',6.25],['2025-06',5.5],['2026-08',5.25]]
 };
 function t(en,zh){return lang==='en'?en:zh}
-function renderSnap(){document.getElementById('snap').innerHTML=B.map(b=>'<div class="panel"><div><div class="bank">'+b.short+'</div><div class="country">'+b.country+'</div><div class="rate">'+b.setting+'</div><div class="mini">'+b.instrument+'</div></div><div class="status">'+b.dir+'</div></div>').join('')}
+function renderSnap(){document.getElementById('snap').innerHTML=B.map(b=>'<div class="panel" '+bankStyle(b.id)+'><div><div class="bankline"><span class="bankbadge">'+b.short+'</span></div><div class="country">'+b.country+'</div><div class="rate">'+b.setting+'</div><div class="mini">'+b.instrument+'</div></div><div class="status">'+b.dir+'</div></div>').join('')}
 const rows=[
 ['Institutional',null],['Economy / Jurisdiction','country'],['Current Head','head'],['Official Position','position'],['Policy-Setting Committee','committee'],
 ['Monetary Policy Framework',null],['Official Mandate / Objective','mandate'],['Inflation Target','target'],['Main Policy Instrument','instrument'],['Current Setting','setting'],
@@ -81,16 +241,109 @@ const rows=[
 function change(b){if(b.latest.includes('+25'))return '↑ +25 bp';if(b.latest.includes('0 bp'))return '— 0 bp';if(b.latest.includes('FX'))return 'FX Framework';return b.latest}
 function gap(b){let x=targets[b.id];if(x==null)return 'Not directly comparable';let d=b.infl-x;return (d>0?'Above target ':'Below target ')+(d>0?'+':'')+d.toFixed(1)+' pp'}
 function val(b,k){if(k==='infl')return '<span class="num">'+b.infl.toFixed(1)+'%</span>';if(k==='gap')return gap(b);if(k==='change')return '<span class="num">'+change(b)+'</span>';if(k==='ind')return b.ind.map(x=>'<span class="pill">'+x+'</span>').join('');if(k==='position')return '<div class="main">'+b.position+'</div>'+(b.chair?'<div class="muted">'+b.chair+'</div>':'');if(k==='setting')return '<span class="num">'+b.setting+'</span>';return '<div class="main">'+(b[k]??'—')+'</div>'}
-function renderMatrix(){let h='<thead><tr><th>'+t('Compare','比較項目')+'</th>'+B.map(b=>'<th>'+b.short+'<div class="muted" style="color:#d9e4f4">'+b.country+'</div></th>').join('')+'</tr></thead><tbody>';for(const [label,k] of rows){if(!k){h+='<tr class="group"><th>'+label+'</th>'+B.map(()=>'<td></td>').join('')+'</tr>'}else{h+='<tr><th>'+label+'</th>'+B.map(b=>'<td>'+val(b,k)+'</td>').join('')+'</tr>'}}h+='</tbody>';document.getElementById('matrix').innerHTML=h}
-function renderCards(){document.getElementById('cards').innerHTML=B.map(b=>'<div class="panel profile"><h3>'+b.short+' · '+b.country+'</h3><div class="photos"><div class="photo"><img src="'+b.photo+'" alt="'+b.head+'"></div><div class="photo"><img src="'+b.building+'" alt="'+b.short+' building"></div></div><div class="leader"><b>'+b.head+'</b><br>'+b.position+(b.chair?'<br><span class="mini">'+b.chair+'</span>':'')+'</div><div class="facts"><div class="fact"><div class="label">Current setting</div><div class="value">'+b.setting+'</div></div><div class="fact"><div class="label">Inflation</div><div class="value">'+b.infl.toFixed(1)+'%</div></div><div class="fact"><div class="label">Latest decision</div><div class="value">'+b.latest+'</div></div><div class="fact"><div class="label">Next meeting</div><div class="value">'+b.next+'</div></div></div></div>').join('')}
-function renderDecisions(){document.getElementById('decisions').innerHTML=B.map(b=>'<div class="panel decision"><b>'+b.short+'</b><div class="date">'+b.date+'</div><div class="action">'+b.latest+'</div><div class="mini">'+b.prev+' → '+b.setting+'</div></div>').join('')}
-function renderMeetings(){document.getElementById('meetings').innerHTML=B.map(b=>'<div class="panel meeting"><b>'+b.next+'</b><span>'+b.short+'</span><span>'+b.setting+'</span></div>').join('')}
+function renderMatrix(){let h='<thead><tr><th>'+t('Compare','比較項目')+'</th>'+B.map(b=>'<th '+bankStyle(b.id)+'>'+b.short+'<div class="muted">'+b.country+'</div></th>').join('')+'</tr></thead><tbody>';for(const [label,k] of rows){if(!k){h+='<tr class="group"><th>'+label+'</th>'+B.map(()=>'<td></td>').join('')+'</tr>'}else{h+='<tr><th>'+label+'</th>'+B.map(b=>'<td>'+val(b,k)+'</td>').join('')+'</tr>'}}h+='</tbody>';document.getElementById('matrix').innerHTML=h}
+function renderCards(){document.getElementById('cards').innerHTML=B.map(b=>'<div class="panel profile" '+bankStyle(b.id)+'><h3><span class="dot"></span>'+b.short+' · '+b.country+'</h3><div class="photos"><div class="photo"><img src="'+b.photo+'" alt="'+b.head+'"></div><div class="photo"><img src="'+b.building+'" alt="'+b.short+' building"></div></div><div class="leader"><b>'+b.head+'</b><br>'+b.position+(b.chair?'<br><span class="mini">'+b.chair+'</span>':'')+'</div><div class="facts"><div class="fact"><div class="label">Current setting</div><div class="value">'+b.setting+'</div></div><div class="fact"><div class="label">Inflation</div><div class="value">'+b.infl.toFixed(1)+'%</div></div><div class="fact"><div class="label">Latest decision</div><div class="value">'+b.latest+'</div></div><div class="fact"><div class="label">Next meeting</div><div class="value">'+b.next+'</div></div></div></div>').join('')}
+function renderDecisions(){document.getElementById('decisions').innerHTML=B.map(b=>'<div class="panel decision" '+bankStyle(b.id)+'><b>'+b.short+'</b><div class="date">'+b.date+'</div><div class="action">'+b.latest+'</div><div class="mini">'+b.prev+' → '+b.setting+'</div></div>').join('')}
+function renderMeetings(){document.getElementById('meetings').innerHTML=B.map(b=>'<div class="panel meeting" '+bankStyle(b.id)+'><b>'+b.next+'</b><span>'+b.short+'</span><span>'+b.setting+'</span></div>').join('')}
 function renderTake(){let x=['RBI currently has the highest directly comparable policy rate among the six rate-based frameworks.','Fed, ECB and BoJ are shown as tightening in the latest-decision snapshot, while BoE and RBI are holding.','Inflation remains above 2% in the US, euro area and UK in this dashboard snapshot.','MAS is structurally different because monetary policy is centred on the S$NEER exchange-rate band.'];document.getElementById('take').innerHTML=x.map(v=>'<div class="panel">'+v+'</div>').join('')}
 function months(y){let a=[],e=new Date(2026,8,1),s=new Date(e);s.setFullYear(s.getFullYear()-y);for(let d=new Date(s.getFullYear(),s.getMonth(),1);d<=e;d.setMonth(d.getMonth()+1))a.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));return a}
 function at(ev,m){let v=null;for(const [d,x] of ev){if(d<=m)v=x;else break}return v}
 let hc,cc,ic;
-function makeHistory(y){let labels=months(y);return {labels,datasets:Object.keys(rateEvents).map(id=>{let b=B.find(x=>x.id===id);return {label:b.short,data:labels.map(m=>at(rateEvents[id],m)),stepped:true,pointRadius:0,borderWidth:2}})}}
-function charts(){hc=new Chart(document.getElementById('history'),{type:'line',data:makeHistory(3),options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom'}},scales:{x:{grid:{display:false},ticks:{maxTicksLimit:12}},y:{grid:{color:'#eef2f6'},title:{display:true,text:'Policy rate (%)'}}}}});let c=B.filter(b=>b.plot!=null).sort((a,b)=>b.plot-a.plot);cc=new Chart(document.getElementById('current'),{type:'bar',data:{labels:c.map(b=>b.short),datasets:[{data:c.map(b=>b.plot)}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,grid:{color:'#eef2f6'}},y:{grid:{display:false}}}}});ic=new Chart(document.getElementById('inflation'),{type:'bar',data:{labels:B.map(b=>b.short),datasets:[{label:'Latest inflation',data:B.map(b=>b.infl)},{label:'Target',data:B.map(b=>targets[b.id])}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:true,grid:{color:'#eef2f6'}},x:{grid:{display:false}}}}})}
+function makeHistory(y){
+  let labels=months(y);
+  return {labels,datasets:Object.keys(rateEvents).map(id=>{
+    let b=B.find(x=>x.id===id), arr=labels.map(m=>at(rateEvents[id],m));
+    return {
+      label:b.short,data:arr,stepped:true,
+      pointRadius:(ctx)=>ctx.dataIndex===arr.length-1?4:0,
+      pointHoverRadius:5,pointBackgroundColor:BANK_COLORS[id],pointBorderColor:'#fff',pointBorderWidth:2,
+      borderWidth:2.7,borderColor:BANK_COLORS[id],backgroundColor:BANK_COLORS[id],tension:0
+    }
+  })}
+}
+const valueLabelPlugin={
+  id:'valueLabels',
+  afterDatasetsDraw(chart,args,opts){
+    if(!opts||!opts.enabled)return;
+    const {ctx}=chart; ctx.save(); ctx.font='700 10px Inter, Arial'; ctx.fillStyle='#334155';
+    chart.data.datasets.forEach((ds,di)=>{
+      const meta=chart.getDatasetMeta(di); if(meta.hidden)return;
+      meta.data.forEach((el,i)=>{
+        if(opts.onlyLast && i!==meta.data.length-1)return;
+        const v=ds.data[i]; if(v==null)return;
+        const p=el.tooltipPosition();
+        ctx.textAlign='left';ctx.textBaseline='middle';
+        ctx.fillText((Number(v)%1===0?Number(v).toFixed(1):Number(v).toFixed(2))+'%',p.x+8,p.y);
+      })
+    });ctx.restore()
+  }
+};
+Chart.register(valueLabelPlugin);
+function charts(){
+  hc=new Chart(document.getElementById('history'),{
+    type:'line',data:makeHistory(3),
+    options:{
+      responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      layout:{padding:{top:10,right:18,bottom:4,left:4}},
+      plugins:{
+        legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle',boxWidth:8,boxHeight:8,padding:18,color:'#475569',font:{size:11,weight:'700'}}},
+        tooltip:{backgroundColor:'#0F172A',titleColor:'#fff',bodyColor:'#E2E8F0',padding:11,cornerRadius:9,displayColors:true,boxPadding:5},
+        valueLabels:{enabled:true,onlyLast:true}
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{maxTicksLimit:12,color:'#64748B',font:{size:10}},border:{color:'#CBD5E1'}},
+        y:{grid:{color:'#E8EDF3'},ticks:{color:'#64748B',font:{size:10}},border:{display:false},title:{display:true,text:'Policy rate (%)',color:'#475569',font:{size:10,weight:'700'}}}
+      }
+    }
+  });
+  let rateBanks=B.filter(b=>b.plot!=null).sort((a,b)=>b.plot-a.plot);
+  cc=new Chart(document.getElementById('current'),{
+    type:'bar',
+    data:{labels:rateBanks.map(b=>b.short),datasets:[{
+      data:rateBanks.map(b=>b.plot),
+      backgroundColor:rateBanks.map(b=>BANK_COLORS[b.id]),
+      borderRadius:7,borderSkipped:false,barThickness:20
+    }]},
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      layout:{padding:{right:42}},
+      plugins:{
+        legend:{display:false},
+        tooltip:{backgroundColor:'#0F172A',padding:10,cornerRadius:8,callbacks:{label:(ctx)=>' '+ctx.raw.toFixed(3).replace(/0+$/,'').replace(/.$/,'')+'%'}},
+        valueLabels:{enabled:true,onlyLast:false}
+      },
+      scales:{
+        x:{beginAtZero:true,grid:{color:'#EDF1F5'},ticks:{color:'#64748B',font:{size:10}},border:{display:false}},
+        y:{grid:{display:false},ticks:{color:'#334155',font:{size:11,weight:'700'}},border:{display:false}}
+      }
+    }
+  });
+  const inflColors=B.map(b=>{
+    const tg=targets[b.id];
+    if(tg==null)return '#94A3B8';
+    const diff=b.infl-tg;
+    if(Math.abs(diff)<=0.3)return '#2563EB';
+    return diff>0?'#C2410C':'#059669';
+  });
+  ic=new Chart(document.getElementById('inflation'),{
+    type:'bar',
+    data:{labels:B.map(b=>b.short),datasets:[
+      {label:'Latest inflation',data:B.map(b=>b.infl),backgroundColor:inflColors,borderRadius:6,borderSkipped:false},
+      {label:'Target',data:B.map(b=>targets[b.id]),backgroundColor:'#CBD5E1',borderRadius:6,borderSkipped:false}
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:8,padding:16,color:'#475569',font:{size:10,weight:'700'}}},
+        tooltip:{backgroundColor:'#0F172A',padding:10,cornerRadius:8}
+      },
+      scales:{
+        y:{beginAtZero:true,grid:{color:'#EDF1F5'},ticks:{color:'#64748B',font:{size:10}},border:{display:false}},
+        x:{grid:{display:false},ticks:{color:'#475569',font:{size:10,weight:'700'}},border:{display:false}}
+      }
+    }
+  })
+}
 document.getElementById('ranges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#ranges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');hc.data=makeHistory(+e.target.dataset.y);hc.update()});
 document.getElementById('lang').onclick=()=>{lang=lang==='en'?'zh':'en';document.getElementById('lang').textContent=lang==='en'?'繁體中文':'English';document.querySelectorAll('[data-en]').forEach(x=>x.textContent=x.dataset[lang]);renderMatrix()};
 renderSnap();renderMatrix();renderCards();renderDecisions();renderMeetings();renderTake();charts();
