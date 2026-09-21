@@ -48,7 +48,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .cards{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
 .profile{padding:8px;border-top:3px solid var(--bank);border-radius:8px;min-height:265px}
 .profile h3{font-size:11px;margin:0 0 4px;color:#17315B}.profile h3 .flag{margin-right:5px}.profile .fullbank{font-size:8.5px;color:#6A7C94;margin-bottom:5px}
-.photo{height:108px;border-radius:6px;overflow:hidden;background:#EEF2F6;border:1px solid #E0E6EE}.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.photo{height:108px;border-radius:6px;overflow:hidden;background:#EEF2F6;border:1px solid #E0E6EE}.photo img{width:100%;height:100%;object-fit:contain;object-position:center top;display:block;background:#F7F9FC}
 .leader{font-size:9px;line-height:1.22;min-height:47px;margin-top:5px;color:#314966}.leader b{font-size:10.5px;color:#132B54}
 .profile-facts{margin-top:4px;display:grid;gap:3px}
 .profile-row{display:grid;grid-template-columns:42px 1fr;gap:4px;font-size:9px;line-height:1.25}
@@ -114,13 +114,9 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
   </div>
 </section>
 
-<section>
-  <h2>Central Bank Profiles</h2>
-  <div class="cards" id="cards"></div>
-</section>
 
 <section>
-  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px"><h2>Central Bank Comparison Matrix</h2><div class="sub" style="margin-bottom:7px">Seven central banks as columns; comparison criteria as rows</div></div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px"><h2>Central Bank Profiles & Comparison</h2><div class="sub" style="margin-bottom:7px">Leader profiles and key policy information in one comparative view</div></div>
   <div class="panel matrix-wrap"><table class="matrix" id="matrix"></table></div>
 </section>
 
@@ -214,15 +210,15 @@ function renderTakeaways(){
   document.getElementById('takeaways').innerHTML=items.map(x=>'<div class="takeaway-item"><div class="takeaway-icon">'+x[0]+'</div><div><b>'+x[1]+'</b><span>'+x[2]+'<br><strong>'+x[3]+'</strong></span></div></div>').join('')
 }
 const rows=[
-['Institutional',null],['Economy / Jurisdiction','country'],['Current Head','head'],['Official Position','position'],['Policy-Setting Committee','committee'],
+['Institutional',null],['Leader Profile','leaderProfile'],['Economy / Jurisdiction','country'],['Policy-Setting Committee','committee'],
 ['Monetary Policy Framework',null],['Official Mandate / Objective','mandate'],['Inflation Target','target'],['Main Policy Instrument','instrument'],['Current Setting','setting'],
 ['Current Conditions',null],['Latest Inflation','infl'],['Inflation vs Target','gap'],['Current Policy Direction','dir'],
-['Latest Decision',null],['Latest Meeting Date','date'],['Decision','latest'],['Previous Setting','prev'],['Current Setting','setting'],['Change in bp','change'],
+['Latest Decision',null],['Latest Meeting Date','date'],['Decision','latest'],['Previous Setting','prev'],['Change in bp','change'],
 ['Monitoring',null],['Key Economic Indicators','ind'],['Next Policy Meeting','next']
 ];
 function change(b){if(b.latest.includes('+25'))return '↑ +25 bp';if(b.latest.includes('0 bp'))return '— 0 bp';if(b.latest.includes('FX'))return 'FX Framework';return b.latest}
 function gap(b){let x=targets[b.id];if(x==null)return 'Not directly comparable';let d=b.infl-x;return (d>0?'Above target ':'Below target ')+(d>0?'+':'')+d.toFixed(1)+' pp'}
-function val(b,k){if(k==='infl')return '<span class="num">'+b.infl.toFixed(1)+'%</span>';if(k==='gap')return gap(b);if(k==='change')return '<span class="num">'+change(b)+'</span>';if(k==='ind')return b.ind.map(x=>'<span class="pill">'+x+'</span>').join('');if(k==='position')return '<div class="main">'+b.position+'</div>'+(b.chair?'<div class="muted">'+b.chair+'</div>':'');if(k==='setting')return '<span class="num">'+b.setting+'</span>';return '<div class="main">'+(b[k]??'—')+'</div>'}
+function val(b,k){if(k==='leaderProfile')return '<div style="display:flex;gap:7px;align-items:center"><img src="'+b.photo+'" alt="'+b.head+'" style="width:52px;height:62px;object-fit:contain;object-position:center top;border-radius:6px;background:#F7F9FC;border:1px solid #E0E6EE"><div><div class="main"><b>'+b.head+'</b></div><div class="muted">'+b.position+'</div></div></div>';if(k==='infl')return '<span class="num">'+b.infl.toFixed(1)+'%</span>';if(k==='gap')return gap(b);if(k==='change')return '<span class="num">'+change(b)+'</span>';if(k==='ind')return b.ind.map(x=>'<span class="pill">'+x+'</span>').join('');if(k==='position')return '<div class="main">'+b.position+'</div>'+(b.chair?'<div class="muted">'+b.chair+'</div>':'');if(k==='setting')return '<span class="num">'+b.setting+'</span>';return '<div class="main">'+(b[k]??'—')+'</div>'}
 function renderMatrix(){
   let h='<thead><tr><th>Category</th>'+B.map(b=>'<th>'+b.short+'<div class="muted">('+b.country+')</div></th>').join('')+'</tr></thead><tbody>';
   for(const [label,k] of rows){
@@ -299,5 +295,5 @@ function charts(){
   })
 }
 document.getElementById('ranges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#ranges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');hc.data=makeHistory(+e.target.dataset.y);hc.update()});
-renderSnap();renderPolicySummary();renderInflSummary();renderTakeaways();renderCards();renderMatrix();renderDecisionTable();renderMeetings();charts();
+renderSnap();renderPolicySummary();renderInflSummary();renderTakeaways();renderMatrix();renderDecisionTable();renderMeetings();charts();
 </script></body></html>
