@@ -201,10 +201,7 @@ section>h2:after{content:"";display:block;width:32px;height:3px;border-radius:99
 <div><h2 data-en="Inflation vs Target" data-zh="通脹 vs 目標">Inflation vs Target</h2><div class="panel chart"><div class="chartbox short"><canvas id="inflation"></canvas></div></div></div>
 </section>
 
-<section><h2 data-en="Recent Decisions" data-zh="最近決策">Recent Decisions</h2><div class="decisions" id="decisions"></div></section>
 <section><h2 data-en="Upcoming Meetings" data-zh="即將舉行的政策會議">Upcoming Meetings</h2><div class="meetings" id="meetings"></div></section>
-<section><h2 data-en="Key Takeaways" data-zh="重點摘要">Key Takeaways</h2><div class="take" id="take"></div></section>
-<section><div class="panel sources"><b data-en="Sources & methodology" data-zh="資料來源與方法">Sources & methodology</b><br><span data-en="Designed for side-by-side academic comparison. Monetary-policy instruments are not fully homogeneous across jurisdictions. MAS is treated separately because it conducts monetary policy primarily through the exchange rate. Values should be checked against official central-bank releases before formal submission." data-zh="本頁以學術比較為目的。各經濟體的貨幣政策工具並非完全同質。由於MAS主要透過匯率執行貨幣政策，因此獨立處理。正式提交前應再以各央行官方資料核對數值。">Designed for side-by-side academic comparison. Monetary-policy instruments are not fully homogeneous across jurisdictions. MAS is treated separately because it conducts monetary policy primarily through the exchange rate. Values should be checked against official central-bank releases before formal submission.</span></div></section>
 </div>
 <script>
 let lang='en';
@@ -340,5 +337,5 @@ function charts(){
 }
 document.getElementById('ranges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#ranges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');hc.data=makeHistory(+e.target.dataset.y);hc.update()});
 document.getElementById('lang').onclick=()=>{lang=lang==='en'?'zh':'en';document.getElementById('lang').textContent=lang==='en'?'繁體中文':'English';document.querySelectorAll('[data-en]').forEach(x=>x.textContent=x.dataset[lang]);renderMatrix()};
-renderSnap();renderMatrix();renderCards();renderDecisions();renderMeetings();renderTake();charts();
+renderSnap();renderMatrix();renderCards();renderMeetings();charts();
 </script></body></html>
