@@ -172,9 +172,6 @@ const FLAGS={fed:'🇺🇸',ecb:'🇪🇺',boe:'🇬🇧',boj:'🇯🇵',pboc:'�
 const FULL={fed:'Federal Reserve System',ecb:'European Central Bank',boe:'Bank of England',boj:'Bank of Japan',pboc:'People’s Bank of China',rbi:'Reserve Bank of India',mas:'Monetary Authority of Singapore'};
 function bankStyle(id){return 'style="--bank:'+BANK_COLORS[id]+'"'}
 
-const BANK_COLORS={fed:'#2563EB',ecb:'#7C3AED',boe:'#0891B2',boj:'#DC2626',pboc:'#D97706',rbi:'#059669',mas:'#DB2777'};
-function bankStyle(id){return 'style="--bank:'+BANK_COLORS[id]+'"'}
-
 const B=[
 {id:'fed',short:'Fed',name:'Federal Reserve System',country:'United States',head:'Kevin Warsh',position:'Chair of the Board of Governors of the Federal Reserve System; Chair of the FOMC',committee:'Federal Open Market Committee (FOMC)',mandate:'Maximum employment and stable prices',target:'2% PCE inflation',instrument:'Federal funds target range',setting:'3.75–4.00%',plot:3.875,infl:2.7,latest:'↑ +25 bp',prev:'3.50–3.75%',date:'16 Sep 2026',dir:'↑ Tightening',next:'28 Oct 2026',ind:['PCE','Payrolls','GDP','Wages'],photo:'https://cdnph.upi.com/svc/sv/upi/4111781703944/2026/1/db91a46184db51bfe4d9ea38e95151a1/New-Fed-chair-Kevin-Warsh-leads-first-Open-Market-Committee-meeting.jpg',building:'https://i.epochtimes.com/assets/uploads/2025/05/id14519874-EpochImages-2968722995-xl.jpg'},
 {id:'ecb',short:'ECB',name:'European Central Bank',country:'Euro Area',head:'Christine Lagarde',position:'President of the European Central Bank',committee:'Governing Council',mandate:'Price stability',target:'2% medium term',instrument:'Deposit facility rate',setting:'2.50%',plot:2.5,infl:2.4,latest:'↑ +25 bp',prev:'2.25%',date:'10 Sep 2026',dir:'↑ Tightening',next:'29 Oct 2026',ind:['HICP','Wages','GDP','PMI'],photo:'https://commons.wikimedia.org/wiki/Special:FilePath/Lagarde%20ECB%20Portrait%202019.jpg?width=500',building:'https://www.vle.lt/Image.php?p=%2F385611%2F53751-1.jpg'},
