@@ -116,7 +116,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
   <div class="panel matrix-wrap"><table class="matrix" id="matrix"></table></div>
 </section>
 
-<section><h2>Central Bank Balance Sheet Comparison</h2><div class="sub">Cross-bank balance-sheet scale — values appear only after the numerator and GDP denominator pass the comparability check</div><div class="panel chart-card"><div class="chart-head"><div><h3>Central Bank Total Assets as % of GDP</h3><div class="sub">Latest comparable official observations</div></div></div><div class="chartbox" style="height:285px"><canvas id="balanceSheetGDP"></canvas></div><div class="note" id="balanceSheetGDPNote">Loading verified comparison…</div></div></section>
+<section><h2>Central Bank Balance Sheet Comparison</h2><div class="sub">Cross-bank balance-sheet scale using official balance-sheet observations</div><div class="panel chart-card"><div class="chart-head"><div><h3>Central Bank Total Assets</h3><div class="sub">USD-equivalent comparison; native-currency totals shown in tooltip</div></div></div><div class="chartbox" style="height:285px"><canvas id="totalAssetsUSD"></canvas></div><div class="note"><b>Comparison basis:</b> latest verified total-assets observations converted to USD using 21 Sep 2026 ECB reference FX rates. Observation dates differ by institution; hover for native totals.</div></div><div class="panel chart-card" style="margin-top:14px"><div class="chart-head"><div><h3>Central Bank Total Assets as % of GDP</h3><div class="sub">Latest comparable official observations</div></div></div><div class="chartbox" style="height:285px"><canvas id="balanceSheetGDP"></canvas></div><div class="note" id="balanceSheetGDPNote">Loading verified comparison…</div></div></section>
 <section class="charts-grid">
   <div class="panel chart-card">
     <div class="chart-head">
@@ -295,6 +295,66 @@ const BS_GDP=[
   {id:'rbi',name:'Reserve Bank of India',value:25.2,note:'₹87.230 lakh crore combined Issue and Banking Department assets (26 Jun 2026) / ₹345.47 lakh crore FY2025-26 nominal GDP.'},
   {id:'mas',name:'Monetary Authority of Singapore',value:97.8,note:'S$772.144bn total assets (Aug 2026, MAS series) / S$789.529bn 2025 nominal GDP.'}
 ];
+const BS_TOTAL_ASSETS=[
+ {id:'fed',name:'Federal Reserve System',usd:6.747,native:'US$6.747tn'},
+ {id:'ecb',name:'Eurosystem',usd:6.793,native:'€5.912tn'},
+ {id:'boe',name:'Bank of England',usd:1.154,native:'£0.862tn'},
+ {id:'boj',name:'Bank of Japan',usd:4.097,native:'¥644.272tn'},
+ {id:'pboc',name:'People’s Bank of China',usd:6.968,native:'RMB46.657tn'},
+ {id:'rbi',name:'Reserve Bank of India',usd:0.910,native:'₹87.230tn'},
+ {id:'mas',name:'Monetary Authority of Singapore',usd:0.606,native:'S$0.772tn'}
+];
+function renderTotalAssets(){
+ const canvas=document.getElementById('totalAssetsUSD'); if(!canvas||!window.Chart)return;
+ new Chart(canvas,{type:'bar',data:{labels:BS_TOTAL_ASSETS.map(x=>x.name),datasets:[{data:BS_TOTAL_ASSETS.map(x=>x.usd),backgroundColor:BS_TOTAL_ASSETS.map(x=>BANK_COLORS[x.id]),borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>'US
+ const canvas=document.getElementById('balanceSheetGDP'), note=document.getElementById('balanceSheetGDPNote');
+ if(!canvas||!window.Chart)return;
+ const labels=BS_GDP.map(x=>x.name), values=BS_GDP.map(x=>Number.isFinite(x.value)?x.value:2.5);
+ const unavailablePlugin={id:'unavailableRows',afterDatasetsDraw(chart){
+   const {ctx,chartArea}=chart, meta=chart.getDatasetMeta(0);
+   ctx.save();ctx.font='700 10px Inter, Arial';ctx.textBaseline='middle';
+   BS_GDP.forEach((x,i)=>{if(Number.isFinite(x.value))return;const el=meta.data[i];if(!el)return;
+     const y=el.y;ctx.fillStyle='#94A3B8';ctx.fillText('Pending verified official value',chartArea.left+12,y);
+   });ctx.restore();
+ }};
+ new Chart(canvas,{type:'bar',plugins:[unavailablePlugin],data:{labels,datasets:[{data:values,backgroundColor:BS_GDP.map(x=>Number.isFinite(x.value)?BANK_COLORS[x.id]:'#E5E7EB'),borderColor:BS_GDP.map(x=>Number.isFinite(x.value)?BANK_COLORS[x.id]:'#CBD5E1'),borderWidth:1,borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>{const x=BS_GDP[ctx.dataIndex];return Number.isFinite(x.value)?x.value.toFixed(1)+'% of GDP':'Data not directly comparable';},afterLabel:(ctx)=>BS_GDP[ctx.dataIndex].note}}},scales:{x:{beginAtZero:true,suggestedMax:100,title:{display:true,text:'Total assets / nominal GDP (%)'}},y:{grid:{display:false},ticks:{autoSkip:false}}}}});
+ note.innerHTML='<b>Coverage:</b> all seven institutions are now explicitly visible. The short grey bars are status placeholders labelled <b>Pending verified official value</b> — their length is not a numeric value. All seven institutions now show a numeric ratio using the latest directly verified comparable observation available for each institution. Observation dates differ and are disclosed in the tooltip.';
+}
+function charts(){
+  hc=new Chart(document.getElementById('history'),{
+    type:'line',data:makeHistory(3),
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:6,padding:11,font:{size:9},color:'#526681'}},tooltip:{backgroundColor:'#102A55',padding:8,cornerRadius:6}},
+      scales:{x:{grid:{color:'#EEF2F6'},ticks:{maxTicksLimit:8,font:{size:8},color:'#63758D'}},y:{grid:{color:'#E6ECF3'},ticks:{font:{size:8},color:'#63758D'},title:{display:true,text:'Policy rate (%)',font:{size:8},color:'#63758D'}}}}
+  });
+  let rb=B.filter(b=>b.plot!=null).sort((a,b)=>b.plot-a.plot);
+  cc=new Chart(document.getElementById('current'),{
+    type:'bar',data:{labels:rb.map(b=>b.name),datasets:[{data:rb.map(b=>b.plot),backgroundColor:rb.map(b=>BANK_COLORS[b.id]),borderRadius:3,barThickness:15}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#102A55',padding:8}},
+      scales:{x:{beginAtZero:true,grid:{color:'#EDF2F7'},ticks:{font:{size:8},color:'#63758D'}},y:{grid:{display:false},ticks:{font:{size:8,weight:'700'},color:'#304865',autoSkip:false}}}}
+  });
+  ic=new Chart(document.getElementById('inflation'),{
+    type:'bar',
+    data:{labels:B.map(b=>b.name),datasets:[
+      {label:'Inflation',data:B.map(b=>b.infl),backgroundColor:B.map(b=>BANK_COLORS[b.id]),borderRadius:3,barThickness:12},
+      {label:'Target',data:B.map(b=>targets[b.id]),backgroundColor:'rgba(255,255,255,.01)',borderColor:B.map(b=>BANK_COLORS[b.id]),borderWidth:1.2,borderRadius:3,barThickness:12}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,boxWidth:6,font:{size:8},color:'#526681'}},tooltip:{backgroundColor:'#102A55',padding:8}},
+      scales:{y:{beginAtZero:true,grid:{color:'#EDF2F7'},ticks:{font:{size:8},color:'#63758D'},title:{display:true,text:'Inflation rate (%)',font:{size:8},color:'#63758D'}},x:{grid:{display:false},ticks:{font:{size:8},color:'#526681',maxRotation:25,minRotation:25}}}}
+  })
+}
+document.getElementById('ranges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#ranges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');hc.data=makeHistory(+e.target.dataset.y);hc.update()});
+try{
+  assertDashboardData();
+  renderSnap();renderPolicySummary();renderTakeaways();renderMatrix();renderDecisionTable();renderMeetings();charts();renderTotalAssets();
+  renderBalanceSheetGDP();
+}catch(err){
+  console.error('Dashboard render failed',err);
+  const msg='<div style="padding:12px;border:1px solid #FCA5A5;background:#FEF2F2;color:#991B1B;border-radius:8px;font-weight:700">Dashboard data could not be rendered. Please refresh the page. Error: '+String(err.message||err)+'</div>';
+  const el=document.getElementById('policySummary'); if(el) el.outerHTML=msg;
+}
+</script></body></html>+BS_TOTAL_ASSETS[ctx.dataIndex].usd.toFixed(3)+'tn equivalent',afterLabel:(ctx)=>'Native total: '+BS_TOTAL_ASSETS[ctx.dataIndex].native}}},scales:{x:{beginAtZero:true,title:{display:true,text:'USD equivalent (trillion)'}},y:{grid:{display:false},ticks:{autoSkip:false}}}}});
+}
 function renderBalanceSheetGDP(){
  const canvas=document.getElementById('balanceSheetGDP'), note=document.getElementById('balanceSheetGDPNote');
  if(!canvas||!window.Chart)return;
