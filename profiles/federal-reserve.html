@@ -39,7 +39,29 @@ function build(){
  const p=toPts('PAYEMS'),chg=p.map((v,i)=>({x:v.x,y:i?p[i].y-p[i-1].y:null}));mk('h',[{label:'Monthly net change',data:chg,type:'bar',backgroundColor:C.teal,yAxisID:'y1'},line('PAYEMS','Total payroll level',C.blue,'y')],'Thousands',{scales:{x:baseOpts('').scales.x,y:{position:'left',title:{display:true,text:'Total payrolls (000s)'}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Monthly change (000s)'}}}});
  const earn=toPts('CES0500000003'),emap=new Map(earn.map(x=>[x.date,x.y])),yoy=earn.map(x=>{let d=new Date(x.date+'T00:00:00Z');d.setUTCFullYear(d.getUTCFullYear()-1);let k=d.toISOString().slice(0,10),v=emap.get(k);return{x:x.x,y:v?((x.y/v)-1)*100:null,date:x.date}}).filter(x=>x.y!=null);
  const claims=toPts('ICSA').map(x=>({x:x.x,y:x.y/1000}));mk('i',[{label:'Initial claims (000s)',data:claims,borderColor:C.red,backgroundColor:C.red,borderWidth:1.8,pointRadius:2,yAxisID:'y'}, {label:'Average hourly earnings YoY %',data:yoy,borderColor:C.green,backgroundColor:C.green,borderWidth:2,pointRadius:0,yAxisID:'y1'},line('AWHAETP','Average weekly hours',C.amber,'y2')],'Claims (000s)',{scales:{x:baseOpts('').scales.x,y:{position:'left',title:{display:true,text:'Initial claims (000s)'}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Hourly earnings YoY %'}},y2:{position:'right',offset:true,grid:{drawOnChartArea:false},title:{display:true,text:'Average weekly hours'}}}});
- charts.j=new Chart(document.getElementById('ch-j'),{type:'bar',data:{labels:['Personal consumption','Private investment','Government','Net exports'],datasets:[{label:'$ billions, SAAR',data:[22100.126,5717.953,5543.809,-875.823],backgroundColor:[C.blue,C.green,C.amber,C.red]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:x=>'
+ charts.j=new Chart(document.getElementById('ch-j'),{
+  type:'bar',
+  data:{
+    labels:['Personal consumption','Private investment','Government','Net exports'],
+    datasets:[{
+      label:'$ billions, SAAR',
+      data:[22100.126,5717.953,5543.809,-875.823],
+      backgroundColor:[C.blue,C.green,C.amber,C.red]
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:x=>'$'+Number(x.raw).toLocaleString(undefined,{maximumFractionDigits:1})+'B'}}
+    },
+    scales:{
+      x:{grid:{display:false}},
+      y:{grid:{color:'#e2e8f0'},title:{display:true,text:'Billions of dollars (SAAR)'}}
+    }
+  }
+});
  mk('k',[line('A191RL1Q225SBEA','Real GDP growth SAAR %',C.blue,'y'),line('GDPC1','Real GDP level',C.indigo,'y1')],'Growth %',{scales:{x:baseOpts('').scales.x,y:{position:'left',title:{display:true,text:'Growth SAAR %'}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Real GDP level'}}}});
 }
 function range(id,y){const ch=charts[id];if(!ch)return;const xs=ch.data.datasets.flatMap(d=>d.data.map(p=>p.x)).filter(Number.isFinite);if(!xs.length)return;const max=Math.max(...xs),min=Math.min(...xs);if(!y){ch.options.scales.x.min=min;ch.options.scales.x.max=max;ch.update();return}const dt=new Date(max);dt.setUTCFullYear(dt.getUTCFullYear()-y);ch.options.scales.x.min=dt.getTime();ch.options.scales.x.max=max;ch.update()}
