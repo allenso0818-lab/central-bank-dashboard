@@ -87,7 +87,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
   .title h1{font-size:25px}.header-right{flex-direction:column;align-items:flex-end}
 }
 .policy-rate-paths{grid-column:1/-1;width:100%;max-width:none;box-sizing:border-box}
-.balance-assets-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.balance-assets-grid{display:grid;grid-template-columns:1fr;gap:8px;width:100%}
 .balance-assets-grid .chart-card{width:100%;box-sizing:border-box}
 @media(max-width:900px){.balance-assets-grid{grid-template-columns:1fr}}</style>
 </head>
@@ -137,7 +137,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
     <div class="chart-head"><div><h3>Inflation vs Target</h3><div class="sub">Latest verified actual inflation vs numerical target (where directly comparable)</div></div></div>
     <div class="chartbox small"><canvas id="inflation"></canvas></div><div class="note">PBoC: 2026 government CPI objective (~2%) is not plotted as a central-bank inflation target. MAS: no formal numerical inflation target. RBI target midpoint is 4%, with a 2–6% tolerance band.</div>
   </div>
-<div class="balance-group" style="grid-column:1/-1"><h2 style="margin:4px 0 8px">Central Bank Balance Sheet Comparison</h2><div class="sub" style="margin-bottom:10px">Cross-bank balance-sheet scale using official balance-sheet observations</div><div class="balance-assets-grid"><div class="panel chart-card"><div class="chart-head"><div><h3>Central Bank Total Assets</h3><div class="sub">USD-equivalent comparison; native-currency totals shown in tooltip</div></div></div><div class="chartbox" style="height:285px"><canvas id="totalAssetsUSD"></canvas></div><div class="note"><b>Comparison basis:</b> latest verified total-assets observations converted to USD using 21 Sep 2026 ECB reference FX rates. Observation dates differ by institution; hover for native totals.</div></div><div class="panel chart-card" style="margin-top:14px"><div class="chart-head"><div><h3>Central Bank Total Assets as % of GDP</h3><div class="sub">Latest comparable official observations</div></div></div><div class="chartbox" style="height:285px"><canvas id="balanceSheetGDP"></canvas></div><div class="note" id="balanceSheetGDPNote">Loading verified comparison…</div></div></div></div></section>
+<div class="balance-group" style="grid-column:1/-1"><h2 style="margin:4px 0 8px">Central Bank Balance Sheet Comparison</h2><div class="sub" style="margin-bottom:10px">Cross-bank balance-sheet scale using official balance-sheet observations</div><div class="balance-assets-grid"><div class="panel chart-card"><div class="chart-head"><div><h3>Central Bank Total Assets</h3><div class="sub">USD-equivalent comparison; native-currency totals shown in tooltip</div></div></div><div class="chartbox" style="height:285px"><canvas id="totalAssetsUSD"></canvas></div><div class="note"><b>Comparison basis:</b> latest verified total-assets observations converted to USD using 21 Sep 2026 ECB reference FX rates. Observation dates differ by institution; hover for native totals.</div></div><div class="panel chart-card"><div class="chart-head"><div><h3>Central Bank Total Assets as % of GDP</h3><div class="sub">Latest comparable official observations</div></div></div><div class="chartbox" style="height:285px"><canvas id="balanceSheetGDP"></canvas></div><div class="note" id="balanceSheetGDPNote">Loading verified comparison…</div></div></div></div></section>
 
 <section class="bottom-grid">
   <div class="panel bottom-card">
