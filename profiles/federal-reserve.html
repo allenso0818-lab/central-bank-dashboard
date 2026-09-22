@@ -20,10 +20,10 @@ function countdown(){const t=new Date('2026-10-28T14:00:00-04:00'),d=Math.max(0,
 const defs=[
 ['a','Unemployed Count','Thousands of persons',[['UNEMPLOY','Unemployed',C.blue]],'BLS / FRED'],
 ['b','Total Civilian Labor Force','Thousands of persons',[['CLF16OV','Civilian Labor Force',C.green]],'BLS / FRED'],
-['c','U-4 Unemployment Rate','Percent',[['U4RATE','U-4',C.red]],'U.S. Bureau of Labor Statistics'],
+['c','Unemployment Rate & U-4 Unemployment Rate','Percent',[['UNRATE','Unemployment Rate (U-3)',C.blue],['U4RATE','U-4 Unemployment Rate',C.red]],'U.S. Bureau of Labor Statistics'],
 ['d','Civilian Noninstitutional Population','Thousands of persons',[['CNP16OV','Civilian Population',C.indigo]],'BLS / FRED'],
 ['e','Employed Population','Thousands of persons',[['CE16OV','Employed Population',C.teal]],'BLS / FRED'],
-['f','U-4 Unemployment Rate','Percent',[['U4RATE','U-4',C.amber]],'U.S. Bureau of Labor Statistics'],
+
 ['g','Labor Force Participation Rate','Percent',[['CIVPART','Participation Rate',C.green]],'BLS / FRED']
 ];
 function card(d){return '<div class="card" id="card-'+d[0]+'"><div class="head"><div><h3>'+d[0]+') '+d[1]+'</h3><div class="sub">'+d[2]+'</div></div>'+ranges(d[0])+'</div><div class="canvas"><canvas id="ch-'+d[0]+'"></canvas></div><div class="legend-note">Tip: click legend items to isolate/hide series. Drag horizontally to zoom; Ctrl + wheel also zooms.</div><div class="source"><span class="badge">Source</span>'+d[4]+'</div></div>'}
