@@ -19,50 +19,48 @@ const C={blue:'#2563eb',green:'#059669',teal:'#0d9488',amber:'#d97706',red:'#dc2
 function countdown(){const t=new Date('2026-10-28T14:00:00-04:00'),d=Math.max(0,t-new Date());dd.textContent=Math.floor(d/864e5);hh.textContent=String(Math.floor(d%864e5/36e5)).padStart(2,'0');mm.textContent=String(Math.floor(d%36e5/6e4)).padStart(2,'0');ss.textContent=String(Math.floor(d%6e4/1e3)).padStart(2,'0')}countdown();setInterval(countdown,1000);
 const defs=[
 ['a','Unemployed Count & Total Civilian Labor Force','Thousands of persons',[['UNEMPLOY','Unemployed Count',C.red],['CLF16OV','Total Civilian Labor Force',C.green]],'U.S. Bureau of Labor Statistics'],
-['c','U-3 Unemployment Rate & U-4 Unemployment Rate','Percent',[['UNRATE','U-3 Unemployment Rate',C.blue],['U4RATE','U-4 Unemployment Rate',C.red]],'U.S. Bureau of Labor Statistics'],
+['b','U-3 Unemployment Rate & U-4 Unemployment Rate','Percent',[['UNRATE','U-3 Unemployment Rate',C.blue],['U4RATE','U-4 Unemployment Rate',C.red]],'U.S. Bureau of Labor Statistics'],
 
-['g','Labor Force Participation Rate','Percent',[['CIVPART','Participation Rate',C.green]],'BLS / FRED']
+['c','Labor Force Participation Rate','Percent',[['CIVPART','Participation Rate',C.green]],'BLS / FRED']
 ];
 function card(d){return '<div class="card" id="card-'+d[0]+'"><div class="head"><div><h3>'+d[0]+') '+d[1]+'</h3><div class="sub">'+d[2]+'</div></div>'+ranges(d[0])+'</div><div class="canvas"><canvas id="ch-'+d[0]+'"></canvas></div><div class="legend-note">Tip: click legend items to isolate/hide series. Drag horizontally to zoom; Ctrl + wheel also zooms.</div><div class="source"><span class="badge">Source</span>'+d[4]+'</div></div>'}
 function ranges(id){return '<div class="ranges" data-id="'+id+'">'+[1,3,5,10].map(x=>'<button data-y="'+x+'">'+x+'Y</button>').join('')+'<button class="active" data-y="0">MAX</button><button class="reset" data-reset="1">Reset</button></div>'}
 macro.innerHTML=defs.map(card).join('')+
-'<div class="card" id="card-h"><div class="head"><div><h3>h) Total Nonfarm Payroll Employment</h3><div class="sub">Total level + monthly net change</div></div>'+ranges('h')+'</div><div class="canvas"><canvas id="ch-h"></canvas></div><div class="source"><span class="badge">Source</span>U.S. Bureau of Labor Statistics. Monthly change is derived from the published payroll level.</div></div>'+
-'<div class="card" id="card-i"><div class="head"><div><h3>i) Wages, Hours & Unemployment Insurance Claims</h3><div class="sub">Claims (left) · Earnings YoY % and weekly hours (right)</div></div>'+ranges('i')+'</div><div class="canvas"><canvas id="ch-i"></canvas></div><div class="source"><span class="badge">Source</span>U.S. Bureau of Labor Statistics and U.S. Department of Labor, Employment and Training Administration. Latest verified: Aug 2026 hourly earnings $37.75 (+3.1% YoY), average weekly hours 34.4; initial claims 196,000 for week ended 12 Sep 2026.</div></div>'+
-'<div class="card" id="card-j"><div class="head"><div><h3>j) GDP Components</h3><div class="sub">Q2 2026 current-dollar GDP components · $ billions, SAAR</div></div></div><div class="canvas"><canvas id="ch-j"></canvas></div><div class="legend-note">GDP identity: C + I + G + (X − M). Net exports are negative in Q2 2026, so a bar chart is used instead of a pie chart to avoid misrepresenting the GDP identity.</div><div class="source"><span class="badge">Source</span>U.S. Bureau of Economic Analysis, NIPA Table 1.1.5, second estimate released 26 Aug 2026.</div></div>'+
-'<div class="card" id="card-k"><div class="head"><div><h3>k) Real GDP</h3><div class="sub">Quarterly annualized real growth + real GDP level (chained 2017 dollars)</div></div>'+ranges('k')+'</div><div class="canvas"><canvas id="ch-k"></canvas></div><div class="source"><span class="badge">Source</span>U.S. Bureau of Economic Analysis. Q2 2026 second estimate: real GDP growth +1.5% SAAR; Q1 2026 +2.1%.</div></div>';
+'<div class="card" id="card-d"><div class="head"><div><h3>d) Total Nonfarm Payroll Employment</h3><div class="sub">Total level + monthly net change</div></div>'+ranges('d')+'</div><div class="canvas"><canvas id="ch-d"></canvas></div><div class="source"><span class="badge">Source</span>U.S. Bureau of Labor Statistics. Monthly change is derived from the published payroll level.</div></div>'+
+'<div class="card" id="card-e"><div class="head"><div><h3>e) Wages, Hours & Unemployment Insurance Claims</h3><div class="sub">Claims (left) · Earnings YoY % and weekly hours (right)</div></div>'+ranges('e')+'</div><div class="canvas"><canvas id="ch-e"></canvas></div><div class="source"><span class="badge">Source</span>U.S. Bureau of Labor Statistics and U.S. Department of Labor, Employment and Training Administration. Latest verified: Aug 2026 hourly earnings $37.75 (+3.1% YoY), average weekly hours 34.4; initial claims 196,000 for week ended 12 Sep 2026.</div></div>'+
+'<div class="card" id="card-f"><div class="head"><div><h3>f) GDP Components</h3><div class="sub">Q2 2026 domestic expenditure composition · share of positive components</div></div></div><div class="canvas"><canvas id="ch-f"></canvas></div><div class="legend-note">Pie slices show the composition of positive domestic expenditure components (C + I + G), normalized to 100%. Q2 2026 net exports were −$875.8B and are disclosed separately because a negative value cannot be represented as a pie slice.</div><div class="source"><span class="badge">Source</span>U.S. Bureau of Economic Analysis, NIPA Table 1.1.5, Q2 2026 second estimate. Net exports: −$875.8B SAAR.</div></div>'+
+'<div class="card" id="card-g"><div class="head"><div><h3>g) Real GDP</h3><div class="sub">Quarterly annualized real growth + real GDP level (chained 2017 dollars)</div></div>'+ranges('g')+'</div><div class="canvas"><canvas id="ch-g"></canvas></div><div class="source"><span class="badge">Source</span>U.S. Bureau of Economic Analysis. Q2 2026 second estimate: real GDP growth +1.5% SAAR; Q1 2026 +2.1%.</div></div>';
 const toPts=id=>(DATA.series[id]||[]).map(x=>({x:Date.parse(x[0]+'T00:00:00Z'),y:x[1],date:x[0]}));
 function baseOpts(unit){return {responsive:true,maintainAspectRatio:false,parsing:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:true,position:'top',labels:{usePointStyle:true}},tooltip:{mode:'index',intersect:false,callbacks:{title:items=>items.length?new Date(items[0].parsed.x).toISOString().slice(0,10):''}},zoom:{pan:{enabled:true,mode:'x'},zoom:{drag:{enabled:true},wheel:{enabled:true,modifierKey:'ctrl'},pinch:{enabled:true},mode:'x'}}},scales:{x:{type:'linear',grid:{color:'#f1f5f9'},ticks:{maxTicksLimit:8,color:'#64748b',callback:v=>new Date(v).getUTCFullYear()}},y:{grid:{color:'#e2e8f0'},ticks:{color:'#64748b'},title:{display:true,text:unit,color:'#64748b'}}}}}
 function mk(id,sets,unit,extra={}){const ctx=document.getElementById('ch-'+id);charts[id]=new Chart(ctx,{type:'line',data:{datasets:sets},options:Object.assign(baseOpts(unit),extra)})}
 function line(series,label,color,yAxisID='y'){return {label,data:toPts(series),borderColor:color,backgroundColor:color,borderWidth:2,pointRadius:0,pointHoverRadius:4,tension:.12,yAxisID}}
 function build(){
  defs.forEach(d=>mk(d[0],d[3].map(s=>line(s[0],s[1],s[2])),d[2]));
- const p=toPts('PAYEMS'),chg=p.map((v,i)=>({x:v.x,y:i?p[i].y-p[i-1].y:null}));mk('h',[{label:'Monthly net change',data:chg,type:'bar',backgroundColor:C.teal,yAxisID:'y1'},line('PAYEMS','Total payroll level',C.blue,'y')],'Thousands',{scales:{x:baseOpts('').scales.x,y:{position:'left',title:{display:true,text:'Total payrolls (000s)'}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Monthly change (000s)'}}}});
+ const p=toPts('PAYEMS'),chg=p.map((v,i)=>({x:v.x,y:i?p[i].y-p[i-1].y:null}));mk('d',[{label:'Monthly net change',data:chg,type:'bar',backgroundColor:C.teal,yAxisID:'y1'},line('PAYEMS','Total payroll level',C.blue,'y')],'Thousands',{scales:{x:baseOpts('').scales.x,y:{position:'left',title:{display:true,text:'Total payrolls (000s)'}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Monthly change (000s)'}}}});
  const earn=toPts('CES0500000003'),emap=new Map(earn.map(x=>[x.date,x.y])),yoy=earn.map(x=>{let d=new Date(x.date+'T00:00:00Z');d.setUTCFullYear(d.getUTCFullYear()-1);let k=d.toISOString().slice(0,10),v=emap.get(k);return{x:x.x,y:v?((x.y/v)-1)*100:null,date:x.date}}).filter(x=>x.y!=null);
- const claims=toPts('ICSA').map(x=>({x:x.x,y:x.y/1000}));mk('i',[{label:'Initial claims (000s)',data:claims,borderColor:C.red,backgroundColor:C.red,borderWidth:1.8,pointRadius:2,yAxisID:'y'}, {label:'Average hourly earnings YoY %',data:yoy,borderColor:C.green,backgroundColor:C.green,borderWidth:2,pointRadius:0,yAxisID:'y1'},line('AWHAETP','Average weekly hours',C.amber,'y2')],'Claims (000s)',{scales:{x:baseOpts('').scales.x,y:{position:'left',title:{display:true,text:'Initial claims (000s)'}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Hourly earnings YoY %'}},y2:{position:'right',offset:true,grid:{drawOnChartArea:false},title:{display:true,text:'Average weekly hours'}}}});
- charts.j=new Chart(document.getElementById('ch-j'),{
-  type:'bar',
+ const claims=toPts('ICSA').map(x=>({x:x.x,y:x.y/1000}));mk('e',[{label:'Initial claims (000s)',data:claims,borderColor:C.red,backgroundColor:C.red,borderWidth:1.8,pointRadius:2,yAxisID:'y'}, {label:'Average hourly earnings YoY %',data:yoy,borderColor:C.green,backgroundColor:C.green,borderWidth:2,pointRadius:0,yAxisID:'y1'},line('AWHAETP','Average weekly hours',C.amber,'y2')],'Claims (000s)',{scales:{x:baseOpts('').scales.x,y:{position:'left',title:{display:true,text:'Initial claims (000s)'}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Hourly earnings YoY %'}},y2:{position:'right',offset:true,grid:{drawOnChartArea:false},title:{display:true,text:'Average weekly hours'}}}});
+ charts.f=new Chart(document.getElementById('ch-f'),{
+  type:'pie',
   data:{
-    labels:['Personal consumption','Private investment','Government','Net exports'],
+    labels:['Personal consumption expenditures','Gross private domestic investment','Government consumption & gross investment'],
     datasets:[{
-      label:'$ billions, SAAR',
-      data:[22100.126,5717.953,5543.809,-875.823],
-      backgroundColor:[C.blue,C.green,C.amber,C.red]
+      label:'Share of positive domestic expenditure',
+      data:[66.25,17.13,16.62],
+      backgroundColor:[C.blue,C.green,C.amber],
+      borderColor:'#fff',
+      borderWidth:2
     }]
   },
   options:{
     responsive:true,
     maintainAspectRatio:false,
     plugins:{
-      legend:{display:false},
-      tooltip:{callbacks:{label:x=>'$'+Number(x.raw).toLocaleString(undefined,{maximumFractionDigits:1})+'B'}}
-    },
-    scales:{
-      x:{grid:{display:false}},
-      y:{grid:{color:'#e2e8f0'},title:{display:true,text:'Billions of dollars (SAAR)'}}
+      legend:{display:true,position:'top',labels:{usePointStyle:true}},
+      tooltip:{callbacks:{label:x=>x.label+': '+Number(x.raw).toFixed(1)+'%'}}
     }
   }
 });
- mk('k',[line('A191RL1Q225SBEA','Real GDP growth SAAR %',C.blue,'y'),line('GDPC1','Real GDP level',C.indigo,'y1')],'Growth %',{scales:{x:baseOpts('').scales.x,y:{position:'left',title:{display:true,text:'Growth SAAR %'}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Real GDP level'}}}});
+ mk('g',[line('A191RL1Q225SBEA','Real GDP growth SAAR %',C.blue,'y'),line('GDPC1','Real GDP level',C.indigo,'y1')],'Growth %',{scales:{x:baseOpts('').scales.x,y:{position:'left',title:{display:true,text:'Growth SAAR %'}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Real GDP level'}}}});
 }
 function range(id,y){const ch=charts[id];if(!ch)return;const xs=ch.data.datasets.flatMap(d=>d.data.map(p=>p.x)).filter(Number.isFinite);if(!xs.length)return;const max=Math.max(...xs),min=Math.min(...xs);if(!y){ch.options.scales.x.min=min;ch.options.scales.x.max=max;ch.update();return}const dt=new Date(max);dt.setUTCFullYear(dt.getUTCFullYear()-y);ch.options.scales.x.min=dt.getTime();ch.options.scales.x.max=max;ch.update()}
 document.addEventListener('click',e=>{if(e.target.dataset.y!==undefined){const box=e.target.closest('.ranges'),id=box.dataset.id;box.querySelectorAll('[data-y]').forEach(b=>b.classList.remove('active'));e.target.classList.add('active');range(id,+e.target.dataset.y)}if(e.target.dataset.reset){const id=e.target.closest('.ranges').dataset.id;charts[id]?.resetZoom()}if(e.target.dataset.s){document.querySelectorAll('.scenario').forEach(b=>b.classList.remove('active'));e.target.classList.add('active');renderScenario(e.target.dataset.s)}});
