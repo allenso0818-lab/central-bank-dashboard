@@ -66,7 +66,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .num{font-weight:900;color:#122C57}.main{font-weight:650}.muted{color:#71839A;font-size:8px}
 .pill{display:inline-block;padding:1px 4px;border:1px solid #D9E2EE;border-radius:99px;background:#F8FAFC;margin:1px;font-size:7.5px}
 
-.charts-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-width:1330px;margin-left:auto;margin-right:auto}.charts-grid>.chart-card{width:100%;min-width:0;max-width:none;box-sizing:border-box;margin:0!important;grid-column:auto!important}.charts-grid .chart-card .chartbox{height:285px}
+.charts-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:'policy inflpath' 'current infltarget' 'balance balance';gap:8px;max-width:1330px;margin-left:auto;margin-right:auto}.charts-grid>.chart-card{width:100%;min-width:0;max-width:none;box-sizing:border-box;margin:0!important;grid-column:auto!important}.policy-rate-paths{grid-area:policy}.inflation-paths{grid-area:inflpath}.current-policy-card{grid-area:current}.inflation-target-card{grid-area:infltarget}.charts-grid .chart-card .chartbox{height:285px}.charts-grid>.balance-group{grid-area:balance}
 .chart-card{padding:10px}.chart-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:5px}.chart-head h3{font-size:13px;margin:0;color:#17305A}.chart-head .sub{margin:2px 0 0}
 .chartbox{height:220px}.chartbox.small{height:220px}
 .controls{display:flex;gap:3px}.controls button{border:1px solid #D5DEEA;background:#fff;color:#38506F;border-radius:5px;padding:5px 8px;font-size:9px;font-weight:800;cursor:pointer}.controls .active{background:#2563EB;color:#fff;border-color:#2563EB}
@@ -88,7 +88,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 }
 .balance-assets-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
 .balance-assets-grid .chart-card{width:100%;min-width:0;max-width:none;box-sizing:border-box;margin:0!important;grid-column:auto!important}.balance-assets-grid .chart-card:first-child,.balance-assets-grid .chart-card:last-child{width:100%}.balance-assets-grid .reserve-card{grid-column:1;width:100%}
-@media(max-width:900px){.balance-assets-grid,.charts-grid{grid-template-columns:1fr}}</style>
+@media(max-width:900px){.balance-assets-grid,.charts-grid{grid-template-columns:1fr}.charts-grid{grid-template-areas:'policy' 'inflpath' 'current' 'infltarget' 'balance'}}</style>
 </head>
 <body><div class="container">
 <header>
@@ -123,18 +123,18 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
       <div class="controls" id="inflRanges"><button data-y="1">1Y</button><button class="active" data-y="3">3Y</button><button data-y="5">5Y</button></div>
     </div>
     <div class="chartbox"><canvas id="inflHistory"></canvas></div>
-    <div class="note">Latest observations use the inflation measures shown in the dashboard cards. Historical points are selected published observations; gaps are left where a comparable observation is not stored.</div>
+    <div class="note"><b>Data sources:</b> U.S. Bureau of Economic Analysis (PCE); Eurostat (HICP); UK Office for National Statistics (CPI); Statistics Bureau of Japan (CPI); National Bureau of Statistics of China (CPI); India Ministry of Statistics & Programme Implementation (CPI); Singapore Ministry of Trade and Industry / MAS (CPI-All Items). Historical points show stored official observations only; no missing month is estimated.</div>
   </div>
-  <div class="panel chart-card">
+  <div class="panel chart-card inflation-target-card">
     <div class="chart-head"><div><h3>Inflation vs Target</h3><div class="sub">Latest verified actual inflation vs numerical target (where directly comparable)</div></div></div>
     <div class="chartbox small"><canvas id="inflation"></canvas></div><div class="note">PBoC: 2026 government CPI objective (~2%) is not plotted as a central-bank inflation target. MAS: no formal numerical inflation target. RBI target midpoint is 4%, with a 2–6% tolerance band.</div>
   </div>
 
-  <div class="panel chart-card">
+  <div class="panel chart-card current-policy-card">
     <div class="chart-head"><div><h3>Current Policy Rate Comparison</h3><div class="sub">Current policy rate (%, latest)</div></div></div>
     <div class="chartbox small"><canvas id="current"></canvas></div>
   </div>
-<div class="balance-group" style="grid-column:1/-1"><h2 style="margin:4px 0 8px">Central Bank Balance Sheet Comparison</h2><div class="sub" style="margin-bottom:10px">Cross-bank balance-sheet scale using official balance-sheet observations</div><div class="balance-assets-grid"><div class="panel chart-card"><div class="chart-head"><div><h3>Central Bank Total Assets</h3><div class="sub">USD-equivalent comparison; native-currency totals shown in tooltip</div></div></div><div class="chartbox" style="height:285px"><canvas id="totalAssetsUSD"></canvas></div><div class="note"><b>Comparison basis:</b> latest verified total-assets observations converted to USD using 21 Sep 2026 ECB reference FX rates. Observation dates differ by institution; hover for native totals.</div></div><div class="panel chart-card"><div class="chart-head"><div><h3>Central Bank Total Assets as % of GDP</h3><div class="sub">Latest comparable official observations</div></div></div><div class="chartbox" style="height:285px"><canvas id="balanceSheetGDP"></canvas></div><div class="note" id="balanceSheetGDPNote">Loading verified comparison…</div></div><div class="panel chart-card reserve-card"><div class="chart-head"><div><h3>International Reserves</h3><div class="sub">Latest official reserve assets; native reported values shown in tooltip</div></div></div><div class="chartbox" style="height:285px"><canvas id="internationalReserves"></canvas></div><div class="note"><b>Coverage:</b> official reserve assets using the latest verified official observation available. Reporting dates and currencies differ by institution.</div></div></div></div></section>
+<div class="balance-group" style="grid-column:1/-1"><h2 style="margin:4px 0 8px">Central Bank Balance Sheet Comparison</h2><div class="sub" style="margin-bottom:10px">Cross-bank balance-sheet scale using official balance-sheet observations</div><div class="balance-assets-grid"><div class="panel chart-card"><div class="chart-head"><div><h3>Central Bank Total Assets</h3><div class="sub">USD-equivalent comparison; native-currency totals shown in tooltip</div></div></div><div class="chartbox" style="height:285px"><canvas id="totalAssetsUSD"></canvas></div><div class="note"><b>Data sources:</b> Federal Reserve H.4.1; ECB/Eurosystem consolidated financial statement; Bank of England balance-sheet data; Bank of Japan Accounts; PBoC Monetary Authority balance sheet; RBI Weekly Statistical Supplement / Annual Accounts; MAS Monthly Statistical Bulletin. <b>Comparison basis:</b> latest verified total-assets observations converted to USD using 21 Sep 2026 ECB reference FX rates. Observation dates differ by institution; hover for native totals.</div></div><div class="panel chart-card"><div class="chart-head"><div><h3>Central Bank Total Assets as % of GDP</h3><div class="sub">Latest comparable official observations</div></div></div><div class="chartbox" style="height:285px"><canvas id="balanceSheetGDP"></canvas></div><div class="note" id="balanceSheetGDPNote"><b>Data sources:</b> central-bank balance sheets above plus official nominal GDP data from BEA (US), Eurostat (euro area), ONS (UK), Japan Cabinet Office, National Bureau of Statistics of China, India MoSPI, and Singapore Department of Statistics.</div></div><div class="panel chart-card reserve-card"><div class="chart-head"><div><h3>International Reserves</h3><div class="sub">Latest official reserve assets; native reported values shown in tooltip</div></div></div><div class="chartbox" style="height:285px"><canvas id="internationalReserves"></canvas></div><div class="note"><b>Data sources:</b> U.S. Treasury / Federal Reserve; ECB; UK HM Treasury / Bank of England; Japan Ministry of Finance; State Administration of Foreign Exchange / PBoC; Reserve Bank of India; Monetary Authority of Singapore. <b>Coverage:</b> latest verified official reserve-assets observation available. Reporting dates and currencies differ by institution.</div></div></div></div></section>
 
 <section class="bottom-grid">
   <div class="panel bottom-card">
@@ -156,7 +156,6 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
     </ul>
   </div>
 </section>
-<section class="rate-expectations-entry" id="rate-expectations"><div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-bottom:8px"><div><h2 style="margin:0 0 4px">Central Bank Rate Expectations</h2><div class="sub">Market-implied policy-rate paths and meeting-by-meeting comparison — pricing, not a forecast.</div></div><a href="/rate-expectations/compare.html" style="color:#102A55;font-weight:800;text-decoration:none">Open full Compare view →</a></div><div class="panel" style="padding:10px"><iframe src="/rate-expectations/compare.html?embedded=1" title="Central Bank Rate Expectations Compare" style="width:100%;height:980px;border:0;border-radius:10px;background:#07101d;display:block"></iframe></div></section>
 </div>
 <script>
 let lang='en';
@@ -238,7 +237,7 @@ const rows=[
 ['Monetary Policy Framework',null],['Official Mandate / Objective','mandate'],['Inflation Target','target'],['Main Policy Instrument','instrument'],['Current Setting','setting'],
 ['Current Conditions',null],['Latest Inflation','infl'],['Inflation vs Target','gap'],['Current Policy Direction','dir'],
 ['Latest Decision',null],['Latest Meeting Date','date'],['Decision','latest'],['Previous Setting','prev'],['Change in bp','change'],
-['Monitoring',null],['Key Economic Indicators','ind'],['Next Policy Meeting','next']
+['Monitoring',null],['Key Economic Indicators','ind']
 ];
 function change(b){if(b.latest.includes('+25'))return '↑ +25 bp';if(b.latest.includes('0 bp'))return '— 0 bp';if(b.latest.includes('FX'))return 'FX Framework';return b.latest}
 function gap(b){let x=targets[b.id];if(x==null)return 'Not directly comparable';let d=b.infl-x;return (d>0?'Above target ':'Below target ')+(d>0?'+':'')+d.toFixed(1)+' pp'}
@@ -283,7 +282,7 @@ function makeInflHistory(y){
   return {labels,datasets:Object.keys(inflationEvents).map(id=>{
     const b=B.find(x=>x.id===id), lookup=Object.fromEntries(inflationEvents[id]);
     const arr=labels.map(m=>lookup[m]??null);
-    return {label:b.name,data:arr,spanGaps:true,pointRadius:(ctx)=>ctx.raw==null?0:3,pointHoverRadius:5,pointBackgroundColor:BANK_COLORS[id],pointBorderColor:'#fff',pointBorderWidth:1.5,borderWidth:2.7,borderColor:BANK_COLORS[id],backgroundColor:BANK_COLORS[id],tension:.18}
+    return {label:b.name,data:arr,spanGaps:true,pointRadius:(ctx)=>ctx.raw==null?0:4,pointHoverRadius:6,pointBackgroundColor:BANK_COLORS[id],pointBorderColor:'#fff',pointBorderWidth:1.5,borderWidth:2.7,borderColor:BANK_COLORS[id],backgroundColor:BANK_COLORS[id],tension:.12}
   })}
 }
 const valueLabelPlugin={
@@ -345,7 +344,7 @@ function renderBalanceSheetGDP(){
  const canvas=document.getElementById('balanceSheetGDP'), note=document.getElementById('balanceSheetGDPNote'); if(!canvas||!window.Chart)return;
  const rows=[...BS_GDP].sort((a,b)=>b.value-a.value);
  new Chart(canvas,{type:'bar',data:{labels:rows.map(x=>x.name),datasets:[{data:rows.map(x=>x.value),backgroundColor:rows.map(x=>BANK_COLORS[x.id]),borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>rows[ctx.dataIndex].value.toFixed(1)+'% of GDP',afterLabel:(ctx)=>rows[ctx.dataIndex].note}}},scales:{x:{beginAtZero:true,suggestedMax:105,title:{display:true,text:'Total assets / nominal GDP (%)'}},y:{grid:{display:false},ticks:{autoSkip:false}}}}});
- note.innerHTML='<b>Coverage:</b> all seven institutions use the latest directly verified comparable observation available. Observation dates differ and are disclosed in the tooltip.';
+ note.innerHTML='<b>Data sources:</b> central-bank balance sheets plus official nominal GDP data from BEA (US), Eurostat (euro area), ONS (UK), Japan Cabinet Office, National Bureau of Statistics of China, India MoSPI, and Singapore Department of Statistics. <b>Coverage:</b> latest directly verified comparable observations; dates differ and are disclosed in the tooltip.';
 }
 function charts(){
   hc=new Chart(document.getElementById('history'),{
