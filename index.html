@@ -298,9 +298,16 @@ const BS_GDP=[
 function renderBalanceSheetGDP(){
  const canvas=document.getElementById('balanceSheetGDP'), note=document.getElementById('balanceSheetGDPNote');
  if(!canvas||!window.Chart)return;
- const labels=BS_GDP.map(x=>x.name), values=BS_GDP.map(x=>Number.isFinite(x.value)?x.value:0);
- new Chart(canvas,{type:'bar',data:{labels,datasets:[{data:values,backgroundColor:BS_GDP.map(x=>Number.isFinite(x.value)?BANK_COLORS[x.id]:'#E5E7EB'),borderColor:BS_GDP.map(x=>Number.isFinite(x.value)?BANK_COLORS[x.id]:'#94A3B8'),borderWidth:1,borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>{const x=BS_GDP[ctx.dataIndex];return Number.isFinite(x.value)?x.value.toFixed(1)+'% of GDP':'Data not directly comparable';},afterLabel:(ctx)=>BS_GDP[ctx.dataIndex].note}}},scales:{x:{beginAtZero:true,suggestedMax:100,title:{display:true,text:'Total assets / nominal GDP (%)'}},y:{grid:{display:false}}}}});
- note.innerHTML='<b>Coverage:</b> all seven institutions are shown. Grey rows mean <b>Data not directly comparable</b>, not zero. Eurosystem is currently the only fully verified ratio (35.9%). Verified numerator anchors: Federal Reserve US$6.746548tn (16 Sep 2026); Bank of Japan ¥644.272tn (10 Sep 2026). Remaining ratios will not be estimated until numerator and GDP periods are aligned.';
+ const labels=BS_GDP.map(x=>x.name), values=BS_GDP.map(x=>Number.isFinite(x.value)?x.value:2.5);
+ const unavailablePlugin={id:'unavailableRows',afterDatasetsDraw(chart){
+   const {ctx,chartArea}=chart, meta=chart.getDatasetMeta(0);
+   ctx.save();ctx.font='700 10px Inter, Arial';ctx.textBaseline='middle';
+   BS_GDP.forEach((x,i)=>{if(Number.isFinite(x.value))return;const el=meta.data[i];if(!el)return;
+     const y=el.y;ctx.fillStyle='#94A3B8';ctx.fillText('Data not directly comparable',chartArea.left+12,y);
+   });ctx.restore();
+ }};
+ new Chart(canvas,{type:'bar',plugins:[unavailablePlugin],data:{labels,datasets:[{data:values,backgroundColor:BS_GDP.map(x=>Number.isFinite(x.value)?BANK_COLORS[x.id]:'#E5E7EB'),borderColor:BS_GDP.map(x=>Number.isFinite(x.value)?BANK_COLORS[x.id]:'#CBD5E1'),borderWidth:1,borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>{const x=BS_GDP[ctx.dataIndex];return Number.isFinite(x.value)?x.value.toFixed(1)+'% of GDP':'Data not directly comparable';},afterLabel:(ctx)=>BS_GDP[ctx.dataIndex].note}}},scales:{x:{beginAtZero:true,suggestedMax:100,title:{display:true,text:'Total assets / nominal GDP (%)'}},y:{grid:{display:false},ticks:{autoSkip:false}}}}});
+ note.innerHTML='<b>Coverage:</b> all seven institutions are now explicitly visible. The short grey bars are status placeholders labelled <b>Data not directly comparable</b> — their length is not a numeric value. Eurosystem is the only currently verified ratio at 35.9%.';
 }
 function charts(){
   hc=new Chart(document.getElementById('history'),{
