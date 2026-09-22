@@ -53,7 +53,7 @@ function build(){
   data:{
     labels:['Personal consumption expenditures','Gross private domestic investment','Government consumption & gross investment','Net exports (−$875.8B)'],
     datasets:[{
-      label:'GDP expenditure components ($B SAAR; net exports shown by absolute magnitude)',
+      label:'GDP expenditure components',
       data:[22100.126,5717.953,5543.809,875.823],
       backgroundColor:[C.blue,C.green,C.amber,C.red],
       borderColor:'#fff',
@@ -65,7 +65,7 @@ function build(){
     maintainAspectRatio:false,
     plugins:{
       legend:{display:true,position:'top',labels:{usePointStyle:true}},
-      tooltip:{callbacks:{label:x=>x.label+': 
+      tooltip:{callbacks:{label:x=>x.label+': $'+Number(x.raw).toLocaleString(undefined,{maximumFractionDigits:1})+'B'}}
     }
   }
 });
