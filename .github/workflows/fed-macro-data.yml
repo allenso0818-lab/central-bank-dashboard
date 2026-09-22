@@ -27,7 +27,7 @@ jobs:
             vals=[]
             if sid in bls:
               try:
-                body=json.dumps({"seriesid":[bls[sid]],"startyear":"2006","endyear":"2026"}).encode()
+                body=json.dumps({"seriesid":[bls[sid]],"startyear":"2017","endyear":"2026"}).encode()
                 req=urllib.request.Request("https://api.bls.gov/publicAPI/v2/timeseries/data/",data=body,headers={"Content-Type":"application/json","User-Agent":"central-bank-dashboard/1.0"})
                 with urllib.request.urlopen(req,timeout=15) as r: doc=json.loads(r.read().decode())
                 months={f"M{i:02d}":f"{i:02d}" for i in range(1,13)}
@@ -36,7 +36,7 @@ jobs:
                     vals.append([f'{row["year"]}-{months[row["period"]]}-01',float(row["value"].replace(",",""))])
                 vals.sort()
               except Exception as e: print("WARN",sid,e)
-            if vals: out["series"][sid]=vals
+            if vals:\n              latest_year=max(int(x[0][:4]) for x in vals)\n              if latest_year < 2025: raise RuntimeError(f"stale BLS response for {sid}: latest {latest_year}")\n              out["series"][sid]=vals
             else: out["series"].setdefault(sid,[])
           p.parent.mkdir(exist_ok=True)
           p.write_text(json.dumps(out,separators=(",",":")))
