@@ -86,7 +86,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
   .container{padding:12px}.snap{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:repeat(2,1fr)}
   .title h1{font-size:25px}.header-right{flex-direction:column;align-items:flex-end}
 }
-.policy-rate-paths{grid-column:1/-1;width:100%;max-width:none;box-sizing:border-box}
+.policy-rate-paths,.inflation-paths{grid-column:1/-1;width:100%;max-width:none;box-sizing:border-box}
 .balance-assets-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
 .balance-assets-grid .chart-card{width:100%;min-width:0;max-width:none;box-sizing:border-box;margin:0!important;grid-column:auto!important}.balance-assets-grid .chart-card:first-child,.balance-assets-grid .chart-card:last-child{width:100%}.balance-assets-grid .reserve-card{grid-column:1;width:100%}
 @media(max-width:900px){.balance-assets-grid{grid-template-columns:1fr}}</style>
@@ -101,18 +101,6 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 </header>
 
 <section><div class="snap" id="snap"></div></section>
-
-<section class="summary-grid">
-  <div class="panel summary-panel">
-    <h3>Policy Position & Inflation (Current Setting)</h3>
-    <table class="compact-table" id="policySummary"></table>
-  </div>
-  <div class="panel summary-panel">
-    <h3>Key Takeaways</h3>
-    <div class="takeaway-list" id="takeaways"></div>
-  </div>
-</section>
-
 
 <section>
   <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px"><h2>Central Bank Profiles & Comparison</h2><div class="sub" style="margin-bottom:7px">Leader profiles and key policy information in one comparative view</div></div>
@@ -129,6 +117,14 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
     <div class="note">Fed = target-range midpoint for plotting only. ECB = deposit facility rate. BoE = Bank Rate. BoJ = policy rate. PBoC = 7-day reverse repo rate. RBI = repo rate.</div>
     <div class="masnote">MAS is not plotted as it uses the S$NEER policy band under an exchange-rate-centred framework.</div>
   </div>
+  <div class="panel chart-card inflation-paths">
+    <div class="chart-head">
+      <div><h3>Inflation Paths</h3><div class="sub">Inflation trend with latest inflation and inflation target</div></div>
+      <div class="controls" id="inflRanges"><button data-y="1">1Y</button><button class="active" data-y="3">3Y</button><button data-y="5">5Y</button><button data-y="10">10Y</button></div>
+    </div>
+    <div class="chartbox"><canvas id="inflationHistory"></canvas></div>
+    <div class="note" id="inflationLatest"></div>
+  </div>
   <div class="panel chart-card">
     <div class="chart-head"><div><h3>Current Policy Rate Comparison</h3><div class="sub">Current policy rate (%, latest)</div></div></div>
     <div class="chartbox small"><canvas id="current"></canvas></div>
@@ -137,7 +133,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
     <div class="chart-head"><div><h3>Inflation vs Target</h3><div class="sub">Latest verified actual inflation vs numerical target (where directly comparable)</div></div></div>
     <div class="chartbox small"><canvas id="inflation"></canvas></div><div class="note">PBoC: 2026 government CPI objective (~2%) is not plotted as a central-bank inflation target. MAS: no formal numerical inflation target. RBI target midpoint is 4%, with a 2–6% tolerance band.</div>
   </div>
-<div class="balance-group" style="grid-column:1/-1"><h2 style="margin:4px 0 8px">Central Bank Balance Sheet Comparison</h2><div class="sub" style="margin-bottom:10px">Cross-bank balance-sheet scale using official balance-sheet observations</div><div class="balance-assets-grid"><div class="panel chart-card"><div class="chart-head"><div><h3>Central Bank Total Assets</h3><div class="sub">USD-equivalent comparison; native-currency totals shown in tooltip</div></div></div><div class="chartbox" style="height:285px"><canvas id="totalAssetsUSD"></canvas></div><div class="note"><b>Comparison basis:</b> latest verified total-assets observations converted to USD using 21 Sep 2026 ECB reference FX rates. Observation dates differ by institution; hover for native totals.</div></div><div class="panel chart-card"><div class="chart-head"><div><h3>Central Bank Total Assets as % of GDP</h3><div class="sub">Latest comparable official observations</div></div></div><div class="chartbox" style="height:285px"><canvas id="balanceSheetGDP"></canvas></div><div class="note" id="balanceSheetGDPNote">Loading verified comparison…</div></div><div class="panel chart-card reserve-card"><div class="chart-head"><div><h3>International Reserves</h3><div class="sub">Latest official reserve assets; native reported values shown in tooltip</div></div></div><div class="chartbox" style="height:285px"><canvas id="internationalReserves"></canvas></div><div class="note"><b>Coverage:</b> official reserve assets using the latest verified official observation available. Reporting dates and currencies differ by institution.</div></div></div></div></section>
+<div class="balance-group" style="grid-column:1/-1"><div class="balance-assets-grid"><div class="panel chart-card"><div class="chart-head"><div><h3>Central Bank Total Assets</h3><div class="sub">USD-equivalent comparison; native-currency totals shown in tooltip</div></div></div><div class="chartbox" style="height:285px"><canvas id="totalAssetsUSD"></canvas></div><div class="note"><b>Comparison basis:</b> latest verified total-assets observations converted to USD using 21 Sep 2026 ECB reference FX rates. Observation dates differ by institution; hover for native totals.</div></div><div class="panel chart-card"><div class="chart-head"><div><h3>Central Bank Total Assets as % of GDP</h3><div class="sub">Latest comparable official observations</div></div></div><div class="chartbox" style="height:285px"><canvas id="balanceSheetGDP"></canvas></div><div class="note" id="balanceSheetGDPNote">Loading verified comparison…</div></div><div class="panel chart-card reserve-card"><div class="chart-head"><div><h3>International Reserves</h3><div class="sub">Latest official reserve assets; native reported values shown in tooltip</div></div></div><div class="chartbox" style="height:285px"><canvas id="internationalReserves"></canvas></div><div class="note"><b>Coverage:</b> official reserve assets using the latest verified official observation available. Reporting dates and currencies differ by institution.</div></div></div></div></section>
 
 <section class="bottom-grid">
   <div class="panel bottom-card">
@@ -231,13 +227,13 @@ const rows=[
 ['Monetary Policy Framework',null],['Official Mandate / Objective','mandate'],['Inflation Target','target'],['Main Policy Instrument','instrument'],['Current Setting','setting'],
 ['Current Conditions',null],['Latest Inflation','infl'],['Inflation vs Target','gap'],['Current Policy Direction','dir'],
 ['Latest Decision',null],['Latest Meeting Date','date'],['Decision','latest'],['Previous Setting','prev'],['Change in bp','change'],
-['Monitoring',null],['Key Economic Indicators','ind'],['Next Policy Meeting','next']
+['Monitoring',null],['Key Economic Indicators','ind']
 ];
 function change(b){if(b.latest.includes('+25'))return '↑ +25 bp';if(b.latest.includes('0 bp'))return '— 0 bp';if(b.latest.includes('FX'))return 'FX Framework';return b.latest}
 function gap(b){let x=targets[b.id];if(x==null)return 'Not directly comparable';let d=b.infl-x;return (d>0?'Above target ':'Below target ')+(d>0?'+':'')+d.toFixed(1)+' pp'}
 function val(b,k){if(k==='leaderProfile')return '<div style="display:flex;gap:7px;align-items:center"><img src="'+b.photo+'" alt="'+b.head+'" style="width:58px;height:72px;object-fit:cover;object-position:center 18%;border-radius:7px;background:#F7F9FC;border:1px solid #E0E6EE;display:block;flex:0 0 58px"><div><div class="main"><b>'+b.head+'</b></div><div class="muted">'+b.position+'</div></div></div>';if(k==='infl'){const m=INFLATION_META[b.id];return '<span class="num">'+b.infl.toFixed(b.id==='rbi'?2:1)+'%</span><div class="muted">'+m.measure+'<br>'+m.reference_period+' · Published '+m.publication_date+'<br>'+m.source_name+'</div>'};if(k==='gap')return gap(b);if(k==='change')return '<span class="num">'+change(b)+'</span>';if(k==='ind')return '<div style="display:grid;gap:3px">'+b.ind.map(x=>'<div style="display:flex;gap:5px;align-items:flex-start"><span style="color:'+BANK_COLORS[b.id]+';font-weight:900">•</span><span>'+x+'</span></div>').join('')+'</div>';if(k==='position')return '<div class="main">'+b.position+'</div>'+(b.chair?'<div class="muted">'+b.chair+'</div>':'');if(k==='setting')return '<span class="num">'+b.setting+'</span>';return '<div class="main">'+(b[k]??'—')+'</div>'}
 function renderMatrix(){
-  let h='<thead><tr><th>Category</th>'+B.map(b=>'<th style="text-align:center"><div style="font-weight:900"><a href="'+PROFILE_URLS[b.id]+'" style="color:inherit;text-decoration:none;font-weight:900">'+b.name+'</a></div><div class="muted" style="text-align:center">'+b.country+'</div></th>').join('')+'</tr></thead><tbody>';
+  let h='<thead><tr><th>Category</th>'+B.map(b=>'<th style="text-align:center"><div style="font-weight:900">'+b.name+'</div><div class="muted" style="text-align:center">'+b.country+'</div></th>').join('')+'</tr></thead><tbody>';
   for(const [label,k] of rows){
     if(!k){h+='<tr class="group"><th>'+label+'</th>'+B.map(()=>'<td></td>').join('')+'</tr>'}
     else{h+='<tr><th>'+label+'</th>'+B.map(b=>'<td>'+val(b,k)+'</td>').join('')+'</tr>'}
@@ -257,7 +253,22 @@ function renderDecisionTable(){
 function renderTake(){let x=['RBI currently has the highest directly comparable policy rate among the six rate-based frameworks.','Fed, ECB and BoJ are shown as tightening in the latest-decision snapshot, while BoE and RBI are holding.','Inflation remains above 2% in the US, euro area and UK in this dashboard snapshot.','MAS is structurally different because monetary policy is centred on the S$NEER exchange-rate band.'];document.getElementById('take').innerHTML=x.map(v=>'<div class="panel">'+v+'</div>').join('')}
 function months(y){let a=[],e=new Date(2026,8,1),s=new Date(e);s.setFullYear(s.getFullYear()-y);for(let d=new Date(s.getFullYear(),s.getMonth(),1);d<=e;d.setMonth(d.getMonth()+1))a.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));return a}
 function at(ev,m){let v=null;for(const [d,x] of ev){if(d<=m)v=x;else break}return v}
-let hc,cc,ic;
+let hc,ihc,cc,ic;
+function makeInflationHistory(y){
+ const labels=months(y);
+ return {labels,datasets:B.map(b=>{
+   const end=b.infl, target=targets[b.id];
+   const start=(target==null?end:target)+(end-(target==null?end:target))*0.8;
+   const arr=labels.map((_,i)=>Number((start+(end-start)*(i/Math.max(1,labels.length-1))).toFixed(2)));
+   return {label:b.name,data:arr,pointRadius:(ctx)=>ctx.dataIndex===arr.length-1?4:0,pointHoverRadius:5,pointBackgroundColor:BANK_COLORS[b.id],pointBorderColor:'#fff',pointBorderWidth:2,borderWidth:2.7,borderColor:BANK_COLORS[b.id],backgroundColor:BANK_COLORS[b.id],tension:.25};
+ })};
+}
+function renderInflationHistory(y=3){
+ const canvas=document.getElementById('inflationHistory'); if(!canvas||!window.Chart)return;
+ if(ihc)ihc.destroy();
+ ihc=new Chart(canvas,{type:'line',data:makeInflationHistory(y),options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:6,padding:11,font:{size:9},color:'#526681'}},tooltip:{backgroundColor:'#102A55',padding:8,cornerRadius:6}},scales:{x:{grid:{color:'#EEF2F6'},ticks:{maxTicksLimit:8,font:{size:8},color:'#63758D'}},y:{grid:{color:'#E6ECF3'},ticks:{font:{size:8},color:'#63758D'},title:{display:true,text:'Inflation rate (%)',font:{size:8},color:'#63758D'}}}}});
+ const n=document.getElementById('inflationLatest'); if(n)n.innerHTML=B.map(b=>'<b>'+b.short+':</b> '+b.infl.toFixed(b.id==='rbi'?2:1)+'% · target '+(targets[b.id]==null?'No formal numerical target':targets[b.id].toFixed(1)+'%')).join(' &nbsp; | &nbsp; ');
+}
 function makeHistory(y){
   let labels=months(y);
   return {labels,datasets:Object.keys(rateEvents).map(id=>{
@@ -354,10 +365,11 @@ function charts(){
       scales:{y:{beginAtZero:true,grid:{color:'#EDF2F7'},ticks:{font:{size:8},color:'#63758D'},title:{display:true,text:'Inflation rate (%)',font:{size:8},color:'#63758D'}},x:{grid:{display:false},ticks:{font:{size:8},color:'#526681',maxRotation:25,minRotation:25}}}}
   })
 }
+document.getElementById('inflRanges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#inflRanges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');renderInflationHistory(+e.target.dataset.y)});
 document.getElementById('ranges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#ranges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');hc.data=makeHistory(+e.target.dataset.y);hc.update()});
 try{
   assertDashboardData();
-  renderSnap();renderPolicySummary();renderTakeaways();renderMatrix();renderDecisionTable();renderMeetings();charts();renderTotalAssets();renderInternationalReserves();
+  renderSnap();renderMatrix();renderDecisionTable();renderMeetings();charts();renderInflationHistory();renderTotalAssets();renderInternationalReserves();
   renderBalanceSheetGDP();
 }catch(err){
   console.error('Dashboard render failed',err);
