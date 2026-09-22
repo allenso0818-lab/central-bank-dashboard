@@ -287,25 +287,20 @@ const valueLabelPlugin={
 };
 Chart.register(valueLabelPlugin);
 const BS_GDP=[
-  {name:'Federal Reserve System',value:null,note:'Awaiting aligned official nominal-GDP denominator'},
-  {name:'Eurosystem',value:35.9,note:'€5.912tn assets (4 Sep 2026) / €16.474tn annualized Q2 2026 nominal GDP (€4.1185tn × 4)'},
-  {name:'Bank of England',value:null,note:'Awaiting verified complete BoE balance-sheet total and aligned UK GDP'},
-  {name:'Bank of Japan',value:null,note:'Awaiting aligned official nominal-GDP denominator'},
-  {name:'People’s Bank of China',value:null,note:'Awaiting verified official total-assets series and aligned China GDP'},
-  {name:'Reserve Bank of India',value:null,note:'Awaiting verified official total-assets series and aligned India GDP'},
-  {name:'Monetary Authority of Singapore',value:null,note:'Awaiting verified official total-assets series and aligned Singapore GDP'}
+  {id:'fed',name:'Federal Reserve System',value:null,note:'US$6.746548tn total assets verified for 16 Sep 2026; aligned current-price GDP denominator still pending.'},
+  {id:'ecb',name:'Eurosystem',value:35.9,note:'€5.912tn assets (4 Sep 2026) / €16.474tn annualized Q2 2026 nominal GDP (€4.1185tn × 4).'},
+  {id:'boe',name:'Bank of England',value:null,note:'Aligned complete Bank of England balance-sheet total still pending; UK GDP denominator must use the same disclosed methodology.'},
+  {id:'boj',name:'Bank of Japan',value:null,note:'¥644.272tn total assets verified for 10 Sep 2026; aligned current-price GDP denominator still pending.'},
+  {id:'pboc',name:'People’s Bank of China',value:null,note:'Official H1 2026 GDP is RMB69.5704tn; a directly comparable verified PBoC total-assets numerator is still pending.'},
+  {id:'rbi',name:'Reserve Bank of India',value:null,note:'Comparable official total-assets numerator and aligned current-price GDP denominator still pending.'},
+  {id:'mas',name:'Monetary Authority of Singapore',value:null,note:'Comparable official total-assets numerator and aligned current-price GDP denominator still pending.'}
 ];
 function renderBalanceSheetGDP(){
  const canvas=document.getElementById('balanceSheetGDP'), note=document.getElementById('balanceSheetGDPNote');
- const valid=BS_GDP.filter(x=>Number.isFinite(x.value));
  if(!canvas||!window.Chart)return;
- if(!valid.length){
-   canvas.style.display='none';
-   note.innerHTML='<b>Chart unavailable:</b> no institution currently has both a verified current total-assets numerator and an aligned nominal-GDP denominator in this build. The dashboard will not manufacture percentages. Individual profile pages show the verified balance-sheet observations available so far.';
-   return;
- }
- new Chart(canvas,{type:'bar',data:{labels:valid.map(x=>x.name),datasets:[{data:valid.map(x=>x.value),backgroundColor:valid.map(x=>BANK_COLORS[B.find(b=>b.name===x.name)?.id]||'#64748B'),borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>ctx.raw.toFixed(1)+'% of GDP'}}},scales:{x:{beginAtZero:true,title:{display:true,text:'Total assets / nominal GDP (%)'}},y:{grid:{display:false}}}}});
- note.innerHTML='<b>Method:</b> values are plotted only when both components are verified. Eurosystem = €5.912tn total assets (4 Sep 2026) ÷ €16.474tn annualized Q2 2026 nominal GDP (€4.1185tn × 4) = 35.9%. Other banks remain withheld until equally transparent numerator/denominator pairs are verified; they are not assigned estimated bars.';
+ const labels=BS_GDP.map(x=>x.name), values=BS_GDP.map(x=>Number.isFinite(x.value)?x.value:0);
+ new Chart(canvas,{type:'bar',data:{labels,datasets:[{data:values,backgroundColor:BS_GDP.map(x=>Number.isFinite(x.value)?BANK_COLORS[x.id]:'#E5E7EB'),borderColor:BS_GDP.map(x=>Number.isFinite(x.value)?BANK_COLORS[x.id]:'#94A3B8'),borderWidth:1,borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>{const x=BS_GDP[ctx.dataIndex];return Number.isFinite(x.value)?x.value.toFixed(1)+'% of GDP':'Data not directly comparable';},afterLabel:(ctx)=>BS_GDP[ctx.dataIndex].note}}},scales:{x:{beginAtZero:true,suggestedMax:100,title:{display:true,text:'Total assets / nominal GDP (%)'}},y:{grid:{display:false}}}}});
+ note.innerHTML='<b>Coverage:</b> all seven institutions are shown. Grey rows mean <b>Data not directly comparable</b>, not zero. Eurosystem is currently the only fully verified ratio (35.9%). Verified numerator anchors: Federal Reserve US$6.746548tn (16 Sep 2026); Bank of Japan ¥644.272tn (10 Sep 2026). Remaining ratios will not be estimated until numerator and GDP periods are aligned.';
 }
 function charts(){
   hc=new Chart(document.getElementById('history'),{
