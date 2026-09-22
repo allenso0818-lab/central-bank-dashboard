@@ -209,7 +209,7 @@ rbi:[['2017-01',6.25],['2019-10',5.15],['2020-05',4],['2022-05',4.4],['2023-02',
 };
 function t(en,zh){return lang==='en'?en:zh}
 function renderSnap(){
-  document.getElementById('snap').innerHTML=B.map(b=>'<div class="panel" '+bankStyle(b.id)+'><div class="bankline"><span class="flag">'+FLAGS[b.id]+'</span><span class="bankbadge">'+b.short+'</span></div><div class="rate">'+(b.id==='mas'?'S$NEER':b.setting)+'</div><div class="status">'+b.latest+'</div><div class="mini">'+(b.id==='mas'?b.setting:b.dir.replace('↑ ','').replace('— ',''))+'</div></div>').join('')
+  document.getElementById('snap').innerHTML=B.map(b=>'<div class="panel" '+bankStyle(b.id)+'><div class="bankline"><span class="flag">'+FLAGS[b.id]+'</span><span class="bankbadge">'+b.name+'</span></div><div class="rate">'+(b.id==='mas'?'S$NEER':b.setting)+'</div><div class="status">'+b.latest+'</div><div class="mini">'+(b.id==='mas'?b.setting:b.dir.replace('↑ ','').replace('— ',''))+'</div></div>').join('')
 }
 function renderPolicySummary(){
   document.getElementById('policySummary').innerHTML='<tr><th>Central bank</th><th>Policy setting</th><th>Direction</th><th>Latest inflation</th><th>Inflation target / objective</th></tr>'+B.map(b=>{const cls=b.dir.includes('Tightening')?'tightening':(b.id==='mas'?'framework':'holding');const pos=b.id==='mas'?'FX Framework':b.dir.replace('↑ ','').replace('— ','');const m=INFLATION_META[b.id];const target=m.target_value==null?(b.id==='pboc'?'Govt objective ~2%*':'No formal target'):(b.id==='rbi'?'4% (2–6% band)':m.target_value.toFixed(0)+'%');return '<tr '+bankStyle(b.id)+'><td><span class="flag">'+FLAGS[b.id]+'</span><span class="strong">'+b.name+'</span></td><td class="strong">'+(b.id==='mas'?'S$NEER':b.setting)+'</td><td class="dir '+cls+'">'+pos+'</td><td><span class="strong">'+b.infl.toFixed(b.id==='rbi'?2:1)+'%</span><div class="muted">'+m.measure+' · '+m.reference_period+'</div></td><td><span class="strong">'+target+'</span><div class="muted">'+m.comparison_status+'</div></td></tr>'}).join('')
@@ -219,7 +219,7 @@ function renderTakeaways(){
   const highest=B.reduce((a,b)=>a.infl>b.infl?a:b,B[0]);
   const lowest=B.reduce((a,b)=>a.infl<b.infl?a:b,B[0]);
   const above=comparable.filter(b=>b.infl>INFLATION_META[b.id].target_value);
-  const items=[['% ',highest.infl.toFixed(highest.id==='rbi'?2:1)+'%','Highest latest inflation',highest.name],['↓',lowest.infl.toFixed(1)+'%','Lowest latest inflation',lowest.name],['↗',String(above.length),'Above numerical target midpoint',above.map(b=>b.short).join(' · ')||'None'],['⚙','2 Banks','Not directly target-comparable','PBoC · MAS']];
+  const items=[['% ',highest.infl.toFixed(highest.id==='rbi'?2:1)+'%','Highest latest inflation',highest.name],['↓',lowest.infl.toFixed(1)+'%','Lowest latest inflation',lowest.name],['↗',String(above.length),'Above numerical target midpoint',above.map(b=>b.name).join(' · ')||'None'],['⚙','2 Banks','Not directly target-comparable','People’s Bank of China · Monetary Authority of Singapore']];
   document.getElementById('takeaways').innerHTML=items.map(x=>'<div class="takeaway-item"><div class="takeaway-icon">'+x[0]+'</div><div><b>'+x[1]+'</b><span>'+x[2]+'<br><strong>'+x[3]+'</strong></span></div></div>').join('')
 }
 const rows=[
@@ -233,7 +233,7 @@ function change(b){if(b.latest.includes('+25'))return '↑ +25 bp';if(b.latest.i
 function gap(b){let x=targets[b.id];if(x==null)return 'Not directly comparable';let d=b.infl-x;return (d>0?'Above target ':'Below target ')+(d>0?'+':'')+d.toFixed(1)+' pp'}
 function val(b,k){if(k==='leaderProfile')return '<div style="display:flex;gap:7px;align-items:center"><img src="'+b.photo+'" alt="'+b.head+'" style="width:58px;height:72px;object-fit:cover;object-position:center 18%;border-radius:7px;background:#F7F9FC;border:1px solid #E0E6EE;display:block;flex:0 0 58px"><div><div class="main"><b>'+b.head+'</b></div><div class="muted">'+b.position+'</div></div></div>';if(k==='infl'){const m=INFLATION_META[b.id];return '<span class="num">'+b.infl.toFixed(b.id==='rbi'?2:1)+'%</span><div class="muted">'+m.measure+'<br>'+m.reference_period+' · Published '+m.publication_date+'<br>'+m.source_name+'</div>'};if(k==='gap')return gap(b);if(k==='change')return '<span class="num">'+change(b)+'</span>';if(k==='ind')return '<div style="display:grid;gap:3px">'+b.ind.map(x=>'<div style="display:flex;gap:5px;align-items:flex-start"><span style="color:'+BANK_COLORS[b.id]+';font-weight:900">•</span><span>'+x+'</span></div>').join('')+'</div>';if(k==='position')return '<div class="main">'+b.position+'</div>'+(b.chair?'<div class="muted">'+b.chair+'</div>':'');if(k==='setting')return '<span class="num">'+b.setting+'</span>';return '<div class="main">'+(b[k]??'—')+'</div>'}
 function renderMatrix(){
-  let h='<thead><tr><th>Category</th>'+B.map(b=>'<th style="text-align:center"><div style="font-weight:900">'+b.name+'</div><div class="muted" style="text-align:center">'+b.short+' · '+b.country+'</div></th>').join('')+'</tr></thead><tbody>';
+  let h='<thead><tr><th>Category</th>'+B.map(b=>'<th style="text-align:center"><div style="font-weight:900">'+b.name+'</div><div class="muted" style="text-align:center">'+b.country+'</div></th>').join('')+'</tr></thead><tbody>';
   for(const [label,k] of rows){
     if(!k){h+='<tr class="group"><th>'+label+'</th>'+B.map(()=>'<td></td>').join('')+'</tr>'}
     else{h+='<tr><th>'+label+'</th>'+B.map(b=>'<td>'+val(b,k)+'</td>').join('')+'</tr>'}
@@ -245,10 +245,10 @@ function renderCards(){
 }
 function renderDecisions(){document.getElementById('decisions').innerHTML=B.map(b=>'<div class="panel decision" '+bankStyle(b.id)+'><b>'+b.short+'</b><div class="date">'+b.date+'</div><div class="action">'+b.latest+'</div><div class="mini">'+b.prev+' → '+b.setting+'</div></div>').join('')}
 function renderMeetings(){
-  document.getElementById('meetingTable').innerHTML='<tr><th>Bank</th><th>Date</th></tr>'+B.slice().sort((a,b)=>a.next.localeCompare(b.next)).map(b=>'<tr '+bankStyle(b.id)+'><td><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bank);margin-right:6px"></span>'+b.short+'</td><td>'+b.next+'</td></tr>').join('')
+  document.getElementById('meetingTable').innerHTML='<tr><th>Bank</th><th>Date</th></tr>'+B.slice().sort((a,b)=>a.next.localeCompare(b.next)).map(b=>'<tr '+bankStyle(b.id)+'><td><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bank);margin-right:6px"></span>'+b.name+'</td><td>'+b.next+'</td></tr>').join('')
 }
 function renderDecisionTable(){
-  document.getElementById('decisionTable').innerHTML='<tr><th>Bank</th><th>Date</th><th>Decision</th></tr>'+B.map(b=>'<tr '+bankStyle(b.id)+'><td><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bank);margin-right:6px"></span>'+b.short+'</td><td>'+b.date+'</td><td style="font-weight:800;color:var(--bank)">'+b.latest+'</td></tr>').join('')
+  document.getElementById('decisionTable').innerHTML='<tr><th>Bank</th><th>Date</th><th>Decision</th></tr>'+B.map(b=>'<tr '+bankStyle(b.id)+'><td><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bank);margin-right:6px"></span>'+b.name+'</td><td>'+b.date+'</td><td style="font-weight:800;color:var(--bank)">'+b.latest+'</td></tr>').join('')
 }
 function renderTake(){let x=['RBI currently has the highest directly comparable policy rate among the six rate-based frameworks.','Fed, ECB and BoJ are shown as tightening in the latest-decision snapshot, while BoE and RBI are holding.','Inflation remains above 2% in the US, euro area and UK in this dashboard snapshot.','MAS is structurally different because monetary policy is centred on the S$NEER exchange-rate band.'];document.getElementById('take').innerHTML=x.map(v=>'<div class="panel">'+v+'</div>').join('')}
 function months(y){let a=[],e=new Date(2026,8,1),s=new Date(e);s.setFullYear(s.getFullYear()-y);for(let d=new Date(s.getFullYear(),s.getMonth(),1);d<=e;d.setMonth(d.getMonth()+1))a.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));return a}
@@ -259,7 +259,7 @@ function makeHistory(y){
   return {labels,datasets:Object.keys(rateEvents).map(id=>{
     let b=B.find(x=>x.id===id), arr=labels.map(m=>at(rateEvents[id],m));
     return {
-      label:b.short,data:arr,stepped:true,
+      label:b.name,data:arr,stepped:true,
       pointRadius:(ctx)=>ctx.dataIndex===arr.length-1?4:0,
       pointHoverRadius:5,pointBackgroundColor:BANK_COLORS[id],pointBorderColor:'#fff',pointBorderWidth:2,
       borderWidth:2.7,borderColor:BANK_COLORS[id],backgroundColor:BANK_COLORS[id],tension:0
