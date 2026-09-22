@@ -306,19 +306,12 @@ const BS_TOTAL_ASSETS=[
 ];
 function renderTotalAssets(){
  const canvas=document.getElementById('totalAssetsUSD'); if(!canvas||!window.Chart)return;
- new Chart(canvas,{type:'bar',data:{labels:BS_TOTAL_ASSETS.map(x=>x.name),datasets:[{data:BS_TOTAL_ASSETS.map(x=>x.usd),backgroundColor:BS_TOTAL_ASSETS.map(x=>BANK_COLORS[x.id]),borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>'US
- const canvas=document.getElementById('balanceSheetGDP'), note=document.getElementById('balanceSheetGDPNote');
- if(!canvas||!window.Chart)return;
- const labels=BS_GDP.map(x=>x.name), values=BS_GDP.map(x=>Number.isFinite(x.value)?x.value:2.5);
- const unavailablePlugin={id:'unavailableRows',afterDatasetsDraw(chart){
-   const {ctx,chartArea}=chart, meta=chart.getDatasetMeta(0);
-   ctx.save();ctx.font='700 10px Inter, Arial';ctx.textBaseline='middle';
-   BS_GDP.forEach((x,i)=>{if(Number.isFinite(x.value))return;const el=meta.data[i];if(!el)return;
-     const y=el.y;ctx.fillStyle='#94A3B8';ctx.fillText('Pending verified official value',chartArea.left+12,y);
-   });ctx.restore();
- }};
- new Chart(canvas,{type:'bar',plugins:[unavailablePlugin],data:{labels,datasets:[{data:values,backgroundColor:BS_GDP.map(x=>Number.isFinite(x.value)?BANK_COLORS[x.id]:'#E5E7EB'),borderColor:BS_GDP.map(x=>Number.isFinite(x.value)?BANK_COLORS[x.id]:'#CBD5E1'),borderWidth:1,borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>{const x=BS_GDP[ctx.dataIndex];return Number.isFinite(x.value)?x.value.toFixed(1)+'% of GDP':'Data not directly comparable';},afterLabel:(ctx)=>BS_GDP[ctx.dataIndex].note}}},scales:{x:{beginAtZero:true,suggestedMax:100,title:{display:true,text:'Total assets / nominal GDP (%)'}},y:{grid:{display:false},ticks:{autoSkip:false}}}}});
- note.innerHTML='<b>Coverage:</b> all seven institutions are now explicitly visible. The short grey bars are status placeholders labelled <b>Pending verified official value</b> — their length is not a numeric value. All seven institutions now show a numeric ratio using the latest directly verified comparable observation available for each institution. Observation dates differ and are disclosed in the tooltip.';
+ new Chart(canvas,{type:'bar',data:{labels:BS_TOTAL_ASSETS.map(x=>x.name),datasets:[{data:BS_TOTAL_ASSETS.map(x=>x.usd),backgroundColor:BS_TOTAL_ASSETS.map(x=>BANK_COLORS[x.id]),borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>'USD '+BS_TOTAL_ASSETS[ctx.dataIndex].usd.toFixed(3)+'tn equivalent',afterLabel:(ctx)=>'Native total: '+BS_TOTAL_ASSETS[ctx.dataIndex].native}}},scales:{x:{beginAtZero:true,title:{display:true,text:'USD equivalent (trillion)'}},y:{grid:{display:false},ticks:{autoSkip:false}}}}});
+}
+function renderBalanceSheetGDP(){
+ const canvas=document.getElementById('balanceSheetGDP'), note=document.getElementById('balanceSheetGDPNote'); if(!canvas||!window.Chart)return;
+ new Chart(canvas,{type:'bar',data:{labels:BS_GDP.map(x=>x.name),datasets:[{data:BS_GDP.map(x=>x.value),backgroundColor:BS_GDP.map(x=>BANK_COLORS[x.id]),borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>BS_GDP[ctx.dataIndex].value.toFixed(1)+'% of GDP',afterLabel:(ctx)=>BS_GDP[ctx.dataIndex].note}}},scales:{x:{beginAtZero:true,suggestedMax:105,title:{display:true,text:'Total assets / nominal GDP (%)'}},y:{grid:{display:false},ticks:{autoSkip:false}}}}});
+ note.innerHTML='<b>Coverage:</b> all seven institutions use the latest directly verified comparable observation available. Observation dates differ and are disclosed in the tooltip.';
 }
 function charts(){
   hc=new Chart(document.getElementById('history'),{
