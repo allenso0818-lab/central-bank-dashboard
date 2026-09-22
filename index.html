@@ -66,7 +66,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .num{font-weight:900;color:#122C57}.main{font-weight:650}.muted{color:#71839A;font-size:8px}
 .pill{display:inline-block;padding:1px 4px;border:1px solid #D9E2EE;border-radius:99px;background:#F8FAFC;margin:1px;font-size:7.5px}
 
-.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:1330px;margin-left:auto;margin-right:auto}.charts-grid .policy-rate-paths{grid-column:1/-1}.charts-grid .chart-card .chartbox{height:220px}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:1330px;margin-left:auto;margin-right:auto}.charts-grid .chart-card .chartbox{height:220px}
 .chart-card{padding:10px}.chart-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:5px}.chart-head h3{font-size:13px;margin:0;color:#17305A}.chart-head .sub{margin:2px 0 0}
 .chartbox{height:220px}.chartbox.small{height:220px}
 .controls{display:flex;gap:3px}.controls button{border:1px solid #D5DEEA;background:#fff;color:#38506F;border-radius:5px;padding:5px 8px;font-size:9px;font-weight:800;cursor:pointer}.controls .active{background:#2563EB;color:#fff;border-color:#2563EB}
@@ -117,6 +117,14 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
     <div class="chartbox"><canvas id="history"></canvas></div>
     <div class="note">Fed = target-range midpoint for plotting only. ECB = deposit facility rate. BoE = Bank Rate. BoJ = policy rate. PBoC = 7-day reverse repo rate. RBI = repo rate.</div>
     <div class="masnote">MAS is not plotted as it uses the S$NEER policy band under an exchange-rate-centred framework.</div>
+  </div>
+  <div class="panel chart-card inflation-paths">
+    <div class="chart-head">
+      <div><h3>Inflation Paths</h3><div class="sub">Recent headline inflation trends across the seven economies</div></div>
+      <div class="controls" id="inflRanges"><button data-y="1">1Y</button><button class="active" data-y="3">3Y</button><button data-y="5">5Y</button></div>
+    </div>
+    <div class="chartbox"><canvas id="inflHistory"></canvas></div>
+    <div class="note">Latest observations use the inflation measures shown in the dashboard cards. Historical points are selected published observations; gaps are left where a comparable observation is not stored.</div>
   </div>
   <div class="panel chart-card">
     <div class="chart-head"><div><h3>Inflation vs Target</h3><div class="sub">Latest verified actual inflation vs numerical target (where directly comparable)</div></div></div>
@@ -194,6 +202,15 @@ function assertDashboardData(){
   if(!Array.isArray(B)||B.length!==7) throw new Error('Central-bank dataset failed to load');
 }
 const targets=Object.fromEntries(B.map(b=>[b.id,INFLATION_META[b.id].target_value]));
+const inflationEvents={
+fed:[['2024-12',2.6],['2025-12',2.8],['2026-07',3.7]],
+ecb:[['2024-12',2.4],['2025-12',1.9],['2026-08',3.2]],
+boe:[['2024-12',2.5],['2025-12',3.4],['2026-08',3.1]],
+boj:[['2024-12',3.6],['2025-12',2.1],['2026-08',1.9]],
+pboc:[['2024-12',0.1],['2025-12',0.8],['2026-08',0.8]],
+rbi:[['2024-12',5.2],['2025-12',4.6],['2026-08',4.82]],
+mas:[['2024-12',1.6],['2025-12',1.2],['2026-07',2.2]]
+};
 const rateEvents={
 fed:[['2017-01',0.75],['2018-12',2.375],['2020-03',0.125],['2022-03',0.375],['2023-07',5.375],['2024-09',4.875],['2025-06',4.375],['2026-09',3.875]],
 ecb:[['2017-01',-0.4],['2019-09',-0.5],['2022-07',0],['2023-09',4],['2024-06',3.75],['2025-03',2.75],['2026-09',2.5]],
@@ -259,6 +276,13 @@ function makeHistory(y){
       pointHoverRadius:5,pointBackgroundColor:BANK_COLORS[id],pointBorderColor:'#fff',pointBorderWidth:2,
       borderWidth:2.7,borderColor:BANK_COLORS[id],backgroundColor:BANK_COLORS[id],tension:0
     }
+  })}
+}
+function makeInflHistory(y){
+  let labels=months(y);
+  return {labels,datasets:Object.keys(inflationEvents).map(id=>{
+    let b=B.find(x=>x.id===id), pts=inflationEvents[id], arr=labels.map(m=>{let hit=pts.find(x=>x[0]===m);return hit?hit[1]:null});
+    return {label:b.name,data:arr,spanGaps:true,pointRadius:(ctx)=>ctx.raw==null?0:3,pointHoverRadius:5,pointBackgroundColor:BANK_COLORS[id],pointBorderColor:'#fff',pointBorderWidth:1.5,borderWidth:2.7,borderColor:BANK_COLORS[id],backgroundColor:BANK_COLORS[id],tension:.18}
   })}
 }
 const valueLabelPlugin={
@@ -335,6 +359,10 @@ function charts(){
     options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#102A55',padding:8}},
       scales:{x:{beginAtZero:true,grid:{color:'#EDF2F7'},ticks:{font:{size:8},color:'#63758D'}},y:{grid:{display:false},ticks:{font:{size:8,weight:'700'},color:'#304865',autoSkip:false}}}}
   });
+  window.ihc=new Chart(document.getElementById('inflHistory'),{
+    type:'line',data:makeInflHistory(3),
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:6,padding:11,font:{size:9},color:'#526681'}},tooltip:{backgroundColor:'#102A55',padding:8,cornerRadius:6}},scales:{x:{grid:{color:'#EEF2F6'},ticks:{maxTicksLimit:8,font:{size:8},color:'#63758D'}},y:{grid:{color:'#E6ECF3'},ticks:{font:{size:8},color:'#63758D'},title:{display:true,text:'Inflation (%)',font:{size:8},color:'#63758D'}}}}
+  });
   ic=new Chart(document.getElementById('inflation'),{
     type:'bar',
     data:{labels:B.map(b=>b.name),datasets:[
@@ -345,6 +373,7 @@ function charts(){
       scales:{y:{beginAtZero:true,grid:{color:'#EDF2F7'},ticks:{font:{size:8},color:'#63758D'},title:{display:true,text:'Inflation rate (%)',font:{size:8},color:'#63758D'}},x:{grid:{display:false},ticks:{font:{size:8},color:'#526681',maxRotation:25,minRotation:25}}}}
   })
 }
+document.getElementById('inflRanges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#inflRanges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');ihc.data=makeInflHistory(+e.target.dataset.y);ihc.update()});
 document.getElementById('ranges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#ranges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');hc.data=makeHistory(+e.target.dataset.y);hc.update()});
 try{
   assertDashboardData();
