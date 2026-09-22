@@ -192,6 +192,12 @@ const INFLATION_META={
  mas:{measure:'CPI-All Items, year-on-year',reference_period:'July 2026',publication_date:'24 Aug 2026',source_name:'Singapore Ministry of Trade and Industry / MAS',source_url:'https://www.mti.gov.sg/newsroom/consumer-price-developments-in-july-2026/',target_value:null,target_definition:'No formal numerical inflation target',comparison_status:'Not directly comparable'}
 };
 const LAST_CHECKED_HKT='22 Sep 2026 08:30 HKT';
+function assertDashboardData(){
+  const requiredIds=['fed','ecb','boe','boj','pboc','rbi','mas'];
+  const missing=requiredIds.filter(id=>!INFLATION_META[id]);
+  if(missing.length) throw new Error('Missing inflation metadata: '+missing.join(', '));
+  if(!Array.isArray(B)||B.length!==7) throw new Error('Central-bank dataset failed to load');
+}
 const targets=Object.fromEntries(B.map(b=>[b.id,INFLATION_META[b.id].target_value]));
 const rateEvents={
 fed:[['2017-01',0.75],['2018-12',2.375],['2020-03',0.125],['2022-03',0.375],['2023-07',5.375],['2024-09',4.875],['2025-06',4.375],['2026-09',3.875]],
@@ -302,5 +308,12 @@ function charts(){
   })
 }
 document.getElementById('ranges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#ranges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');hc.data=makeHistory(+e.target.dataset.y);hc.update()});
-renderSnap();renderPolicySummary();renderTakeaways();renderMatrix();renderDecisionTable();renderMeetings();charts();
+try{
+  assertDashboardData();
+  renderSnap();renderPolicySummary();renderTakeaways();renderMatrix();renderDecisionTable();renderMeetings();charts();
+}catch(err){
+  console.error('Dashboard render failed',err);
+  const msg='<div style="padding:12px;border:1px solid #FCA5A5;background:#FEF2F2;color:#991B1B;border-radius:8px;font-weight:700">Dashboard data could not be rendered. Please refresh the page. Error: '+String(err.message||err)+'</div>';
+  const el=document.getElementById('policySummary'); if(el) el.outerHTML=msg;
+}
 </script></body></html>
