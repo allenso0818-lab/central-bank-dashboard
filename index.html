@@ -66,7 +66,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .num{font-weight:900;color:#122C57}.main{font-weight:650}.muted{color:#71839A;font-size:8px}
 .pill{display:inline-block;padding:1px 4px;border:1px solid #D9E2EE;border-radius:99px;background:#F8FAFC;margin:1px;font-size:7.5px}
 
-.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:1330px;margin-left:auto;margin-right:auto}.charts-grid .chart-card:first-child{grid-column:1/-1}.charts-grid .chart-card:first-child .chartbox{height:220px}
+.charts-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-width:1330px;margin-left:auto;margin-right:auto}.charts-grid .chart-card .chartbox{height:220px}
 .chart-card{padding:10px}.chart-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:5px}.chart-head h3{font-size:13px;margin:0;color:#17305A}.chart-head .sub{margin:2px 0 0}
 .chartbox{height:220px}.chartbox.small{height:220px}
 .controls{display:flex;gap:3px}.controls button{border:1px solid #D5DEEA;background:#fff;color:#38506F;border-radius:5px;padding:5px 8px;font-size:9px;font-weight:800;cursor:pointer}.controls .active{background:#2563EB;color:#fff;border-color:#2563EB}
@@ -102,17 +102,6 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 
 <section><div class="snap" id="snap"></div></section>
 
-<section class="summary-grid">
-  <div class="panel summary-panel">
-    <h3>Policy Position & Inflation (Current Setting)</h3>
-    <table class="compact-table" id="policySummary"></table>
-  </div>
-  <div class="panel summary-panel">
-    <h3>Key Takeaways</h3>
-    <div class="takeaway-list" id="takeaways"></div>
-  </div>
-</section>
-
 
 <section>
   <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px"><h2>Central Bank Profiles & Comparison</h2><div class="sub" style="margin-bottom:7px">Leader profiles and key policy information in one comparative view</div></div>
@@ -130,12 +119,13 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
     <div class="masnote">MAS is not plotted as it uses the S$NEER policy band under an exchange-rate-centred framework.</div>
   </div>
   <div class="panel chart-card">
-    <div class="chart-head"><div><h3>Current Policy Rate Comparison</h3><div class="sub">Current policy rate (%, latest)</div></div></div>
-    <div class="chartbox small"><canvas id="current"></canvas></div>
-  </div>
-  <div class="panel chart-card">
     <div class="chart-head"><div><h3>Inflation vs Target</h3><div class="sub">Latest verified actual inflation vs numerical target (where directly comparable)</div></div></div>
     <div class="chartbox small"><canvas id="inflation"></canvas></div><div class="note">PBoC: 2026 government CPI objective (~2%) is not plotted as a central-bank inflation target. MAS: no formal numerical inflation target. RBI target midpoint is 4%, with a 2–6% tolerance band.</div>
+  </div>
+
+  <div class="panel chart-card">
+    <div class="chart-head"><div><h3>Current Policy Rate Comparison</h3><div class="sub">Current policy rate (%, latest)</div></div></div>
+    <div class="chartbox small"><canvas id="current"></canvas></div>
   </div>
 <div class="balance-group" style="grid-column:1/-1"><h2 style="margin:4px 0 8px">Central Bank Balance Sheet Comparison</h2><div class="sub" style="margin-bottom:10px">Cross-bank balance-sheet scale using official balance-sheet observations</div><div class="balance-assets-grid"><div class="panel chart-card"><div class="chart-head"><div><h3>Central Bank Total Assets</h3><div class="sub">USD-equivalent comparison; native-currency totals shown in tooltip</div></div></div><div class="chartbox" style="height:285px"><canvas id="totalAssetsUSD"></canvas></div><div class="note"><b>Comparison basis:</b> latest verified total-assets observations converted to USD using 21 Sep 2026 ECB reference FX rates. Observation dates differ by institution; hover for native totals.</div></div><div class="panel chart-card"><div class="chart-head"><div><h3>Central Bank Total Assets as % of GDP</h3><div class="sub">Latest comparable official observations</div></div></div><div class="chartbox" style="height:285px"><canvas id="balanceSheetGDP"></canvas></div><div class="note" id="balanceSheetGDPNote">Loading verified comparison…</div></div><div class="panel chart-card reserve-card"><div class="chart-head"><div><h3>International Reserves</h3><div class="sub">Latest official reserve assets; native reported values shown in tooltip</div></div></div><div class="chartbox" style="height:285px"><canvas id="internationalReserves"></canvas></div><div class="note"><b>Coverage:</b> official reserve assets using the latest verified official observation available. Reporting dates and currencies differ by institution.</div></div></div></div></section>
 
@@ -214,7 +204,7 @@ rbi:[['2017-01',6.25],['2019-10',5.15],['2020-05',4],['2022-05',4.4],['2023-02',
 };
 function t(en,zh){return lang==='en'?en:zh}
 function renderSnap(){
-  document.getElementById('snap').innerHTML=B.map(b=>'<a href="'+PROFILE_URLS[b.id]+'" aria-label="View detailed profile for '+b.name+'" style="display:block;color:inherit;text-decoration:none"><div class="panel" '+bankStyle(b.id)+'><div class="bankline"><span class="flag">'+FLAGS[b.id]+'</span><span class="bankbadge">'+b.name+'</span></div><div class="rate">'+(b.id==='mas'?'S$NEER':b.setting)+'</div><div class="status">'+b.latest+'</div><div class="mini">'+(b.id==='mas'?b.setting:b.dir.replace('↑ ','').replace('— ',''))+'</div><div style="margin-top:10px;font-size:12px;font-weight:850;color:#244f91">View Detailed Profile →</div></div></a>').join('')
+  document.getElementById('snap').innerHTML=B.map(b=>{const m=INFLATION_META[b.id];const target=m.target_value==null?(b.id==='pboc'?'Govt objective ~2%*':'No formal target'):(b.id==='rbi'?'4% (2–6% band)':m.target_value.toFixed(0)+'%');return '<div class="panel" '+bankStyle(b.id)+'><div class="bankline"><span class="flag">'+FLAGS[b.id]+'</span><span class="bankbadge">'+b.name+'</span></div><div class="rate">'+(b.id==='mas'?'S$NEER':b.setting)+'</div><div class="status">'+b.latest+'</div><div class="mini">'+(b.id==='mas'?b.setting:b.dir.replace('↑ ','').replace('— ',''))+'</div><div style="margin-top:8px;padding-top:7px;border-top:1px solid #E2E8F0;font-size:9px;line-height:1.45"><b>Inflation:</b> '+b.infl.toFixed(b.id==='rbi'?2:1)+'%<br><b>Target:</b> '+target+'</div></div>'}).join('')
 }
 function renderPolicySummary(){
   document.getElementById('policySummary').innerHTML='<tr><th>Central bank</th><th>Policy setting</th><th>Direction</th><th>Latest inflation</th><th>Inflation target / objective</th></tr>'+B.map(b=>{const cls=b.dir.includes('Tightening')?'tightening':(b.id==='mas'?'framework':'holding');const pos=b.id==='mas'?'FX Framework':b.dir.replace('↑ ','').replace('— ','');const m=INFLATION_META[b.id];const target=m.target_value==null?(b.id==='pboc'?'Govt objective ~2%*':'No formal target'):(b.id==='rbi'?'4% (2–6% band)':m.target_value.toFixed(0)+'%');return '<tr '+bankStyle(b.id)+'><td><span class="flag">'+FLAGS[b.id]+'</span><span class="strong">'+b.name+'</span></td><td class="strong">'+(b.id==='mas'?'S$NEER':b.setting)+'</td><td class="dir '+cls+'">'+pos+'</td><td><span class="strong">'+b.infl.toFixed(b.id==='rbi'?2:1)+'%</span><div class="muted">'+m.measure+' · '+m.reference_period+'</div></td><td><span class="strong">'+target+'</span><div class="muted">'+m.comparison_status+'</div></td></tr>'}).join('')
@@ -358,7 +348,7 @@ function charts(){
 document.getElementById('ranges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#ranges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');hc.data=makeHistory(+e.target.dataset.y);hc.update()});
 try{
   assertDashboardData();
-  renderSnap();renderPolicySummary();renderTakeaways();renderMatrix();renderDecisionTable();renderMeetings();charts();renderTotalAssets();renderInternationalReserves();
+  renderSnap();renderMatrix();renderDecisionTable();renderMeetings();charts();renderTotalAssets();renderInternationalReserves();
   renderBalanceSheetGDP();
 }catch(err){
   console.error('Dashboard render failed',err);
