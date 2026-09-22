@@ -288,7 +288,7 @@ const valueLabelPlugin={
 Chart.register(valueLabelPlugin);
 const BS_GDP=[
   {name:'Federal Reserve System',value:null,note:'Awaiting aligned official nominal-GDP denominator'},
-  {name:'Eurosystem',value:null,note:'Awaiting aligned euro-area nominal-GDP denominator'},
+  {name:'Eurosystem',value:35.9,note:'€5.912tn assets (4 Sep 2026) / €16.474tn annualized Q2 2026 nominal GDP (€4.1185tn × 4)'},
   {name:'Bank of England',value:null,note:'Awaiting verified complete BoE balance-sheet total and aligned UK GDP'},
   {name:'Bank of Japan',value:null,note:'Awaiting aligned official nominal-GDP denominator'},
   {name:'People’s Bank of China',value:null,note:'Awaiting verified official total-assets series and aligned China GDP'},
@@ -305,7 +305,7 @@ function renderBalanceSheetGDP(){
    return;
  }
  new Chart(canvas,{type:'bar',data:{labels:valid.map(x=>x.name),datasets:[{data:valid.map(x=>x.value),backgroundColor:valid.map(x=>BANK_COLORS[B.find(b=>b.name===x.name)?.id]||'#64748B'),borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>ctx.raw.toFixed(1)+'% of GDP'}}},scales:{x:{beginAtZero:true,title:{display:true,text:'Total assets / nominal GDP (%)'}},y:{grid:{display:false}}}}});
- note.textContent='Reference periods and calculation details are shown on the individual profile pages.';
+ note.innerHTML='<b>Method:</b> values are plotted only when both components are verified. Eurosystem = €5.912tn total assets (4 Sep 2026) ÷ €16.474tn annualized Q2 2026 nominal GDP (€4.1185tn × 4) = 35.9%. Other banks remain withheld until equally transparent numerator/denominator pairs are verified; they are not assigned estimated bars.';
 }
 function charts(){
   hc=new Chart(document.getElementById('history'),{
