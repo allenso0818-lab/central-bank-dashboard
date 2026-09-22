@@ -216,8 +216,8 @@ function renderPolicySummary(){
 }
 function renderTakeaways(){
   const comparable=B.filter(b=>INFLATION_META[b.id].target_value!=null);
-  const highest=B.reduce((a,b)=>a.infl>b.infl?a:b),B[0]);
-  const lowest=B.reduce((a,b)=>a.infl<b.infl?a:b),B[0]);
+  const highest=B.reduce((a,b)=>a.infl>b.infl?a:b,B[0]);
+  const lowest=B.reduce((a,b)=>a.infl<b.infl?a:b,B[0]);
   const above=comparable.filter(b=>b.infl>INFLATION_META[b.id].target_value);
   const items=[['% ',highest.infl.toFixed(highest.id==='rbi'?2:1)+'%','Highest latest inflation',highest.name],['↓',lowest.infl.toFixed(1)+'%','Lowest latest inflation',lowest.name],['↗',String(above.length),'Above numerical target midpoint',above.map(b=>b.short).join(' · ')||'None'],['⚙','2 Banks','Not directly target-comparable','PBoC · MAS']];
   document.getElementById('takeaways').innerHTML=items.map(x=>'<div class="takeaway-item"><div class="takeaway-icon">'+x[0]+'</div><div><b>'+x[1]+'</b><span>'+x[2]+'<br><strong>'+x[3]+'</strong></span></div></div>').join('')
