@@ -31,7 +31,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .mini{font-size:9px;color:#63758D;line-height:1.25}
 .status{font-size:9.5px;font-weight:800;margin-top:4px;color:var(--bank)}
 
-.summary-grid{display:grid;grid-template-columns:1.15fr 1.15fr .75fr;gap:8px;margin-top:8px}
+.summary-grid{display:grid;grid-template-columns:2.3fr .75fr;gap:8px;margin-top:8px}
 .summary-panel{padding:10px 12px;min-height:166px}
 .summary-panel h3{font-size:13px;margin:0 0 6px;color:#17305A}
 .compact-table{width:100%;border-collapse:collapse;font-size:10px}
@@ -94,19 +94,15 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
     <h1 data-en="Seven Central Banks — One Comparative View" data-zh="七大中央銀行 — 一頁比較">Seven Central Banks — One Comparative View</h1>
     <p data-en="A visual comparison of mandates, policy settings, inflation and decisions" data-zh="以視覺方式比較職責、政策設定、通脹與決策">A visual comparison of mandates, policy settings, inflation and decisions</p>
   </div>
-  <div class="header-right"><span>Updated: 21 Sep 2026 · HKT</span></div>
+  <div class="header-right"><span>Dashboard updated: 22 Sep 2026 08:30 HKT</span></div>
 </header>
 
 <section><div class="snap" id="snap"></div></section>
 
 <section class="summary-grid">
   <div class="panel summary-panel">
-    <h3>Policy Position (Current Setting)</h3>
+    <h3>Policy Position & Inflation (Current Setting)</h3>
     <table class="compact-table" id="policySummary"></table>
-  </div>
-  <div class="panel summary-panel">
-    <h3>Inflation Snapshot (Latest)</h3>
-    <table class="compact-table" id="inflSummary"></table>
   </div>
   <div class="panel summary-panel">
     <h3>Key Takeaways</h3>
@@ -135,8 +131,8 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
     <div class="chartbox small"><canvas id="current"></canvas></div>
   </div>
   <div class="panel chart-card">
-    <div class="chart-head"><div><h3>Inflation vs Target</h3><div class="sub">Latest inflation and target (where applicable)</div></div></div>
-    <div class="chartbox small"><canvas id="inflation"></canvas></div>
+    <div class="chart-head"><div><h3>Inflation vs Target</h3><div class="sub">Latest verified actual inflation vs numerical target (where directly comparable)</div></div></div>
+    <div class="chartbox small"><canvas id="inflation"></canvas></div><div class="note">PBoC: 2026 government CPI objective (~2%) is not plotted as a central-bank inflation target. MAS: no formal numerical inflation target. RBI target midpoint is 4%, with a 2–6% tolerance band.</div>
   </div>
 </section>
 
@@ -152,7 +148,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
   <div class="panel bottom-card sources">
     <h3>Sources & Methodology</h3>
     <ul>
-      <li>Central bank websites and official statements (latest available as of 21 Sep 2026).</li>
+      <li>Inflation figures use official statistical/government releases and are verified separately from inflation targets. Last checked: 22 Sep 2026 08:30 HKT.</li>
       <li>Policy rates are the headline policy instruments for each central bank.</li>
       <li>Fed rate uses the target-range midpoint for charting purposes.</li>
       <li>MAS is not plotted in the policy-rate chart because it uses an exchange-rate-centred framework.</li>
@@ -177,15 +173,26 @@ const FULL={fed:'Federal Reserve System',ecb:'European Central Bank',boe:'Bank o
 function bankStyle(id){return 'style="--bank:'+BANK_COLORS[id]+'"'}
 
 const B=[
-{id:'fed',short:'Fed',name:'Federal Reserve System',country:'United States',head:'Kevin Warsh',position:'Chair of the Board of Governors of the Federal Reserve System; Chair of the FOMC',committee:'Federal Open Market Committee (FOMC)',mandate:'Maximum employment and stable prices',target:'2% PCE inflation',instrument:'Federal funds target range',setting:'3.75–4.00%',plot:3.875,infl:2.7,latest:'↑ +25 bp',prev:'3.50–3.75%',date:'16 Sep 2026',dir:'↑ Tightening',next:'28 Oct 2026',ind:['PCE','Payrolls','GDP','Wages'],photo:'https://www.federalreserve.gov/aboutthefed/images/chairman-warsh-130x168.png',building:'https://i.epochtimes.com/assets/uploads/2025/05/id14519874-EpochImages-2968722995-xl.jpg'},
-{id:'ecb',short:'ECB',name:'European Central Bank',country:'Euro Area',head:'Christine Lagarde',position:'President of the European Central Bank',committee:'Governing Council',mandate:'Price stability',target:'2% medium term',instrument:'Deposit facility rate',setting:'2.50%',plot:2.5,infl:2.4,latest:'↑ +25 bp',prev:'2.25%',date:'10 Sep 2026',dir:'↑ Tightening',next:'29 Oct 2026',ind:['HICP','Wages','GDP','PMI'],photo:'https://commons.wikimedia.org/wiki/Special:FilePath/Lagarde%20ECB%20Portrait%202019.jpg?width=500',building:'https://www.vle.lt/Image.php?p=%2F385611%2F53751-1.jpg'},
-{id:'boe',short:'BoE',name:'Bank of England',country:'United Kingdom',head:'Andrew Bailey',position:'Governor of the Bank of England; Chair of the Monetary Policy Committee',committee:'Monetary Policy Committee (MPC)',mandate:'Price stability; support government economic policy',target:'2% CPI inflation',instrument:'Bank Rate',setting:'3.75%',plot:3.75,infl:3.8,latest:'— 0 bp',prev:'3.75%',date:'17 Sep 2026',dir:'— Holding',next:'5 Nov 2026',ind:['CPI','Wages','GDP','Labour'],photo:'https://www.bankofengland.co.uk/-/media/boe/images/people/andrew-bailey/andrew-bailey-front.jpg?h=515&iar=0&w=521&hash=C0338A66BD70CE3D996DB0EA80350841',building:'https://doqvf81n9htmm.cloudfront.net/data/jessicachiang_377/shutterstock_2556450023bank.jpg'},
-{id:'boj',short:'BoJ',name:'Bank of Japan',country:'Japan',head:'Kazuo Ueda',position:'Governor of the Bank of Japan',committee:'Policy Board',mandate:'Price stability; financial-system stability',target:'2% CPI inflation',instrument:'Short-term policy rate',setting:'~1.25%',plot:1.25,infl:2.1,latest:'↑ +25 bp',prev:'~1.00%',date:'18 Sep 2026',dir:'↑ Tightening',next:'30 Oct 2026',ind:['CPI','Wages','Tankan','FX'],photo:'https://www.boj.or.jp/en/about/organization/policyboard/img/ueda.jpg',building:'https://commons.wikimedia.org/wiki/Special:FilePath/Bank%20of%20Japan%20Head%20Office%20-%20Main%20building%20from%20south.jpg?width=800'},
-{id:'pboc',short:'PBoC',name:'People’s Bank of China',country:'China',head:'Pan Gongsheng',position:'Governor of the People’s Bank of China; Chair of the Monetary Policy Committee',committee:'Monetary Policy Committee',mandate:'Currency stability; support economic growth',target:'Government inflation objective',instrument:'7-day reverse repo rate',setting:'1.40%',plot:1.4,infl:0.8,latest:'— 0 bp',prev:'1.40%',date:'Aug 2026',dir:'— Holding',next:'No fixed calendar',ind:['CPI','Credit','PMI','FX'],photo:'https://commons.wikimedia.org/wiki/Special:FilePath/Pan%20Gongsheng.jpg?width=300',building:'https://www.capitalfm.co.ke/news/files/2025/08/68a3c06fa310b236b651f601.png'},
-{id:'rbi',short:'RBI',name:'Reserve Bank of India',country:'India',head:'Sanjay Malhotra',position:'Governor of the Reserve Bank of India; Chair of the Monetary Policy Committee',committee:'Monetary Policy Committee (MPC)',mandate:'Price stability while keeping growth in mind',target:'4% CPI ±2pp',instrument:'Policy repo rate',setting:'5.25%',plot:5.25,infl:3.1,latest:'— 0 bp',prev:'5.25%',date:'5 Aug 2026',dir:'— Holding',next:'7 Oct 2026',ind:['CPI','Growth','Liquidity','INR'],photo:'https://m.economictimes.com/thumb/msid-119980395%2Cwidth-1200%2Cheight-900%2Cresizemode-4%2Cimgsize-82758/file-photo-reserve-bank-of-india-rbi-governor-sanjay-malhotra-poses-for-a-picture-as-he-returns-after-a-press-conference-in-mumbai.jpg',building:'https://images.moneycontrol.com/static-mcnews/2022/06/Reserve-Bank-of-India-old-building.jpg?height=720&impolicy=website&width=1280'},
+{id:'fed',short:'Fed',name:'Federal Reserve System',country:'United States',head:'Kevin Warsh',position:'Chair of the Board of Governors of the Federal Reserve System; Chair of the FOMC',committee:'Federal Open Market Committee (FOMC)',mandate:'Maximum employment and stable prices',target:'2% PCE inflation',instrument:'Federal funds target range',setting:'3.75–4.00%',plot:3.875,infl:3.7,latest:'↑ +25 bp',prev:'3.50–3.75%',date:'16 Sep 2026',dir:'↑ Tightening',next:'28 Oct 2026',ind:['PCE','Payrolls','GDP','Wages'],photo:'https://www.federalreserve.gov/aboutthefed/images/chairman-warsh-130x168.png',building:'https://i.epochtimes.com/assets/uploads/2025/05/id14519874-EpochImages-2968722995-xl.jpg'},
+{id:'ecb',short:'ECB',name:'European Central Bank',country:'Euro Area',head:'Christine Lagarde',position:'President of the European Central Bank',committee:'Governing Council',mandate:'Price stability',target:'2% medium term',instrument:'Deposit facility rate',setting:'2.50%',plot:2.5,infl:3.2,latest:'↑ +25 bp',prev:'2.25%',date:'10 Sep 2026',dir:'↑ Tightening',next:'29 Oct 2026',ind:['HICP','Wages','GDP','PMI'],photo:'https://commons.wikimedia.org/wiki/Special:FilePath/Lagarde%20ECB%20Portrait%202019.jpg?width=500',building:'https://www.vle.lt/Image.php?p=%2F385611%2F53751-1.jpg'},
+{id:'boe',short:'BoE',name:'Bank of England',country:'United Kingdom',head:'Andrew Bailey',position:'Governor of the Bank of England; Chair of the Monetary Policy Committee',committee:'Monetary Policy Committee (MPC)',mandate:'Price stability; support government economic policy',target:'2% CPI inflation',instrument:'Bank Rate',setting:'3.75%',plot:3.75,infl:3.1,latest:'— 0 bp',prev:'3.75%',date:'17 Sep 2026',dir:'— Holding',next:'5 Nov 2026',ind:['CPI','Wages','GDP','Labour'],photo:'https://www.bankofengland.co.uk/-/media/boe/images/people/andrew-bailey/andrew-bailey-front.jpg?h=515&iar=0&w=521&hash=C0338A66BD70CE3D996DB0EA80350841',building:'https://doqvf81n9htmm.cloudfront.net/data/jessicachiang_377/shutterstock_2556450023bank.jpg'},
+{id:'boj',short:'BoJ',name:'Bank of Japan',country:'Japan',head:'Kazuo Ueda',position:'Governor of the Bank of Japan',committee:'Policy Board',mandate:'Price stability; financial-system stability',target:'2% CPI inflation',instrument:'Short-term policy rate',setting:'~1.25%',plot:1.25,infl:1.9,latest:'↑ +25 bp',prev:'~1.00%',date:'18 Sep 2026',dir:'↑ Tightening',next:'30 Oct 2026',ind:['CPI','Wages','Tankan','FX'],photo:'https://www.boj.or.jp/en/about/organization/policyboard/img/ueda.jpg',building:'https://commons.wikimedia.org/wiki/Special:FilePath/Bank%20of%20Japan%20Head%20Office%20-%20Main%20building%20from%20south.jpg?width=800'},
+{id:'pboc',short:'PBoC',name:'People’s Bank of China',country:'China',head:'Pan Gongsheng',position:'Governor of the People’s Bank of China; Chair of the Monetary Policy Committee',committee:'Monetary Policy Committee',mandate:'Currency stability; support economic growth',target:'2026 government CPI objective: around 2% (not a PBoC inflation target)',instrument:'7-day reverse repo rate',setting:'1.40%',plot:1.4,infl:0.8,latest:'— 0 bp',prev:'1.40%',date:'Aug 2026',dir:'— Holding',next:'No fixed calendar',ind:['CPI','Credit','PMI','FX'],photo:'https://commons.wikimedia.org/wiki/Special:FilePath/Pan%20Gongsheng.jpg?width=300',building:'https://www.capitalfm.co.ke/news/files/2025/08/68a3c06fa310b236b651f601.png'},
+{id:'rbi',short:'RBI',name:'Reserve Bank of India',country:'India',head:'Sanjay Malhotra',position:'Governor of the Reserve Bank of India; Chair of the Monetary Policy Committee',committee:'Monetary Policy Committee (MPC)',mandate:'Price stability while keeping growth in mind',target:'4% headline CPI; 2–6% tolerance band',instrument:'Policy repo rate',setting:'5.25%',plot:5.25,infl:4.82,latest:'— 0 bp',prev:'5.25%',date:'5 Aug 2026',dir:'— Holding',next:'7 Oct 2026',ind:['CPI','Growth','Liquidity','INR'],photo:'https://m.economictimes.com/thumb/msid-119980395%2Cwidth-1200%2Cheight-900%2Cresizemode-4%2Cimgsize-82758/file-photo-reserve-bank-of-india-rbi-governor-sanjay-malhotra-poses-for-a-picture-as-he-returns-after-a-press-conference-in-mumbai.jpg',building:'https://images.moneycontrol.com/static-mcnews/2022/06/Reserve-Bank-of-India-old-building.jpg?height=720&impolicy=website&width=1280'},
 {id:'mas',short:'MAS',name:'Monetary Authority of Singapore',country:'Singapore',head:'Chia Der Jiun',position:'Managing Director of the Monetary Authority of Singapore',chair:'Gan Kim Yong — Chairman of the MAS Board of Directors',committee:'MAS monetary-policy decision framework',mandate:'Price stability conducive to sustainable growth',target:'No conventional numeric target',instrument:'S$NEER Policy Band',setting:'Slightly steeper appreciation slope',plot:null,infl:2.2,latest:'FX Framework',prev:'Previous S$NEER parameters',date:'14 Apr 2026',dir:'FX Framework',next:'Oct 2026 · pending',ind:['Core CPI','S$NEER','GDP','Labour'],photo:'https://www.ibf.org.sg/application/ar2025/img/chairman.jpg',building:'https://cassette.sphdigital.com.sg/image/straitstimes/2b093b1db1cc952ee91b083778392550ec989650fb9c1561532890d1d4b637e8'}
 ];
-const targets={fed:2,ecb:2,boe:2,boj:2,pboc:null,rbi:4,mas:null};
+
+const INFLATION_META={
+ fed:{measure:'Headline PCE, year-on-year',reference_period:'July 2026',publication_date:'26 Aug 2026',source_name:'U.S. Bureau of Economic Analysis (BEA)',source_url:'https://www.bea.gov/news/2026/personal-income-and-outlays-july-2026',target_value:2,target_definition:'2% PCE inflation over the longer run',comparison_status:'Directly comparable'},
+ ecb:{measure:'Headline HICP, year-on-year',reference_period:'August 2026',publication_date:'17 Sep 2026',source_name:'Eurostat',source_url:'https://ec.europa.eu/eurostat/en/web/products-euro-indicators/w/2-17092026-ap',target_value:2,target_definition:'2% inflation over the medium term',comparison_status:'Directly comparable'},
+ boe:{measure:'Headline CPI, year-on-year',reference_period:'August 2026',publication_date:'16 Sep 2026',source_name:'UK Office for National Statistics (ONS)',source_url:'https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/august2026',target_value:2,target_definition:'2% CPI inflation target',comparison_status:'Directly comparable'},
+ boj:{measure:'Headline CPI, year-on-year',reference_period:'August 2026',publication_date:'18 Sep 2026',source_name:'Statistics Bureau of Japan',source_url:'https://www.stat.go.jp/data/cpi/sokuhou/tsuki/index-z.htm',target_value:2,target_definition:'2% price stability target',comparison_status:'Directly comparable'},
+ pboc:{measure:'Headline CPI, year-on-year',reference_period:'August 2026',publication_date:'10 Sep 2026',source_name:'National Bureau of Statistics of China',source_url:'https://www.stats.gov.cn/english/PressRelease/202609/t20260910_1965275.html',target_value:null,target_definition:'2026 government CPI objective: around 2%; not a conventional PBoC inflation target',comparison_status:'Not directly comparable'},
+ rbi:{measure:'Headline CPI, year-on-year',reference_period:'August 2026',publication_date:'14 Sep 2026',source_name:'Ministry of Statistics & Programme Implementation / PIB',source_url:'https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2310058&lang=2&reg=48',target_value:4,target_definition:'4% headline CPI midpoint; 2–6% tolerance band through Mar 2031',comparison_status:'Directly comparable; tolerance band applies'},
+ mas:{measure:'CPI-All Items, year-on-year',reference_period:'July 2026',publication_date:'24 Aug 2026',source_name:'Singapore Ministry of Trade and Industry / MAS',source_url:'https://www.mti.gov.sg/newsroom/consumer-price-developments-in-july-2026/',target_value:null,target_definition:'No formal numerical inflation target',comparison_status:'Not directly comparable'}
+};
+const LAST_CHECKED_HKT='22 Sep 2026 08:30 HKT';
+const targets=Object.fromEntries(B.map(b=>[b.id,INFLATION_META[b.id].target_value]));
 const rateEvents={
 fed:[['2017-01',0.75],['2018-12',2.375],['2020-03',0.125],['2022-03',0.375],['2023-07',5.375],['2024-09',4.875],['2025-06',4.375],['2026-09',3.875]],
 ecb:[['2017-01',-0.4],['2019-09',-0.5],['2022-07',0],['2023-09',4],['2024-06',3.75],['2025-03',2.75],['2026-09',2.5]],
@@ -199,7 +206,7 @@ function renderSnap(){
   document.getElementById('snap').innerHTML=B.map(b=>'<div class="panel" '+bankStyle(b.id)+'><div class="bankline"><span class="flag">'+FLAGS[b.id]+'</span><span class="bankbadge">'+b.short+'</span></div><div class="rate">'+(b.id==='mas'?'S$NEER':b.setting)+'</div><div class="status">'+b.latest+'</div><div class="mini">'+(b.id==='mas'?b.setting:b.dir.replace('↑ ','').replace('— ',''))+'</div></div>').join('')
 }
 function renderPolicySummary(){
-  document.getElementById('policySummary').innerHTML=B.map(b=>{const cls=b.dir.includes('Tightening')?'tightening':(b.id==='mas'?'framework':'holding');const pos=b.id==='mas'?'FX Framework':b.dir.replace('↑ ','').replace('— ','');return '<tr '+bankStyle(b.id)+'><td><span class="flag">'+FLAGS[b.id]+'</span><span class="strong">'+b.name+'</span></td><td class="strong">'+(b.id==='mas'?'S$NEER':b.setting)+'</td><td class="dir '+cls+'">'+pos+'</td></tr>'}).join('')
+  document.getElementById('policySummary').innerHTML='<tr><th>Central bank</th><th>Policy setting</th><th>Direction</th><th>Latest inflation</th><th>Inflation target / objective</th></tr>'+B.map(b=>{const cls=b.dir.includes('Tightening')?'tightening':(b.id==='mas'?'framework':'holding');const pos=b.id==='mas'?'FX Framework':b.dir.replace('↑ ','').replace('— ','');const m=INFLATION_META[b.id];const target=m.target_value==null?(b.id==='pboc'?'Govt objective ~2%*':'No formal target'):(b.id==='rbi'?'4% (2–6% band)':m.target_value.toFixed(0)+'%');return '<tr '+bankStyle(b.id)+'><td><span class="flag">'+FLAGS[b.id]+'</span><span class="strong">'+b.name+'</span></td><td class="strong">'+(b.id==='mas'?'S$NEER':b.setting)+'</td><td class="dir '+cls+'">'+pos+'</td><td><span class="strong">'+b.infl.toFixed(b.id==='rbi'?2:1)+'%</span><div class="muted">'+m.measure+' · '+m.reference_period+'</div></td><td><span class="strong">'+target+'</span><div class="muted">'+m.comparison_status+'</div></td></tr>'}).join('')
 }
 function renderInflSummary(){
   document.getElementById('inflSummary').innerHTML=B.map(b=>{
@@ -209,12 +216,11 @@ function renderInflSummary(){
   }).join('')
 }
 function renderTakeaways(){
-  const items=[
-    ['▥','5.25%','Highest comparable policy rate','RBI'],
-    ['↗','3 Banks','Latest decision = tightening','Fed · ECB · BoJ'],
-    ['%','3.8%','Highest inflation shown','United Kingdom'],
-    ['⚙','FX-based','Different policy framework','MAS']
-  ];
+  const comparable=B.filter(b=>INFLATION_META[b.id].target_value!=null);
+  const highest=B.reduce((a,b)=>a.infl>b.infl?a:b),B[0]);
+  const lowest=B.reduce((a,b)=>a.infl<b.infl?a:b),B[0]);
+  const above=comparable.filter(b=>b.infl>INFLATION_META[b.id].target_value);
+  const items=[['% ',highest.infl.toFixed(highest.id==='rbi'?2:1)+'%','Highest latest inflation',highest.name],['↓',lowest.infl.toFixed(1)+'%','Lowest latest inflation',lowest.name],['↗',String(above.length),'Above numerical target midpoint',above.map(b=>b.short).join(' · ')||'None'],['⚙','2 Banks','Not directly target-comparable','PBoC · MAS']];
   document.getElementById('takeaways').innerHTML=items.map(x=>'<div class="takeaway-item"><div class="takeaway-icon">'+x[0]+'</div><div><b>'+x[1]+'</b><span>'+x[2]+'<br><strong>'+x[3]+'</strong></span></div></div>').join('')
 }
 const rows=[
@@ -226,7 +232,7 @@ const rows=[
 ];
 function change(b){if(b.latest.includes('+25'))return '↑ +25 bp';if(b.latest.includes('0 bp'))return '— 0 bp';if(b.latest.includes('FX'))return 'FX Framework';return b.latest}
 function gap(b){let x=targets[b.id];if(x==null)return 'Not directly comparable';let d=b.infl-x;return (d>0?'Above target ':'Below target ')+(d>0?'+':'')+d.toFixed(1)+' pp'}
-function val(b,k){if(k==='leaderProfile')return '<div style="display:flex;gap:7px;align-items:center"><img src="'+b.photo+'" alt="'+b.head+'" style="width:58px;height:72px;object-fit:cover;object-position:center 18%;border-radius:7px;background:#F7F9FC;border:1px solid #E0E6EE;display:block;flex:0 0 58px"><div><div class="main"><b>'+b.head+'</b></div><div class="muted">'+b.position+'</div></div></div>';if(k==='infl')return '<span class="num">'+b.infl.toFixed(1)+'%</span>';if(k==='gap')return gap(b);if(k==='change')return '<span class="num">'+change(b)+'</span>';if(k==='ind')return b.ind.map(x=>'<span class="pill">'+x+'</span>').join('');if(k==='position')return '<div class="main">'+b.position+'</div>'+(b.chair?'<div class="muted">'+b.chair+'</div>':'');if(k==='setting')return '<span class="num">'+b.setting+'</span>';return '<div class="main">'+(b[k]??'—')+'</div>'}
+function val(b,k){if(k==='leaderProfile')return '<div style="display:flex;gap:7px;align-items:center"><img src="'+b.photo+'" alt="'+b.head+'" style="width:58px;height:72px;object-fit:cover;object-position:center 18%;border-radius:7px;background:#F7F9FC;border:1px solid #E0E6EE;display:block;flex:0 0 58px"><div><div class="main"><b>'+b.head+'</b></div><div class="muted">'+b.position+'</div></div></div>';if(k==='infl'){const m=INFLATION_META[b.id];return '<span class="num">'+b.infl.toFixed(b.id==='rbi'?2:1)+'%</span><div class="muted">'+m.measure+'<br>'+m.reference_period+' · Published '+m.publication_date+'<br>'+m.source_name+'</div>'};if(k==='gap')return gap(b);if(k==='change')return '<span class="num">'+change(b)+'</span>';if(k==='ind')return b.ind.map(x=>'<span class="pill">'+x+'</span>').join('');if(k==='position')return '<div class="main">'+b.position+'</div>'+(b.chair?'<div class="muted">'+b.chair+'</div>':'');if(k==='setting')return '<span class="num">'+b.setting+'</span>';return '<div class="main">'+(b[k]??'—')+'</div>'}
 function renderMatrix(){
   let h='<thead><tr><th>Category</th>'+B.map(b=>'<th>'+b.short+'<div class="muted">('+b.country+')</div></th>').join('')+'</tr></thead><tbody>';
   for(const [label,k] of rows){
@@ -303,5 +309,5 @@ function charts(){
   })
 }
 document.getElementById('ranges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#ranges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');hc.data=makeHistory(+e.target.dataset.y);hc.update()});
-renderSnap();renderPolicySummary();renderInflSummary();renderTakeaways();renderMatrix();renderDecisionTable();renderMeetings();charts();
+renderSnap();renderPolicySummary();renderTakeaways();renderMatrix();renderDecisionTable();renderMeetings();charts();
 </script></body></html>
