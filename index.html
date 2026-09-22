@@ -116,7 +116,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
   <div class="panel matrix-wrap"><table class="matrix" id="matrix"></table></div>
 </section>
 
-<section><h2>Central Bank Balance Sheet Comparison</h2><div class="sub">Cross-bank balance-sheet scale using a normalized methodology</div><div class="panel chart-card"><div class="chart-head"><div><h3>Central Bank Total Assets as % of GDP</h3><div class="sub">Normalized balance-sheet comparison — official-source verification in progress</div></div></div><div style="padding:18px 4px"><p><b>Comparable percentage values are intentionally not plotted yet.</b></p><p class="sub">The specification requires each ratio to use a transparent Central Bank Total Assets / Nominal GDP calculation with aligned balance-sheet and GDP reference periods. Until that methodology is verified consistently for all seven institutions, the dashboard displays “Data not directly comparable” rather than forcing estimates.</p><div class="note">Verified latest balance-sheet anchors include Federal Reserve total assets of US$6.747tn (16 Sep 2026), Eurosystem total assets of €5.912tn (4 Sep 2026), and Bank of Japan total assets of ¥644.272tn (10 Sep 2026). These absolute values are not compared directly because they use different currencies.</div></div></div></section>
+<section><h2>Central Bank Balance Sheet Comparison</h2><div class="sub">Cross-bank balance-sheet scale — values appear only after the numerator and GDP denominator pass the comparability check</div><div class="panel chart-card"><div class="chart-head"><div><h3>Central Bank Total Assets as % of GDP</h3><div class="sub">Latest comparable official observations</div></div></div><div class="chartbox" style="height:285px"><canvas id="balanceSheetGDP"></canvas></div><div class="note" id="balanceSheetGDPNote">Loading verified comparison…</div></div></section>
 <section class="charts-grid">
   <div class="panel chart-card">
     <div class="chart-head">
@@ -286,6 +286,27 @@ const valueLabelPlugin={
   }
 };
 Chart.register(valueLabelPlugin);
+const BS_GDP=[
+  {name:'Federal Reserve System',value:null,note:'Awaiting aligned official nominal-GDP denominator'},
+  {name:'Eurosystem',value:null,note:'Awaiting aligned euro-area nominal-GDP denominator'},
+  {name:'Bank of England',value:null,note:'Awaiting verified complete BoE balance-sheet total and aligned UK GDP'},
+  {name:'Bank of Japan',value:null,note:'Awaiting aligned official nominal-GDP denominator'},
+  {name:'People’s Bank of China',value:null,note:'Awaiting verified official total-assets series and aligned China GDP'},
+  {name:'Reserve Bank of India',value:null,note:'Awaiting verified official total-assets series and aligned India GDP'},
+  {name:'Monetary Authority of Singapore',value:null,note:'Awaiting verified official total-assets series and aligned Singapore GDP'}
+];
+function renderBalanceSheetGDP(){
+ const canvas=document.getElementById('balanceSheetGDP'), note=document.getElementById('balanceSheetGDPNote');
+ const valid=BS_GDP.filter(x=>Number.isFinite(x.value));
+ if(!canvas||!window.Chart)return;
+ if(!valid.length){
+   canvas.style.display='none';
+   note.innerHTML='<b>Chart unavailable:</b> no institution currently has both a verified current total-assets numerator and an aligned nominal-GDP denominator in this build. The dashboard will not manufacture percentages. Individual profile pages show the verified balance-sheet observations available so far.';
+   return;
+ }
+ new Chart(canvas,{type:'bar',data:{labels:valid.map(x=>x.name),datasets:[{data:valid.map(x=>x.value),backgroundColor:valid.map(x=>BANK_COLORS[B.find(b=>b.name===x.name)?.id]||'#64748B'),borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>ctx.raw.toFixed(1)+'% of GDP'}}},scales:{x:{beginAtZero:true,title:{display:true,text:'Total assets / nominal GDP (%)'}},y:{grid:{display:false}}}}});
+ note.textContent='Reference periods and calculation details are shown on the individual profile pages.';
+}
 function charts(){
   hc=new Chart(document.getElementById('history'),{
     type:'line',data:makeHistory(3),
@@ -312,7 +333,7 @@ function charts(){
 document.getElementById('ranges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#ranges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');hc.data=makeHistory(+e.target.dataset.y);hc.update()});
 try{
   assertDashboardData();
-  renderSnap();renderPolicySummary();renderTakeaways();renderMatrix();renderDecisionTable();renderMeetings();charts();
+  renderSnap();renderPolicySummary();renderTakeaways();renderMatrix();renderDecisionTable();renderMeetings();charts();renderBalanceSheetGDP();
 }catch(err){
   console.error('Dashboard render failed',err);
   const msg='<div style="padding:12px;border:1px solid #FCA5A5;background:#FEF2F2;color:#991B1B;border-radius:8px;font-weight:700">Dashboard data could not be rendered. Please refresh the page. Error: '+String(err.message||err)+'</div>';
