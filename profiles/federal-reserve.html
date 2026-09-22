@@ -18,8 +18,7 @@
 const C={blue:'#2563eb',green:'#059669',teal:'#0d9488',amber:'#d97706',red:'#dc2626',indigo:'#4f46e5',slate:'#64748b'};let DATA=null,charts={};
 function countdown(){const t=new Date('2026-10-28T14:00:00-04:00'),d=Math.max(0,t-new Date());dd.textContent=Math.floor(d/864e5);hh.textContent=String(Math.floor(d%864e5/36e5)).padStart(2,'0');mm.textContent=String(Math.floor(d%36e5/6e4)).padStart(2,'0');ss.textContent=String(Math.floor(d%6e4/1e3)).padStart(2,'0')}countdown();setInterval(countdown,1000);
 const defs=[
-['a','Unemployed Count','Thousands of persons',[['UNEMPLOY','Unemployed',C.blue]],'BLS / FRED'],
-['b','Total Civilian Labor Force','Thousands of persons',[['CLF16OV','Civilian Labor Force',C.green]],'BLS / FRED'],
+['a','Unemployed Count & Total Civilian Labor Force','Thousands of persons',[['UNEMPLOY','Unemployed Count',C.red],['CLF16OV','Total Civilian Labor Force',C.green]],'U.S. Bureau of Labor Statistics'],
 ['c','Unemployment Rate & U-4 Unemployment Rate','Percent',[['UNRATE','Unemployment Rate (U-3)',C.blue],['U4RATE','U-4 Unemployment Rate',C.red]],'U.S. Bureau of Labor Statistics'],
 ['d','Civilian Noninstitutional Population','Thousands of persons',[['CNP16OV','Civilian Population',C.indigo]],'BLS / FRED'],
 ['e','Employed Population','Thousands of persons',[['CE16OV','Employed Population',C.teal]],'BLS / FRED'],
