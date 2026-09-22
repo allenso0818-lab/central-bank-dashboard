@@ -5,7 +5,7 @@ on:
     - cron: "17 12 * * *"
   push:
     paths:
-      - ".github/workflows/fed-macro-data.yml"
+      - ".github/workflows/fed-macro-data.yml"\n      - ".github/fed-macro-trigger"
 permissions:
   contents: write
 jobs:
