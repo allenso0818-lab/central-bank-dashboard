@@ -208,13 +208,6 @@ function renderSnap(){
 function renderPolicySummary(){
   document.getElementById('policySummary').innerHTML='<tr><th>Central bank</th><th>Policy setting</th><th>Direction</th><th>Latest inflation</th><th>Inflation target / objective</th></tr>'+B.map(b=>{const cls=b.dir.includes('Tightening')?'tightening':(b.id==='mas'?'framework':'holding');const pos=b.id==='mas'?'FX Framework':b.dir.replace('↑ ','').replace('— ','');const m=INFLATION_META[b.id];const target=m.target_value==null?(b.id==='pboc'?'Govt objective ~2%*':'No formal target'):(b.id==='rbi'?'4% (2–6% band)':m.target_value.toFixed(0)+'%');return '<tr '+bankStyle(b.id)+'><td><span class="flag">'+FLAGS[b.id]+'</span><span class="strong">'+b.name+'</span></td><td class="strong">'+(b.id==='mas'?'S$NEER':b.setting)+'</td><td class="dir '+cls+'">'+pos+'</td><td><span class="strong">'+b.infl.toFixed(b.id==='rbi'?2:1)+'%</span><div class="muted">'+m.measure+' · '+m.reference_period+'</div></td><td><span class="strong">'+target+'</span><div class="muted">'+m.comparison_status+'</div></td></tr>'}).join('')
 }
-function renderInflSummary(){
-  document.getElementById('inflSummary').innerHTML=B.map(b=>{
-    const tg=targets[b.id];
-    let note=b.id==='fed'?'Target: 2% PCE':b.id==='ecb'?'Target: 2% medium term':b.id==='boe'?'Target: 2% CPI':b.id==='boj'?'Target: 2% CPI':b.id==='pboc'?'Objective: government inflation target':b.id==='rbi'?'Target range':'No formal target';
-    return '<tr '+bankStyle(b.id)+'><td><span class="dot"></span>'+b.short+'</td><td class="strong">'+b.infl.toFixed(1)+'%</td><td class="muted">('+note+')</td></tr>'
-  }).join('')
-}
 function renderTakeaways(){
   const comparable=B.filter(b=>INFLATION_META[b.id].target_value!=null);
   const highest=B.reduce((a,b)=>a.infl>b.infl?a:b),B[0]);
