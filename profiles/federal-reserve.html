@@ -27,7 +27,7 @@ function card(d){return '<div class="card" id="card-'+d[0]+'"><div class="head">
 function ranges(id){return '<div class="ranges" data-id="'+id+'"><button data-m="3">3M</button><button data-m="6">6M</button>'+[1,3,5,10].map(x=>'<button data-y="'+x+'">'+x+'Y</button>').join('')+'<button class="active" data-y="0">MAX</button><button class="reset" data-reset="1">Reset</button></div>'}
 macro.innerHTML=defs.map(card).join('')+
 '<div class="card" id="card-d"><div class="head"><div><h3>d) Total Nonfarm Payroll Employment</h3><div class="sub">Total level + monthly net change</div></div>'+ranges('d')+'</div><div class="canvas"><canvas id="ch-d"></canvas></div><div class="source"><span class="badge">Source</span>U.S. Bureau of Labor Statistics. Monthly change is derived from the published payroll level.</div></div>'+
-'<div class="card" id="card-e"><div class="head"><div><h3>e) Wages, Hours & Unemployment Insurance Claims</h3><div class="sub">Initial claims (000s) · Average hourly earnings ($) · Average weekly hours</div></div>'+ranges('e')+'</div><div class="canvas"><canvas id="ch-e"></canvas></div><div class="source"><span class="badge">Source</span>U.S. Bureau of Labor Statistics and U.S. Department of Labor, Employment and Training Administration. Latest verified: Aug 2026 hourly earnings $37.75 (+3.1% YoY), average weekly hours 34.4; initial claims 196,000 for week ended 12 Sep 2026.</div></div>'+
+'<div class="card" id="card-e"><div class="head"><div><h3>e) Wages, Hours & Unemployment Insurance Claims</h3><div class="sub">Initial claims · Average hourly earnings ($) · Average weekly hours</div></div>'+ranges('e')+'</div><div class="canvas"><canvas id="ch-e"></canvas></div><div class="source"><span class="badge">Source</span>U.S. Bureau of Labor Statistics and U.S. Department of Labor, Employment and Training Administration. Latest verified: Aug 2026 hourly earnings $37.75 (+3.1% YoY), average weekly hours 34.4; initial claims 196,000 for week ended 12 Sep 2026.</div></div>'+
 '<div class="card" id="card-f"><div class="head"><div><h3>f) GDP Components</h3><div class="sub">Q2 2026 GDP expenditure components · including net exports</div></div></div><div class="canvas"><canvas id="ch-f"></canvas></div><div class="legend-note">Pie includes all four GDP expenditure components. Net exports were negative in Q2 2026; the pie uses the absolute magnitude of net exports for visual composition, with the negative sign clearly retained in the label.</div><div class="source"><span class="badge">Source</span>U.S. Bureau of Economic Analysis, NIPA Table 1.1.5, Q2 2026 second estimate. Net exports: −$875.8B SAAR.</div></div>'+
 '<div class="card" id="card-g"><div class="head"><div><h3>g) Real GDP</h3><div class="sub">Quarterly real GDP level · billions of chained 2017 dollars, SAAR</div></div>'+ranges('g')+'</div><div class="canvas"><canvas id="ch-g"></canvas></div><div class="source"><span class="badge">Source</span>U.S. Bureau of Economic Analysis. Q2 2026 second estimate: real GDP growth +1.5% SAAR; Q1 2026 +2.1%.</div></div>';
 const toPts=id=>(DATA.series[id]||[]).map(x=>({x:Date.parse(x[0]+'T00:00:00Z'),y:x[1],date:x[0]}));
@@ -37,14 +37,14 @@ function line(series,label,color,yAxisID='y'){return {label,data:toPts(series),b
 function build(){
  defs.forEach(d=>{if(d[0]==='a'){mk('a',[line('UNEMPLOY','Unemployed Count',C.red,'y'),line('CLF16OV','Total Civilian Labor Force',C.green,'y1')],'Unemployed (000s)',{scales:{x:baseOpts('').scales.x,y:{position:'left',grid:{color:'#e2e8f0'},title:{display:true,text:'Unemployed (000s)'}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Civilian labor force (000s)'}}}})}else mk(d[0],d[3].map(s=>line(s[0],s[1],s[2])),d[2])});
  const p=toPts('PAYEMS'),chg=p.map((v,i)=>({x:v.x,y:i?p[i].y-p[i-1].y:null}));mk('d',[{label:'Monthly net change',data:chg,type:'bar',backgroundColor:C.teal,yAxisID:'y1'},line('PAYEMS','Total payroll level',C.blue,'y')],'Thousands',{scales:{x:baseOpts('').scales.x,y:{position:'left',title:{display:true,text:'Total payrolls (000s)'}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Monthly change (000s)'}}}});
- const claims=toPts('ICSA').map(x=>({x:x.x,y:x.y/1000,date:x.date}));
+ const claims=toPts('ICSA');
  mk('e',[
-   {label:'Initial claims (000s)',data:claims,borderColor:C.red,backgroundColor:C.red,borderWidth:2,pointRadius:2,yAxisID:'y'},
+   {label:'Initial claims',data:claims,borderColor:C.red,backgroundColor:C.red,borderWidth:2,pointRadius:2,yAxisID:'y'},
    line('CES0500000003','Average hourly earnings ($)',C.green,'y1'),
    line('AWHAETP','Average weekly hours',C.amber,'y2')
  ],'Initial claims (000s)',{scales:{
    x:baseOpts('').scales.x,
-   y:{position:'left',title:{display:true,text:'Initial claims (000s)'}},
+   y:{position:'left',title:{display:true,text:'Initial claims'}},
    y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Hourly earnings ($)'}},
    y2:{position:'right',offset:true,grid:{drawOnChartArea:false},title:{display:true,text:'Weekly hours'}}
  }});
