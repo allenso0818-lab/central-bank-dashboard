@@ -42,11 +42,11 @@ function build(){
    {label:'Initial claims',data:claims,borderColor:C.red,backgroundColor:C.red,borderWidth:2,pointRadius:2,yAxisID:'y'},
    line('CES0500000003','Average hourly earnings ($)',C.green,'y1'),
    line('AWHAETP','Average weekly hours',C.amber,'y2')
- ],'Initial claims (000s)',{scales:{
+ ],'Initial claims',{scales:{
    x:baseOpts('').scales.x,
-   y:{position:'left',title:{display:true,text:'Initial claims'}},
-   y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Hourly earnings ($)'}},
-   y2:{position:'right',offset:true,grid:{drawOnChartArea:false},title:{display:true,text:'Weekly hours'}}
+   y:{position:'left',title:{display:true,text:'Initial claims'},ticks:{callback:v=>Number(v).toLocaleString()}},
+   y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Hourly earnings ($)'},suggestedMin:35,suggestedMax:39},
+   y2:{position:'right',offset:true,grid:{drawOnChartArea:false},title:{display:true,text:'Weekly hours'},suggestedMin:33.5,suggestedMax:35}
  }});
  charts.f=new Chart(document.getElementById('ch-f'),{
   type:'pie',
