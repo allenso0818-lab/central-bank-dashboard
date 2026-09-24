@@ -30,7 +30,7 @@ jobs:
             vals=[]
             if sid in bls:
               try:
-                body=json.dumps({"seriesid":[bls[sid]],"startyear":"2017","endyear":"2026"}).encode()
+                body=json.dumps({"seriesid":[bls[sid]],"startyear":"2016","endyear":"2026"}).encode()
                 req=urllib.request.Request("https://api.bls.gov/publicAPI/v2/timeseries/data/",data=body,headers={"Content-Type":"application/json","User-Agent":"central-bank-dashboard/1.0"})
                 with urllib.request.urlopen(req,timeout=15) as r:
                   doc=json.loads(r.read().decode())
@@ -73,7 +73,24 @@ jobs:
           except Exception as e:
             print("WARN ICSA full-history fetch failed",e)
             out["series"].setdefault("ICSA",[])
-          out["series"]["GDPC1"]=[["2025-04-01",23770.976],["2025-07-01",24026.834],["2025-10-01",24055.749],["2026-01-01",24180.419],["2026-04-01",24269.613]]
+          # Real GDP (GDPC1): full official BEA series via FRED; keep 2016 onward.
+          try:
+            url="https://fred.stlouisfed.org/graph/fredgraph.csv?id=GDPC1"
+            req=urllib.request.Request(url,headers={"User-Agent":"central-bank-dashboard/1.0"})
+            with urllib.request.urlopen(req,timeout=20) as r:
+              rows=r.read().decode().strip().splitlines()
+            gdpc1=[]
+            for row in rows[1:]:
+              date,val=row.split(",",1)
+              if date >= "2016-01-01" and val and val!=".":
+                gdpc1.append([date,float(val)])
+            if gdpc1:
+              out["series"]["GDPC1"]=gdpc1
+            else:
+              raise ValueError("empty GDPC1 series")
+          except Exception as e:
+            print("WARN GDPC1 full-history fetch failed",e)
+            out["series"].setdefault("GDPC1",[])
           out["series"]["A191RL1Q225SBEA"]=[["2025-10-01",0.5],["2026-01-01",2.1],["2026-04-01",1.5]]
           out["verified_through"]={"labor":"2026-08","ICSA":"2026-09-12","GDP":"2026-Q2"}
           p.write_text(json.dumps(out,separators=(",",":")),encoding="utf-8")
