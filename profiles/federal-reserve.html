@@ -35,6 +35,9 @@ function baseOpts(unit){return {responsive:true,maintainAspectRatio:false,parsin
 function mk(id,sets,unit,extra={}){const ctx=document.getElementById('ch-'+id);charts[id]=new Chart(ctx,{type:'line',data:{datasets:sets},options:Object.assign(baseOpts(unit),extra)})}
 function line(series,label,color,yAxisID='y'){return {label,data:toPts(series),borderColor:color,backgroundColor:color,borderWidth:2,pointRadius:0,pointHoverRadius:4,tension:.12,yAxisID}}
 function build(){
+ const START_2016=Date.UTC(2016,0,1);
+ const originalToPts=toPts;
+ toPts=id=>originalToPts(id).filter(p=>p.x>=START_2016);
  defs.forEach(d=>{if(d[0]==='a'){mk('a',[line('UNEMPLOY','Unemployed Count',C.red,'y'),line('CLF16OV','Total Civilian Labor Force',C.green,'y1')],'Unemployed (000s)',{scales:{x:baseOpts('').scales.x,y:{position:'left',grid:{color:'#e2e8f0'},title:{display:true,text:'Unemployed (000s)'}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Civilian labor force (000s)'}}}})}else mk(d[0],d[3].map(s=>line(s[0],s[1],s[2])),d[2])});
  const p=toPts('PAYEMS'),chg=p.map((v,i)=>({x:v.x,y:i?p[i].y-p[i-1].y:null}));mk('d',[{label:'Monthly net change',data:chg,type:'bar',backgroundColor:C.teal,yAxisID:'y1'},line('PAYEMS','Total payroll level',C.blue,'y')],'Thousands',{scales:{x:baseOpts('').scales.x,y:{position:'left',title:{display:true,text:'Total payrolls (000s)'}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Monthly change (000s)'}}}});
  const claims=toPts('ICSA');
