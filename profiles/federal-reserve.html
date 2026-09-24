@@ -11,7 +11,7 @@
 <div class="section-title"><h2>Specialized Fed Policy Visualizations</h2><p>Market pricing, SEP projections and scenario analysis.</p></div>
 <div class="policy-grid">
 <div class="card"><div class="head"><div><h3>CME FedWatch Prediction</h3><div class="sub">Market-implied target-range probabilities · only displayed when verified</div></div><select id="meetingSel" class="select"><option value="2026-10-28">28 Oct 2026</option><option value="2026-12-09">9 Dec 2026</option></select></div><div id="prob" style="margin-top:18px"></div><div class="source"><span class="badge">CME FedWatch</span>Probability snapshots are separate from Federal Reserve projections. Values must be refreshed from CME market pricing; unavailable meetings are explicitly labelled rather than estimated.</div></div>
-<div class="card"><div class="head"><div><h3>FOMC SEP Policy Rate Path</h3><div class="sub">September 2026 · official FOMC participant dot plot</div></div></div><div class="dotcanvas"><canvas id="dots"></canvas></div><div class="source"><span class="badge">Federal Reserve</span>Summary of Economic Projections, 16 September 2026. Figure 2: FOMC participants’ assessments of appropriate monetary policy, September 2026. Each circle marks a projected rate level; its size represents the number of participants at that same level. Values are rounded to the nearest 1/8 percentage point. 18 participants submitted projections for 2026 and 2027; 17 submitted projections for 2028 and 2029.</div></div>
+<div class="card"><div class="head"><div><h3>FOMC SEP Policy Rate Path</h3><div class="sub">September 2026 · official FOMC participant dot plot</div></div></div><div class="dotcanvas"><canvas id="dots"></canvas></div><div class="source"><span class="badge">Federal Reserve</span>Summary of Economic Projections, 16 September 2026. Figure 2: FOMC participants’ assessments of appropriate monetary policy, September 2026. Each dot represents one FOMC participant. Participants projecting the same rate are spread horizontally at that rate level so every individual dot remains visible. Values are rounded to the nearest 1/8 percentage point. 18 participants submitted projections for 2026 and 2027; 17 submitted projections for 2028 and 2029.</div></div>
 <div class="card wide"><div class="head"><div><h3>Analysis & Prediction Scenarios</h3><div class="sub">Scenario framework — not a forecast recommendation</div></div></div><div class="scenario-tabs"><button class="scenario active" data-s="base">Base Case / Soft Landing</button><button class="scenario" data-s="hawk">Sticky Inflation / Hawkish</button><button class="scenario" data-s="dove">Labor Softening / Dovish</button></div><div id="analysis" class="analysis"></div><div class="source"><span class="badge">Scenario analysis</span>Conditional macro scenarios for presentation and risk framing; probabilities are not assigned.</div></div>
 </div><div class="footer">Data attribution: U.S. Bureau of Labor Statistics, U.S. Department of Labor, U.S. Bureau of Economic Analysis, and Federal Reserve Board. Household labor measures are shown on the seasonally adjusted basis used in BLS Summary Table A; civilian noninstitutional population itself is not seasonally adjusted. Policy calendar and SEP: Federal Reserve Board.</div></div>
 <script>
@@ -83,21 +83,14 @@ const sepDotCounts={
  '2029':{3.875:3,3.625:7,3.375:2,3.125:4,2.875:1},
  'Longer run':{3.875:2,3.75:1,3.625:2,3.5:2,3.375:1,3.25:2,3.125:1,3.0:6,2.875:1}
 };
-const sepYears=Object.keys(sepDotCounts),sepDatasets=[];
+const sepYears=Object.keys(sepDotCounts),sepPoints=[];
 Object.entries(sepDotCounts).forEach(([yr,counts],xi)=>{
   Object.entries(counts).forEach(([rate,count])=>{
-    sepDatasets.push({
-      label:yr+' · '+(+rate).toFixed(3)+'%',
-      data:[{x:xi,y:+rate}],
-      pointRadius:Math.max(5,Math.sqrt(+count)*5.2),
-      pointHoverRadius:Math.max(6,Math.sqrt(+count)*5.2+1),
-      backgroundColor:C.blue,
-      borderColor:C.blue,
-      count:+count
-    });
+    const n=+count,spacing=0.075;
+    for(let k=0;k<n;k++) sepPoints.push({x:xi+(k-(n-1)/2)*spacing,y:+rate,year:yr,rate:+rate});
   });
 });
-new Chart(document.getElementById('dots'),{type:'scatter',data:{datasets:sepDatasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{title:items=>sepYears[Math.round(items[0].parsed.x)]||'',label:ctx=>ctx.dataset.count+' participant'+(ctx.dataset.count===1?'':'s')+' at '+ctx.parsed.y.toFixed(3)+'%'}}},scales:{x:{min:-0.5,max:4.5,ticks:{stepSize:1,callback:v=>sepYears[v]||''},grid:{color:'#e2e8f0'}},y:{min:2.75,max:4.5,ticks:{stepSize:0.125,callback:v=>Number(v).toFixed(3)+'%'},grid:{color:'#e2e8f0'},title:{display:true,text:'Federal funds rate (%)'}}}}});
+new Chart(document.getElementById('dots'),{type:'scatter',data:{datasets:[{label:'FOMC participant assessment',data:sepPoints,pointRadius:4.5,pointHoverRadius:5.5,backgroundColor:C.blue,borderColor:C.blue}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{title:items=>items[0].raw.year,label:ctx=>ctx.raw.rate.toFixed(3)+'%'}}},scales:{x:{min:-0.55,max:4.55,ticks:{stepSize:1,callback:v=>Number.isInteger(v)?(sepYears[v]||''):''},grid:{color:'#e2e8f0'}},y:{min:2.0,max:5.0,ticks:{stepSize:0.5,callback:v=>Number(v).toFixed(1)+'%'},grid:{color:'#e2e8f0'},title:{display:true,text:'Federal funds rate (%)'}}}}});
 const scenarios={base:['Base Case / Soft Landing','Inflation cools gradually while labor demand slows without a sharp contraction. Under this condition, policy can remain restrictive until inflation progress is clearer, with later adjustment depending on realized inflation and employment data.'],hawk:['Sticky Inflation / Hawkish','If inflation persistence or renewed demand pressure dominates, the risk shifts toward keeping policy restrictive for longer or further tightening. Watch wage growth, services inflation, inflation expectations and financial conditions.'],dove:['Labor Softening / Dovish','If payroll growth, participation and hiring weaken materially while inflation eases, the employment side of the dual mandate becomes more binding. That would increase the case for less restrictive policy, conditional on inflation evidence.']};
 function renderScenario(k){analysis.innerHTML='<h4>'+scenarios[k][0]+'</h4><p>'+scenarios[k][1]+'</p>'}renderScenario('base');
 fetch('/data/fed-macro.json?ts='+Date.now()).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json()}).then(d=>{DATA=d;updated.textContent='Macro data refreshed: '+new Date(d.updated_at).toLocaleString();build()}).catch(e=>{updated.textContent='Macro dataset unavailable';macro.insertAdjacentHTML('afterbegin','<div class="error wide">The scheduled official-data refresh has not produced the local macro dataset yet. Charts will populate automatically after the data refresh completes.</div>')});
