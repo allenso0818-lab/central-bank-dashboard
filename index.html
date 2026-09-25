@@ -132,11 +132,6 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .transmission-node:not(:last-child)::after{content:'→';position:absolute;right:-13px;top:50%;transform:translateY(-50%);font-size:18px;font-weight:900;color:#8AA1BB}
 .transmission-node b{font-size:10px;color:#15315C}.transmission-node span{font-size:8px;color:#6B7F97;line-height:1.35;margin-top:4px}
 .transmission-alt{margin-top:8px;padding:7px 9px;border-radius:7px;background:#FFF6FB;border:1px solid #F4D7E8;font-size:8.5px;color:#7A4664;line-height:1.35}
-.policy-timeline{position:relative;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;padding-top:16px}
-.policy-timeline::before{content:'';position:absolute;left:4%;right:4%;top:8px;height:2px;background:#DCE5F0}
-.timeline-item{position:relative;border:1px solid #E0E8F2;border-radius:8px;background:#fff;padding:11px 8px 8px;min-height:102px;border-top:3px solid var(--bank)}
-.timeline-item::before{content:'';position:absolute;width:9px;height:9px;border-radius:50%;background:var(--bank);top:-12px;left:50%;transform:translateX(-50%);box-shadow:0 0 0 3px #fff}
-.timeline-date{font-size:8px;color:#71839A;font-weight:800}.timeline-bank{font-size:10px;color:#17305A;font-weight:900;margin-top:2px}.timeline-action{font-size:12px;color:var(--bank);font-weight:900;margin-top:6px}.timeline-setting{font-size:8px;color:#64748B;margin-top:3px;line-height:1.25}
 .policy-map-viewport{position:relative;aspect-ratio:2/1;height:auto;border-radius:10px;background:linear-gradient(180deg,#F9FBFE,#EEF4FA);overflow:hidden;border:1px solid #E1E9F3}
 .policy-map-svg{position:absolute;inset:0;width:100%;height:100%;display:block}
 .policy-map-svg .sphere{fill:#F8FBFE;stroke:#DCE6F0;stroke-width:1}
@@ -178,12 +173,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .transmission-node b{font-size:10px;color:#15315C}.transmission-node span{display:block;font-size:8px;color:#6B7F97;line-height:1.35;margin-top:4px}
 .transmission-alt{margin-top:9px;padding:8px 9px;border-radius:8px;background:linear-gradient(90deg,#FFF7FB,#FBF4F8);border:1px solid #F0D8E6;font-size:8.5px;color:#70445F;line-height:1.4}
 
-.policy-timeline{display:flex;gap:8px;align-items:stretch;overflow-x:auto;padding:14px 2px 5px;scrollbar-width:thin}
-.timeline-item{position:relative;flex:1 0 145px;border:1px solid #E0E8F2;border-radius:9px;background:linear-gradient(180deg,#fff,#FAFCFE);padding:10px 9px 9px;min-height:112px;border-top:3px solid var(--bank)}
-.timeline-item:before{content:'';position:absolute;width:8px;height:8px;border-radius:50%;background:var(--bank);top:-7px;left:16px;box-shadow:0 0 0 3px #fff}
-.timeline-date{font-size:8px;color:#71839A;font-weight:800}.timeline-bank{font-size:10px;color:#17305A;font-weight:900;margin-top:3px;display:flex;align-items:center;gap:5px}.timeline-bank .flag{width:15px;height:15px;flex-basis:15px}
-.timeline-action{font-size:12px;color:var(--bank);font-weight:900;margin-top:7px}.timeline-setting{font-size:8px;color:#64748B;margin-top:3px;line-height:1.3}
-@media(max-width:1050px){.policy-tools-grid{grid-template-columns:repeat(4,1fr)}.policy-timeline{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:1050px){.policy-tools-grid{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:760px){
 .policy-visual-suite{grid-template-columns:1fr}
 .policy-tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -202,7 +192,6 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .policy-map-marker[data-bank="rbi"]{--label-x:-76px;--label-y:8px}
 .policy-map-marker[data-bank="mas"]{--label-x:8px;--label-y:6px}
 .map-legend{left:8px;right:8px;justify-content:center;font-size:7.5px;gap:5px}
-.timeline-item{flex-basis:132px}
 }
 
 /* Leaflet policy map — scoped overrides only */
@@ -261,15 +250,10 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .policy-tool .framework-badge{display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:3px 6px;border-radius:999px;background:#F2F6FB;border:1px solid #DCE6F0;font-size:7px;font-weight:900;color:#31547E}
 .policy-tool .framework-dot{width:6px;height:6px;border-radius:50%;background:var(--bank)}
 .policy-tool .tool-direction{padding-top:5px;border-top:1px solid #E8EDF4;margin-top:7px}
-.timeline-axis{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;margin:5px 2px 0;font-size:7px;font-weight:800;color:#8292A8;text-transform:uppercase;letter-spacing:.04em}
-.timeline-axis div{height:1px;background:linear-gradient(90deg,#E2E8F0,#9BB0C9)}
-.timeline-item.latest-decision{box-shadow:0 6px 18px rgba(15,42,85,.10);transform:translateY(-2px)}
-.timeline-item.latest-decision:after{content:'Latest';position:absolute;top:7px;right:7px;font-size:6.5px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--bank);background:#F7FAFD;border:1px solid #E1E8F0;border-radius:999px;padding:2px 5px}
 @media(max-width:760px){
   .quadrant-insights{grid-template-columns:1fr}
   .quadrant-insight{min-height:0}
-  .timeline-axis{display:none}
-}
+  }
 
 </style>
 </head>
@@ -293,7 +277,6 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 </section>
 
 <section><div class="snap" id="snap"></div></section>
-
 
 <section>
   <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px"><h2>Central Bank Profiles & Comparison</h2><div class="sub" style="margin-bottom:7px">Leader profiles and key policy information in one comparative view</div></div>
@@ -320,12 +303,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
       <div class="transmission-track" id="policyTransmission"></div>
       <div class="transmission-alt"><b>Singapore / MAS:</b> S$NEER policy band → exchange rate → import prices & domestic cost pressures → activity and inflation. MAS notes that the peak macroeconomic impact of an exchange-rate policy change can take around four to six quarters.</div>
     </div>
-    <div class="panel chart-card" style="grid-column:1/-1">
-      <div class="chart-head"><div><h3>Policy Timeline</h3><div class="sub">Latest policy decision snapshot across the seven central banks</div></div></div>
-      <div class="timeline-axis"><span>Earlier</span><div></div><span>Latest</span></div>
-      <div class="policy-timeline" id="policyTimeline"></div>
-    </div>
-  </div>
+      </div>
 
   <div class="panel chart-card dynamic-policy-chart">
     <div class="chart-head">
@@ -629,31 +607,6 @@ function renderPolicyTransmission(){
  const el=document.getElementById('policyTransmission'); if(!el)return;
  el.innerHTML=steps.map(x=>'<div class="transmission-node"><div class="transmission-step">'+x[0]+'</div><b>'+x[1]+'</b><span>'+x[2]+'</span></div>').join('');
 }
-function renderPolicyTimeline(){
- const el=document.getElementById('policyTimeline'); if(!el)return;
-
- const monthNum={Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
- function sortableDate(b){
-   const m=b.date.match(/(\d{1,2})?\s*([A-Z][a-z]{2})\s*(\d{4})/);
-   if(!m)return 0;
-   const day=Number(m[1]||1),mon=monthNum[m[2]]||1,yr=Number(m[3]||0);
-   return yr*10000+mon*100+day;
- }
- const rows=B.slice().sort((a,b)=>sortableDate(a)-sortableDate(b));
- const latestValue=Math.max(...rows.map(sortableDate));
-
- el.innerHTML=rows.map(b=>{
-   const latest=sortableDate(b)===latestValue?' latest-decision':'';
-   const stance=b.dir.includes('Tight')?'Tightening':b.dir.includes('Holding')?'Holding':'FX framework';
-   return '<div class="timeline-item'+latest+'" '+bankStyle(b.id)+'>'+
-    '<div class="timeline-date">'+b.date+'</div>'+
-    '<div class="timeline-bank"><span class="flag">'+FLAGS[b.id]+'</span>'+b.short+'</div>'+
-    '<div class="timeline-action">'+b.latest+'</div>'+
-    '<div class="timeline-setting">'+b.prev+' → '+b.setting+'</div>'+
-    '<div class="tool-direction">'+stance+'</div>'+
-    '</div>';
- }).join('');
-}
 function renderMatrix(){
   let h='<thead><tr><th>Category</th>'+B.map(b=>'<th style="text-align:center"><div style="font-weight:900"><a href="'+PROFILE_URLS[b.id]+'" style="color:inherit;text-decoration:none;font-weight:900">'+b.name+'</a></div><div class="muted" style="text-align:center">'+b.country+'</div></th>').join('')+'</tr></thead><tbody>';
   for(const [label,k] of rows){
@@ -813,7 +766,7 @@ document.getElementById('inflRanges').addEventListener('click',e=>{if(e.target.t
 document.getElementById('ranges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#ranges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');hc.data=makeHistory(+e.target.dataset.y);hc.update()});
 try{
   assertDashboardData();
-  renderSnap();renderPolicyVisuals();renderPolicyTools();renderPolicyTransmission();renderPolicyTimeline();renderMatrix();renderDecisionTable();renderMeetings();charts();renderTotalAssets();renderInternationalReserves();
+  renderSnap();renderPolicyVisuals();renderPolicyTools();renderPolicyTransmission();renderMatrix();renderDecisionTable();renderMeetings();charts();renderTotalAssets();renderInternationalReserves();
   renderBalanceSheetGDP();
 }catch(err){
   console.error('Dashboard render failed',err);
