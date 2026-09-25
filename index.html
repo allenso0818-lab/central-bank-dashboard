@@ -277,6 +277,27 @@ section{margin-top:15px}
   .matrix thead th:first-child,.matrix tbody th{min-width:145px}
 }
 
+ 
+/* Central-bank map popup now contains the former snapshot information */
+.cb-popup .leaflet-popup-content{margin:10px 12px;min-width:205px}
+.cb-popup-card{min-width:205px}
+.cb-popup-head{display:flex;align-items:center;gap:8px}
+.cb-popup-head .flag{width:25px;height:25px;flex:0 0 25px}
+.cb-popup-bank{font-size:11px;font-weight:900;color:#17305A;line-height:1.2}
+.cb-popup-country{font-size:8px;color:#71839A;margin-top:1px}
+.cb-popup-rate{font-size:22px;font-weight:900;color:#102A55;margin-top:9px;line-height:1}
+.cb-popup-change{font-size:12px;font-weight:900;color:var(--bank);margin-top:6px}
+.cb-popup-dir{font-size:9px;color:#64748B;margin-top:1px}
+.cb-popup-divider{height:1px;background:#E5EBF3;margin:8px 0 6px}
+.cb-popup-row{display:flex;justify-content:space-between;gap:12px;font-size:9px;line-height:1.35;padding:2px 0}
+.cb-popup-row b{color:#17305A}
+.cb-popup-row span{text-align:right;color:#415875}
+@media(max-width:760px){
+  .cb-popup .leaflet-popup-content{min-width:185px}
+  .cb-popup-card{min-width:185px}
+  .cb-popup-rate{font-size:20px}
+}
+
 </style>
 </head>
 <body><div class="container">
@@ -297,8 +318,6 @@ section{margin-top:15px}
       </div>
     </div>
 </section>
-
-<section><div class="snap" id="snap"></div></section>
 
 <section>
   <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px"><h2>Central Bank Profiles & Comparison</h2><div class="sub" style="margin-bottom:7px">Leader profiles and key policy information in one comparative view</div></div>
@@ -516,11 +535,22 @@ function renderGeoPolicyMap(){
    const marker=L.marker([g.lat,g.lon],{icon,keyboard:true}).addTo(policyLeafletMap);
    const dir=b.dir.includes('Tight')?'↑ Tightening':b.dir.includes('Holding')?'→ Holding':'◆ FX framework';
    const v=b.id==='mas'?'S$NEER':b.setting;
+   const m=INFLATION_META[b.id];
+   const target=m.target_value==null
+     ? (b.id==='pboc'?'Govt objective ~2%*':'No formal target')
+     : (b.id==='rbi'?'4% (2–6% band)':m.target_value.toFixed(0)+'%');
+
    marker.bindPopup(
-     '<div class="cb-popup-bank">'+b.name+'</div>'+
-     '<div class="cb-popup-rate">'+v+'</div>'+
-     '<div class="cb-popup-dir">'+dir+'</div>',
-     {className:'cb-popup'}
+     '<div class="cb-popup-card" style="--bank:'+BANK_COLORS[b.id]+'">'+
+       '<div class="cb-popup-head"><span class="flag">'+FLAGS[b.id]+'</span><div><div class="cb-popup-bank">'+b.name+'</div><div class="cb-popup-country">'+b.country+'</div></div></div>'+
+       '<div class="cb-popup-rate">'+v+'</div>'+
+       '<div class="cb-popup-change">'+b.latest+'</div>'+
+       '<div class="cb-popup-dir">'+dir+'</div>'+
+       '<div class="cb-popup-divider"></div>'+
+       '<div class="cb-popup-row"><b>Inflation</b><span>'+b.infl.toFixed(b.id==='rbi'?2:1)+'%</span></div>'+
+       '<div class="cb-popup-row"><b>Target</b><span>'+target+'</span></div>'+
+     '</div>',
+     {className:'cb-popup',maxWidth:270}
    );
    marker.bindTooltip(b.short,{direction:'top',offset:[0,-12],opacity:.92,permanent:false});
    bounds.push([g.lat,g.lon]);
@@ -772,7 +802,7 @@ document.getElementById('inflRanges').addEventListener('click',e=>{if(e.target.t
 document.getElementById('ranges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#ranges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');hc.data=makeHistory(+e.target.dataset.y);hc.update()});
 try{
   assertDashboardData();
-  renderSnap();renderPolicyVisuals();renderPolicyTools();renderMatrix();renderDecisionTable();renderMeetings();charts();renderTotalAssets();renderInternationalReserves();
+  renderPolicyVisuals();renderPolicyTools();renderMatrix();renderDecisionTable();renderMeetings();charts();renderTotalAssets();renderInternationalReserves();
   renderBalanceSheetGDP();
 }catch(err){
   console.error('Dashboard render failed',err);
