@@ -22,6 +22,10 @@ header{display:flex;justify-content:space-between;align-items:flex-start;gap:18p
 .header-right{display:flex;align-items:center;gap:12px;color:#526681;font-size:11px}
 .lang{border:1px solid #CAD6E5;background:#fff;color:#19345F;border-radius:6px;padding:7px 11px;font-weight:800;cursor:pointer}
 section{margin-top:11px}
+.top-policy-map{margin-top:6px}
+.top-policy-map>.chart-card{width:100%;max-width:1330px;margin-left:auto;margin-right:auto;padding:12px}
+.top-policy-map .policy-map-viewport{min-height:360px}
+@media(max-width:760px){.top-policy-map .policy-map-viewport{min-height:0}}
 h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .sub{font-size:10.5px;color:#6C7F98;margin:-2px 0 7px}
 
@@ -68,7 +72,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .num{font-weight:900;color:#122C57}.main{font-weight:650}.muted{color:#71839A;font-size:8px}
 .pill{display:inline-block;padding:1px 4px;border:1px solid #D9E2EE;border-radius:99px;background:#F8FAFC;margin:1px;font-size:7.5px}
 
-.charts-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:'visual visual' 'dynamic dynamic' 'policy inflpath' 'current infltarget' 'balance balance';gap:8px;max-width:1330px;margin-left:auto;margin-right:auto}.charts-grid>.chart-card{width:100%;min-width:0;max-width:none;box-sizing:border-box;margin:0!important;grid-column:auto!important}.visual-story{grid-area:visual;display:grid;grid-template-columns:1.05fr .95fr;gap:8px;min-width:0}.visual-story>.panel{min-width:0;overflow:hidden}
+.charts-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:'visual visual' 'dynamic dynamic' 'policy inflpath' 'current infltarget' 'balance balance';gap:8px;max-width:1330px;margin-left:auto;margin-right:auto}.charts-grid>.chart-card{width:100%;min-width:0;max-width:none;box-sizing:border-box;margin:0!important;grid-column:auto!important}.visual-story{grid-area:visual;display:grid;grid-template-columns:1fr;gap:8px;min-width:0}.visual-story>.panel{min-width:0;overflow:hidden}
 @media(max-width:900px){.visual-story{grid-template-columns:1fr!important}.visual-story .chartbox{height:270px!important}}.dynamic-policy-chart{grid-area:dynamic}.policy-rate-paths{grid-area:policy}.inflation-paths{grid-area:inflpath}.current-policy-card{grid-area:current}.inflation-target-card{grid-area:infltarget}.charts-grid .chart-card .chartbox{height:285px}.charts-grid>.balance-group{grid-area:balance}
 .chart-card{padding:10px}.chart-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:5px}.chart-head h3{font-size:13px;margin:0;color:#17305A}.chart-head .sub{margin:2px 0 0}
 .chartbox{height:220px}.chartbox.small{height:220px}
@@ -183,6 +187,17 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
   <div class="header-right"><span>Dashboard data verified: 25 Sep 2026 HKT</span></div>
 </header>
 
+<section class="top-policy-map">
+  <div class="panel chart-card">
+      <div class="chart-head"><div><h3>Global Central Bank Policy Map</h3><div class="sub">Current policy setting and latest direction · markers placed by geographic coordinates</div></div></div>
+      <div class="policy-map-viewport" id="policyMapViewport">
+        <svg id="policyMapSvg" class="policy-map-svg" viewBox="0 0 960 480" role="img" aria-label="World map showing the seven central banks"></svg>
+        <div class="policy-map-loading" id="policyMapLoading">Loading geographic map…</div>
+        <div class="map-legend"><b>Latest stance</b><span>↑ tightening</span><span>→ unchanged</span><span>◆ exchange-rate framework</span></div>
+      </div>
+    </div>
+</section>
+
 <section><div class="snap" id="snap"></div></section>
 
 
@@ -193,15 +208,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 
 <section class="charts-grid">
   <div class="visual-story">
-    <div class="panel chart-card">
-      <div class="chart-head"><div><h3>Global Central Bank Policy Map</h3><div class="sub">Current policy setting and latest direction · markers placed by geographic coordinates</div></div></div>
-      <div class="policy-map-viewport" id="policyMapViewport">
-        <svg id="policyMapSvg" class="policy-map-svg" viewBox="0 0 960 480" role="img" aria-label="World map showing the seven central banks"></svg>
-        <div class="policy-map-loading" id="policyMapLoading">Loading geographic map…</div>
-        <div class="map-legend"><b>Latest stance</b><span>↑ tightening</span><span>→ unchanged</span><span>◆ exchange-rate framework</span></div>
-      </div>
-    </div>
-    <div class="panel chart-card">
+        <div class="panel chart-card">
       <div class="chart-head"><div><h3>Inflation vs Policy Rate Quadrant</h3><div class="sub">Latest inflation and policy-rate setting; MAS excluded because it uses S$NEER</div></div></div>
       <div class="chartbox" style="height:300px"><canvas id="policyQuadrant"></canvas></div>
     </div>
