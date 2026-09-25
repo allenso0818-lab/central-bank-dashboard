@@ -2,7 +2,7 @@ name: Daily Central Bank Data Refresh
 on:
   workflow_dispatch:
   schedule:
-    - cron: "40 1 * * *"
+    - cron: "0 0 * * *"
 permissions:
   contents: write
 jobs:
