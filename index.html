@@ -89,7 +89,28 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 }
 .balance-assets-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
 .balance-assets-grid .chart-card{width:100%;min-width:0;max-width:none;box-sizing:border-box;margin:0!important;grid-column:auto!important}.balance-assets-grid .chart-card:first-child,.balance-assets-grid .chart-card:last-child{width:100%}.balance-assets-grid .reserve-card{grid-column:1;width:100%}
-@media(max-width:900px){.balance-assets-grid,.charts-grid{grid-template-columns:1fr}.charts-grid{grid-template-areas:'visual' 'dynamic' 'policy' 'inflpath' 'current' 'infltarget' 'balance'}}</style>
+@media(max-width:900px){.balance-assets-grid,.charts-grid{grid-template-columns:1fr}.charts-grid{grid-template-areas:'visual' 'dynamic' 'policy' 'inflpath' 'current' 'infltarget' 'balance'}}
+.policy-visual-suite{grid-column:1/-1;display:grid;grid-template-columns:1.05fr .95fr;gap:8px;min-width:0}
+.policy-visual-suite>.panel{min-width:0;overflow:hidden}
+.policy-tools-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.policy-tool{border:1px solid #E0E8F2;border-top:3px solid var(--bank);border-radius:8px;background:linear-gradient(180deg,#fff,#F8FAFD);padding:8px 7px;min-height:108px}
+.policy-tool .tool-bank{font-size:9px;font-weight:900;color:#19345F}.policy-tool .tool-type{font-size:8px;color:#64748B;margin-top:2px}
+.policy-tool .tool-instrument{font-size:10px;font-weight:850;color:#17305A;line-height:1.25;margin-top:7px}.policy-tool .tool-setting{font-size:12px;font-weight:900;color:var(--bank);margin-top:5px}
+.transmission-flow{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;align-items:stretch;margin-top:8px}
+.transmission-node{position:relative;border:1px solid #DFE7F1;border-radius:9px;background:#FAFCFF;padding:12px 9px;min-height:88px;text-align:center;display:flex;flex-direction:column;justify-content:center}
+.transmission-node:not(:last-child)::after{content:'→';position:absolute;right:-13px;top:50%;transform:translateY(-50%);font-size:18px;font-weight:900;color:#8AA1BB}
+.transmission-node b{font-size:10px;color:#15315C}.transmission-node span{font-size:8px;color:#6B7F97;line-height:1.35;margin-top:4px}
+.transmission-alt{margin-top:8px;padding:7px 9px;border-radius:7px;background:#FFF6FB;border:1px solid #F4D7E8;font-size:8.5px;color:#7A4664;line-height:1.35}
+.policy-timeline{position:relative;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;padding-top:16px}
+.policy-timeline::before{content:'';position:absolute;left:4%;right:4%;top:8px;height:2px;background:#DCE5F0}
+.timeline-item{position:relative;border:1px solid #E0E8F2;border-radius:8px;background:#fff;padding:11px 8px 8px;min-height:102px;border-top:3px solid var(--bank)}
+.timeline-item::before{content:'';position:absolute;width:9px;height:9px;border-radius:50%;background:var(--bank);top:-12px;left:50%;transform:translateX(-50%);box-shadow:0 0 0 3px #fff}
+.timeline-date{font-size:8px;color:#71839A;font-weight:800}.timeline-bank{font-size:10px;color:#17305A;font-weight:900;margin-top:2px}.timeline-action{font-size:12px;color:var(--bank);font-weight:900;margin-top:6px}.timeline-setting{font-size:8px;color:#64748B;margin-top:3px;line-height:1.25}
+.map-legend{position:absolute;left:10px;bottom:8px;display:flex;gap:7px;flex-wrap:wrap;background:rgba(255,255,255,.9);border:1px solid #DFE7F1;border-radius:7px;padding:5px 7px;font-size:8px;color:#536A86}
+.map-legend b{color:#17305A}.policy-map-card{transition:transform .15s ease,box-shadow .15s ease}.policy-map-card:hover{transform:translate(-50%,-53%) scale(1.03)!important;box-shadow:0 7px 18px rgba(15,42,85,.16)!important}
+@media(max-width:1050px){.policy-tools-grid{grid-template-columns:repeat(4,1fr)}.policy-timeline{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:760px){.policy-visual-suite{grid-template-columns:1fr}.policy-tools-grid{grid-template-columns:repeat(2,1fr)}.policy-timeline{grid-template-columns:repeat(2,1fr)}.transmission-flow{grid-template-columns:1fr}.transmission-node:not(:last-child)::after{content:'↓';right:auto;left:50%;top:auto;bottom:-16px;transform:translateX(-50%)}}
+</style>
 </head>
 <body><div class="container">
 <header>
@@ -97,7 +118,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
     <h1 data-en="Seven Central Banks — One Comparative View" data-zh="七大中央銀行 — 一頁比較">Seven Central Banks — One Comparative View</h1>
     <p data-en="A visual comparison of mandates, policy settings, inflation and decisions" data-zh="以視覺方式比較職責、政策設定、通脹與決策">A visual comparison of mandates, policy settings, inflation and decisions</p>
   </div>
-  <div class="header-right"><span>Dashboard updated: 22 Sep 2026 08:30 HKT</span></div>
+  <div class="header-right"><span>Dashboard data verified: 25 Sep 2026 HKT</span></div>
 </header>
 
 <section><div class="snap" id="snap"></div></section>
@@ -122,6 +143,24 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
       <div class="chartbox" style="height:300px"><canvas id="policyQuadrant"></canvas></div>
     </div>
   </div>
+
+  <div class="policy-visual-suite">
+    <div class="panel chart-card">
+      <div class="chart-head"><div><h3>Monetary Policy Tools</h3><div class="sub">Primary operating instrument used by each central bank</div></div></div>
+      <div class="policy-tools-grid" id="policyTools"></div>
+      <div class="note">This view compares the main policy instrument, not every facility available to each institution. MAS is shown separately because its operating framework is centred on the S$NEER policy band rather than a conventional policy rate.</div>
+    </div>
+    <div class="panel chart-card">
+      <div class="chart-head"><div><h3>Policy Transmission</h3><div class="sub">How policy settings pass through to financial conditions and inflation</div></div></div>
+      <div class="transmission-flow" id="policyTransmission"></div>
+      <div class="transmission-alt"><b>Singapore / MAS:</b> S$NEER policy band → exchange rate → import prices & domestic cost pressures → activity and inflation. MAS notes that the peak macroeconomic impact of an exchange-rate policy change can take around four to six quarters.</div>
+    </div>
+    <div class="panel chart-card" style="grid-column:1/-1">
+      <div class="chart-head"><div><h3>Policy Timeline</h3><div class="sub">Latest policy decision snapshot across the seven central banks</div></div></div>
+      <div class="policy-timeline" id="policyTimeline"></div>
+    </div>
+  </div>
+
   <div class="panel chart-card dynamic-policy-chart">
     <div class="chart-head">
       <div><h3>Inflation & Policy Rate Dynamics</h3><div class="sub">Compare one central bank’s inflation trend with its policy-rate path</div></div>
@@ -170,7 +209,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
   <div class="panel bottom-card sources">
     <h3>Sources & Methodology</h3>
     <ul>
-      <li>Inflation figures use official statistical/government releases and are verified separately from inflation targets. Last checked: 22 Sep 2026 08:30 HKT.</li>
+      <li>Inflation figures use official statistical/government releases and are verified separately from inflation targets. Last checked: 25 Sep 2026 HKT.</li>
       <li>Policy rates are the headline policy instruments for each central bank.</li>
       <li>Fed rate uses the target-range midpoint for charting purposes.</li>
       <li>MAS is not plotted in the policy-rate chart because it uses an exchange-rate-centred framework.</li>
@@ -275,9 +314,34 @@ function gap(b){let x=targets[b.id];if(x==null)return 'Not directly comparable';
 function val(b,k){if(k==='leaderProfile')return '<div style="display:flex;gap:7px;align-items:center"><img src="'+b.photo+'" alt="'+b.head+'" style="width:58px;height:72px;object-fit:cover;object-position:center 18%;border-radius:7px;background:#F7F9FC;border:1px solid #E0E6EE;display:block;flex:0 0 58px"><div><div class="main"><b>'+b.head+'</b></div><div class="muted">'+b.position+'</div></div></div>';if(k==='infl'){const m=INFLATION_META[b.id];return '<span class="num">'+b.infl.toFixed(b.id==='rbi'?2:1)+'%</span><div class="muted">'+m.measure+'<br>'+m.reference_period+' · Published '+m.publication_date+'<br>'+m.source_name+'</div>'};if(k==='gap')return gap(b);if(k==='change')return '<span class="num">'+change(b)+'</span>';if(k==='ind')return '<div style="display:grid;gap:1px">'+KEY_INDICATOR_GROUPS[b.id].map(x=>'<div style="display:grid;grid-template-columns:56px 1fr;gap:5px;padding:3px 0;border-bottom:1px solid #EEF2F6"><span style="font-size:8px;font-weight:900;color:'+BANK_COLORS[b.id]+'">'+x[0]+'</span><span style="font-size:8px;line-height:1.3">'+x[1]+'</span></div>').join('')+'<div class="muted" style="margin-top:4px;font-size:7px">Latest verified reading where available · official-source series</div></div>';if(k==='position')return '<div class="main">'+b.position+'</div>'+(b.chair?'<div class="muted">'+b.chair+'</div>':'');if(k==='setting')return '<span class="num">'+b.setting+'</span>';return '<div class="main">'+(b[k]??'—')+'</div>'}
 function renderPolicyVisuals(){
  const pos={fed:[13,43],ecb:[43,36],boe:[34,20],boj:[84,40],pboc:[67,47],rbi:[56,70],mas:[80,76]};
- document.getElementById('policyMap').innerHTML=B.map(b=>{const p=pos[b.id],dir=b.dir.includes('Tight')?'↑':b.dir.includes('Holding')?'→':'◆',v=b.id==='mas'?'S$NEER':b.setting;return '<div style="position:absolute;left:'+p[0]+'%;top:'+p[1]+'%;transform:translate(-50%,-50%);background:#fff;border:1px solid #D9E3EF;border-top:3px solid '+BANK_COLORS[b.id]+';border-radius:8px;padding:6px 8px;box-shadow:0 4px 12px rgba(15,42,85,.10);min-width:86px;max-width:112px;font-size:9px;white-space:nowrap"><b>'+b.short+'</b><br><span style="font-size:12px;font-weight:900">'+v+'</span> <span style="color:'+BANK_COLORS[b.id]+';font-weight:900">'+dir+'</span></div>'}).join('');
- const pts=B.filter(b=>b.id!=='mas'&&b.plot!=null).map(b=>({x:b.infl,y:b.plot,bank:b.short}));
- new Chart(document.getElementById('policyQuadrant'),{type:'scatter',data:{datasets:pts.map((p,i)=>({label:p.bank,data:[p],backgroundColor:BANK_COLORS[B.filter(b=>b.id!=='mas')[i].id],pointRadius:7,pointHoverRadius:9}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:8,font:{size:8}}},tooltip:{callbacks:{label:c=>c.dataset.label+': inflation '+c.raw.x.toFixed(2)+'%, policy '+c.raw.y.toFixed(2)+'%'}}},scales:{x:{title:{display:true,text:'Inflation (%)'},grid:{color:'#EDF1F6'}},y:{title:{display:true,text:'Policy rate (%)'},grid:{color:'#EDF1F6'}}}}});
+ const cards=B.map(b=>{const p=pos[b.id],dir=b.dir.includes('Tight')?'↑':b.dir.includes('Holding')?'→':'◆',v=b.id==='mas'?'S$NEER':b.setting,tag=b.dir.includes('Tight')?'Tightening':b.dir.includes('Holding')?'Holding':'FX framework';return '<div class="policy-map-card" style="position:absolute;left:'+p[0]+'%;top:'+p[1]+'%;transform:translate(-50%,-50%);background:#fff;border:1px solid #D9E3EF;border-top:3px solid '+BANK_COLORS[b.id]+';border-radius:8px;padding:6px 8px;box-shadow:0 4px 12px rgba(15,42,85,.10);min-width:92px;max-width:118px;font-size:9px;white-space:nowrap"><div style="display:flex;align-items:center;gap:4px"><span class="flag" style="width:15px;height:15px;flex-basis:15px">'+FLAGS[b.id]+'</span><b>'+b.short+'</b></div><div style="font-size:12px;font-weight:900;margin-top:3px">'+v+' <span style="color:'+BANK_COLORS[b.id]+'">'+dir+'</span></div><div style="font-size:7.5px;color:#6A7C94;margin-top:2px">'+tag+'</div></div>'}).join('');
+ document.getElementById('policyMap').innerHTML=cards+'<div class="map-legend"><b>Latest stance</b><span>↑ tightening</span><span>→ unchanged</span><span>◆ exchange-rate framework</span></div>';
+ const eligible=B.filter(b=>b.id!=='mas'&&b.plot!=null);
+ const pts=eligible.map(b=>({x:b.infl,y:b.plot,bank:b.short,id:b.id}));
+ const pointLabelPlugin={id:'pointLabels',afterDatasetsDraw(chart){const ctx=chart.ctx;ctx.save();ctx.font='800 9px Inter, Arial';ctx.fillStyle='#314966';chart.data.datasets.forEach((ds,di)=>{const m=chart.getDatasetMeta(di);if(m.hidden||!m.data[0])return;const p=m.data[0].tooltipPosition();ctx.fillText(ds.label,p.x+8,p.y-7)});ctx.restore()}};
+ new Chart(document.getElementById('policyQuadrant'),{type:'scatter',data:{datasets:pts.map(p=>({label:p.bank,data:[p],backgroundColor:BANK_COLORS[p.id],borderColor:'#fff',borderWidth:2,pointRadius:8,pointHoverRadius:10}))},plugins:[pointLabelPlugin],options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:7,font:{size:8},padding:10}},tooltip:{callbacks:{label:c=>c.dataset.label+': inflation '+c.raw.x.toFixed(2)+'%, policy '+c.raw.y.toFixed(2)+'%'}}},scales:{x:{title:{display:true,text:'Latest inflation (%)'},grid:{color:'#EDF1F6'},beginAtZero:true},y:{title:{display:true,text:'Policy rate (%)'},grid:{color:'#EDF1F6'},beginAtZero:true}}}});
+}
+function renderPolicyTools(){
+ const channel={fed:'Interest-rate corridor',ecb:'Standing-facility rate',boe:'Policy rate',boj:'Short-term rate',pboc:'Open-market rate',rbi:'Policy repo rate',mas:'Exchange-rate band'};
+ const el=document.getElementById('policyTools'); if(!el)return;
+ el.innerHTML=B.map(b=>'<div class="policy-tool" '+bankStyle(b.id)+'><div class="tool-bank">'+b.short+'</div><div class="tool-type">'+channel[b.id]+'</div><div class="tool-instrument">'+b.instrument+'</div><div class="tool-setting">'+(b.id==='mas'?'S$NEER':b.setting)+'</div></div>').join('');
+}
+function renderPolicyTransmission(){
+ const steps=[
+  ['Policy decision','Rate / liquidity / exchange-rate setting'],
+  ['Market prices','Money-market rates, bond yields, FX and asset prices'],
+  ['Financial conditions','Borrowing costs, credit availability and balance sheets'],
+  ['Demand & costs','Consumption, investment, employment, wages and import costs'],
+  ['Inflation','Price-setting and medium-term inflation dynamics']
+ ];
+ const el=document.getElementById('policyTransmission'); if(!el)return;
+ el.innerHTML=steps.map(x=>'<div class="transmission-node"><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('');
+}
+function renderPolicyTimeline(){
+ const el=document.getElementById('policyTimeline'); if(!el)return;
+ const order=['mas','rbi','pboc','ecb','fed','boe','boj'];
+ const rows=order.map(id=>B.find(b=>b.id===id)).filter(Boolean);
+ el.innerHTML=rows.map(b=>'<div class="timeline-item" '+bankStyle(b.id)+'><div class="timeline-date">'+b.date+'</div><div class="timeline-bank">'+b.short+'</div><div class="timeline-action">'+b.latest+'</div><div class="timeline-setting">'+b.prev+' → '+b.setting+'</div></div>').join('');
 }
 function renderMatrix(){
   let h='<thead><tr><th>Category</th>'+B.map(b=>'<th style="text-align:center"><div style="font-weight:900"><a href="'+PROFILE_URLS[b.id]+'" style="color:inherit;text-decoration:none;font-weight:900">'+b.name+'</a></div><div class="muted" style="text-align:center">'+b.country+'</div></th>').join('')+'</tr></thead><tbody>';
@@ -438,7 +502,7 @@ document.getElementById('inflRanges').addEventListener('click',e=>{if(e.target.t
 document.getElementById('ranges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#ranges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');hc.data=makeHistory(+e.target.dataset.y);hc.update()});
 try{
   assertDashboardData();
-  renderSnap();renderPolicyVisuals();renderMatrix();renderDecisionTable();renderMeetings();charts();renderTotalAssets();renderInternationalReserves();
+  renderSnap();renderPolicyVisuals();renderPolicyTools();renderPolicyTransmission();renderPolicyTimeline();renderMatrix();renderDecisionTable();renderMeetings();charts();renderTotalAssets();renderInternationalReserves();
   renderBalanceSheetGDP();
 }catch(err){
   console.error('Dashboard render failed',err);
