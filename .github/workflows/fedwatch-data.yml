@@ -1,0 +1,49 @@
+name: Refresh FedWatch Probabilities
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "25 1,13 * * *"
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Refresh futures-implied FOMC probabilities
+        run: |
+          python - <<'PY'
+          import json,re,urllib.request,pathlib,datetime
+          url="https://terminal.kryptomagazin.cz/en/macro/fedwatch"
+          req=urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0 central-bank-dashboard/1.0"})
+          with urllib.request.urlopen(req,timeout=25) as r:
+              s=r.read().decode("utf-8","ignore")
+          # Extract front-meeting summary and timestamp from the openly accessible
+          # Fed Funds futures-derived page. It states it uses the CME FedWatch methodology.
+          def grab(label):
+              m=re.search(label+r'[\s\S]{0,500}?([0-9]+(?:\.[0-9]+)?)\s*%',s,re.I)
+              return float(m.group(1)) if m else None
+          ease=grab(r'Ease(?:\s*\(cut\))?')
+          same=grab(r'No change')
+          hike=grab(r'Hike(?:\s*\(raise\))?')
+          md=re.search(r'Upcoming FOMC meeting[^0-9]*(\d{1,2})\s+([A-Z][a-z]{2})\s+(20\d{2})',s,re.I)
+          if None in (ease,same,hike) or not md:
+              raise SystemExit("Could not verify current probabilities; keeping prior cache")
+          months={m:i for i,m in enumerate(["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],1)}
+          dt=f"{md.group(3)}-{months[md.group(2).title()]:02d}-{int(md.group(1)):02d}"
+          label=f"{int(md.group(1))} {md.group(2).title()} {md.group(3)}"
+          total=round(ease+same+hike,1)
+          if abs(total-100)>0.2: raise SystemExit(f"Probability total invalid: {total}")
+          rows=[]
+          if ease>0: rows.append(["Decrease",ease])
+          rows.append(["No change",same])
+          if hike>0: rows.append(["Increase",hike])
+          out={"updated_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),"source":"Fed Funds futures-derived feed using CME FedWatch methodology","source_url":url,"official_cme_verification_url":"https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html","meetings":{dt:{"label":label,"note":"Auto-refreshed futures-implied probabilities · verify against CME FedWatch","rows":rows}},"direction":{"increase":hike,"same":same,"decrease":ease}}
+          pathlib.Path("data/fedwatch.json").write_text(json.dumps(out,indent=2),encoding="utf-8")
+          PY
+      - name: Commit cache
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/fedwatch.json
+          git diff --cached --quiet || (git commit -m "Refresh FedWatch probability cache" && git push)
