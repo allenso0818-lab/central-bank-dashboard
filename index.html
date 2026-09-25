@@ -25,7 +25,13 @@ section{margin-top:11px}
 .top-policy-map{margin-top:6px}
 .top-policy-map>.chart-card{width:100%;max-width:1330px;margin-left:auto;margin-right:auto;padding:12px}
 .top-policy-map .policy-map-viewport{min-height:360px}
-@media(max-width:760px){.top-policy-map .policy-map-viewport{min-height:0}}
+@media(max-width:760px){
+.policy-map-svg .bank-label-bank{font-size:9px}
+.policy-map-svg .bank-label-setting{font-size:11px}
+.policy-map-svg .bank-label-tag{font-size:7.5px}
+.map-legend{white-space:normal;line-height:1.25;padding:5px 6px}
+.map-legend span{white-space:nowrap}
+.top-policy-map .policy-map-viewport{min-height:0}}
 h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .sub{font-size:10.5px;color:#6C7F98;margin:-2px 0 7px}
 
@@ -194,7 +200,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
       <div class="policy-map-viewport" id="policyMapViewport">
         <svg id="policyMapSvg" class="policy-map-svg" viewBox="0 0 960 480" role="img" aria-label="World map showing the seven central banks"></svg>
         <div class="policy-map-loading" id="policyMapLoading">Loading geographic map…</div>
-        <div class="map-legend"><b>Latest stance</b><span>↑ tightening</span><span>→ unchanged</span><span>◆ exchange-rate framework</span></div>
+        <div class="map-legend"><b>Latest stance</b><span>↑ Tighten</span><span>→ Hold</span><span>◆ FX framework</span></div>
       </div>
     </div>
 </section>
@@ -409,10 +415,16 @@ async function renderGeoPolicyMap(){
      rbi:{lat:18.9322,lon:72.8368},
      mas:{lat:1.2838,lon:103.8515}
    };
-   const offsets={
+
+   const isMobile=window.matchMedia('(max-width:760px)').matches;
+   const offsets=isMobile ? {
+     fed:[18,-2],boe:[-102,-58],ecb:[20,10],pboc:[-108,12],boj:[-112,-46],rbi:[-102,18],mas:[-112,14]
+   } : {
      fed:[18,-4],boe:[-115,-62],ecb:[16,18],pboc:[-120,18],boj:[18,-50],rbi:[-108,22],mas:[18,18]
    };
-   const labelW=104,labelH=55;
+
+   const labelW=isMobile?94:104,labelH=isMobile?50:55;
+   const margin=8;
    const defs=svg.append('defs');
 
    for(const b of B){
@@ -433,37 +445,34 @@ async function renderGeoPolicyMap(){
 
    for(const b of B){
      const p=projection([geo[b.id].lon,geo[b.id].lat]); if(!p)continue;
-     const [dx,dy]=offsets[b.id], lx=p[0]+dx, ly=p[1]+dy;
+     const [dx,dy]=offsets[b.id];
+     let lx=p[0]+dx, ly=p[1]+dy;
+
+     // Keep every label fully inside the SVG viewport on all screen sizes.
+     lx=Math.max(margin,Math.min(width-labelW-margin,lx));
+     ly=Math.max(margin,Math.min(height-labelH-34,ly));
+
      const dir=b.dir.includes('Tight')?'↑':b.dir.includes('Holding')?'→':'◆';
      const v=b.id==='mas'?'S$NEER':b.setting;
      const tag=b.dir.includes('Tight')?'Tightening':b.dir.includes('Holding')?'Holding':'FX framework';
      const color=BANK_COLORS[b.id];
-     const anchorX=dx<0?lx+labelW:lx, anchorY=ly+labelH/2;
+
+     const labelIsLeft=(lx+labelW/2)<p[0];
+     const anchorX=labelIsLeft?lx+labelW:lx;
+     const anchorY=ly+labelH/2;
 
      const g=svg.append('g').attr('class','bank-marker').attr('data-bank',b.id);
      g.append('path').attr('class','bank-leader').attr('d','M'+p[0]+','+p[1]+' L'+anchorX+','+anchorY);
 
-     // Outer bank-colour halo
-     g.append('circle')
-       .attr('cx',p[0]).attr('cy',p[1]).attr('r',12)
-       .attr('fill',color).attr('opacity',0.18);
-
-     // White ring
-     g.append('circle')
-       .attr('cx',p[0]).attr('cy',p[1]).attr('r',10)
-       .attr('fill','#fff').attr('stroke',color).attr('stroke-width',2.5);
-
-     // Flag inside the pin
-     g.append('circle')
-       .attr('cx',p[0]).attr('cy',p[1]).attr('r',7.2)
-       .attr('fill','url(#flag-pattern-'+b.id+')')
-       .attr('stroke','#fff').attr('stroke-width',1);
+     g.append('circle').attr('cx',p[0]).attr('cy',p[1]).attr('r',12).attr('fill',color).attr('opacity',0.18);
+     g.append('circle').attr('cx',p[0]).attr('cy',p[1]).attr('r',10).attr('fill','#fff').attr('stroke',color).attr('stroke-width',2.5);
+     g.append('circle').attr('cx',p[0]).attr('cy',p[1]).attr('r',7.2).attr('fill','url(#flag-pattern-'+b.id+')').attr('stroke','#fff').attr('stroke-width',1);
 
      g.append('rect').attr('class','bank-label-bg').attr('x',lx).attr('y',ly).attr('width',labelW).attr('height',labelH).attr('rx',8);
-     g.append('line').attr('class','bank-label-accent').attr('x1',lx+1.5).attr('x2',lx+1.5).attr('y1',ly+8).attr('y2',ly+labelH-8).attr('stroke',color);
-     g.append('text').attr('class','bank-label-bank').attr('x',lx+10).attr('y',ly+16).text(b.short);
-     g.append('text').attr('class','bank-label-setting').attr('x',lx+10).attr('y',ly+34).text(v+' '+dir);
-     g.append('text').attr('class','bank-label-tag').attr('x',lx+10).attr('y',ly+48).text(tag);
+     g.append('line').attr('class','bank-label-accent').attr('x1',lx+1.5).attr('x2',lx+1.5).attr('y1',ly+7).attr('y2',ly+labelH-7).attr('stroke',color);
+     g.append('text').attr('class','bank-label-bank').attr('x',lx+9).attr('y',ly+(isMobile?14:16)).text(b.short);
+     g.append('text').attr('class','bank-label-setting').attr('x',lx+9).attr('y',ly+(isMobile?30:34)).text(v+' '+dir);
+     g.append('text').attr('class','bank-label-tag').attr('x',lx+9).attr('y',ly+(isMobile?43:48)).text(tag);
    }
    if(loading)loading.style.display='none';
  }catch(err){
