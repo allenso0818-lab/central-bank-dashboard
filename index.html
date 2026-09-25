@@ -106,8 +106,17 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .timeline-item{position:relative;border:1px solid #E0E8F2;border-radius:8px;background:#fff;padding:11px 8px 8px;min-height:102px;border-top:3px solid var(--bank)}
 .timeline-item::before{content:'';position:absolute;width:9px;height:9px;border-radius:50%;background:var(--bank);top:-12px;left:50%;transform:translateX(-50%);box-shadow:0 0 0 3px #fff}
 .timeline-date{font-size:8px;color:#71839A;font-weight:800}.timeline-bank{font-size:10px;color:#17305A;font-weight:900;margin-top:2px}.timeline-action{font-size:12px;color:var(--bank);font-weight:900;margin-top:6px}.timeline-setting{font-size:8px;color:#64748B;margin-top:3px;line-height:1.25}
-.map-legend{position:absolute;left:10px;bottom:8px;display:flex;gap:7px;flex-wrap:wrap;background:rgba(255,255,255,.9);border:1px solid #DFE7F1;border-radius:7px;padding:5px 7px;font-size:8px;color:#536A86}
-.map-legend b{color:#17305A}.policy-map-card{transition:transform .15s ease,box-shadow .15s ease}.policy-map-card:hover{transform:translate(-50%,-53%) scale(1.03)!important;box-shadow:0 7px 18px rgba(15,42,85,.16)!important}
+.policy-world-svg{position:absolute;inset:0;width:100%;height:100%;opacity:.95}
+#policyMap{position:absolute;inset:0}
+.policy-map-marker{position:absolute;transform:translate(-50%,-50%);z-index:2}
+.map-pin{position:absolute;width:13px;height:13px;border-radius:50% 50% 50% 0;background:var(--bank);transform:rotate(-45deg);left:-7px;top:-7px;box-shadow:0 0 0 3px rgba(255,255,255,.95),0 2px 6px rgba(15,42,85,.16)}
+.map-pin:after{content:'';position:absolute;width:4px;height:4px;border-radius:50%;background:#fff;left:4.5px;top:4.5px}
+.map-label{margin-left:10px;background:rgba(255,255,255,.96);border:1px solid #D8E2EE;border-left:3px solid var(--bank);border-radius:7px;padding:5px 7px;min-width:82px;box-shadow:0 4px 10px rgba(15,42,85,.08);white-space:nowrap}
+.map-bankline{display:flex;align-items:center;gap:4px;font-size:8px;color:#17305A}.map-bankline .flag{width:13px;height:13px;flex-basis:13px}
+.map-setting{font-size:10px;font-weight:900;color:#15315C;margin-top:2px}.map-setting span{color:var(--bank)}
+.map-tag{font-size:7px;color:#71839A;margin-top:1px}
+.map-legend{position:absolute;left:10px;bottom:8px;display:flex;gap:7px;flex-wrap:wrap;background:rgba(255,255,255,.92);border:1px solid #DFE7F1;border-radius:7px;padding:5px 7px;font-size:8px;color:#536A86}
+.map-legend b{color:#17305A}
 @media(max-width:1050px){.policy-tools-grid{grid-template-columns:repeat(4,1fr)}.policy-timeline{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:760px){
 .policy-visual-suite{grid-template-columns:1fr}
@@ -116,18 +125,18 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .transmission-flow{grid-template-columns:1fr}
 .transmission-node:not(:last-child)::after{content:'↓';right:auto;left:50%;top:auto;bottom:-16px;transform:translateX(-50%)}
 #policyMap{position:absolute;inset:0}
-#policyMap .policy-map-card{min-width:78px!important;max-width:92px!important;padding:5px 6px!important;font-size:8px!important}
-#policyMap .policy-map-card .flag{width:13px!important;height:13px!important;flex-basis:13px!important}
-#policyMap .policy-map-card div:nth-child(2){font-size:10.5px!important}
-#policyMap .policy-map-card[data-bank="fed"]{left:13%!important;top:48%!important}
-#policyMap .policy-map-card[data-bank="boe"]{left:29%!important;top:16%!important}
-#policyMap .policy-map-card[data-bank="ecb"]{left:40%!important;top:36%!important}
-#policyMap .policy-map-card[data-bank="pboc"]{left:61%!important;top:49%!important}
-#policyMap .policy-map-card[data-bank="boj"]{left:82%!important;top:28%!important}
-#policyMap .policy-map-card[data-bank="rbi"]{left:50%!important;top:72%!important}
-#policyMap .policy-map-card[data-bank="mas"]{left:79%!important;top:76%!important}
+#policyMap .map-label{min-width:72px;padding:4px 5px;margin-left:8px}
+#policyMap .map-setting{font-size:9px}
+#policyMap .map-tag{font-size:6.5px}
+#policyMap .policy-map-marker[data-bank="fed"]{left:15%!important;top:35%!important}
+#policyMap .policy-map-marker[data-bank="boe"]{left:40%!important;top:20%!important}
+#policyMap .policy-map-marker[data-bank="ecb"]{left:46%!important;top:32%!important}
+#policyMap .policy-map-marker[data-bank="pboc"]{left:70%!important;top:40%!important}
+#policyMap .policy-map-marker[data-bank="boj"]{left:84%!important;top:31%!important}
+#policyMap .policy-map-marker[data-bank="rbi"]{left:61%!important;top:57%!important}
+#policyMap .policy-map-marker[data-bank="mas"]{left:76%!important;top:66%!important}
 .map-legend{left:8px!important;right:8px!important;bottom:7px!important;justify-content:center!important;font-size:7.5px!important;gap:5px!important}
-.visual-story>.panel:first-child>div[style*="height:300px"]{height:390px!important}
+.visual-story>.panel:first-child>div[style*="height:300px"]{height:360px!important}
 }
 </style>
 </head>
@@ -153,7 +162,23 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
     <div class="panel chart-card">
       <div class="chart-head"><div><h3>Global Central Bank Policy Map</h3><div class="sub">Current policy setting and latest direction</div></div></div>
       <div style="position:relative;height:300px;border-radius:8px;background:linear-gradient(180deg,#F7FAFE,#EDF4FA);overflow:hidden;border:1px solid #E5ECF5">
-        <svg viewBox="0 0 900 360" style="position:absolute;inset:0;width:100%;height:100%;opacity:.28" aria-hidden="true"><path fill="#9FB5CC" d="M55 98l65-34 100 5 52 42-20 42-70 5-28 44-54-13-15-37-45-12zm264-20l83-17 52 19 22 40-31 20-19 66-48 18-27-44-45-18-12-46zm192 14l73-29 122 13 80 52-26 38-78-9-39 29-58-18-46-39zm151 142l64-14 64 25-10 50-76 17-47-35z"/></svg>
+        <svg viewBox="0 0 1000 500" class="policy-world-svg" aria-hidden="true">
+  <g fill="#DDE8F2" stroke="#C9D7E6" stroke-width="2">
+    <path d="M64 126 112 92 174 78 237 92 270 122 250 151 218 162 200 194 167 211 128 200 111 169 77 158 49 143Z"/>
+    <path d="M182 212 214 228 230 269 220 314 195 350 169 322 158 281 166 247Z"/>
+    <path d="M402 112 438 91 483 89 521 109 530 132 498 145 483 166 450 160 427 143Z"/>
+    <path d="M467 168 510 175 542 211 551 262 530 319 495 350 461 325 446 278 450 226Z"/>
+    <path d="M530 103 595 81 676 85 749 105 822 128 885 159 905 193 866 208 824 190 786 199 744 184 701 194 669 177 631 181 600 163 568 157 544 137Z"/>
+    <path d="M738 201 780 211 810 233 803 260 773 271 747 250 728 226Z"/>
+    <path d="M832 318 869 304 913 317 934 348 916 379 877 391 842 375 823 345Z"/>
+    <path d="M372 72 391 57 408 63 404 79 388 88Z"/>
+    <path d="M905 195 932 188 949 198 938 210 916 211Z"/>
+  </g>
+  <g stroke="#E8EEF5" stroke-width="1">
+    <line x1="0" y1="125" x2="1000" y2="125"/><line x1="0" y1="250" x2="1000" y2="250"/><line x1="0" y1="375" x2="1000" y2="375"/>
+    <line x1="200" y1="0" x2="200" y2="500"/><line x1="400" y1="0" x2="400" y2="500"/><line x1="600" y1="0" x2="600" y2="500"/><line x1="800" y1="0" x2="800" y2="500"/>
+  </g>
+</svg>
         <div id="policyMap"></div>
       </div>
     </div>
@@ -332,8 +357,16 @@ function change(b){if(b.latest.includes('+25'))return '↑ +25 bp';if(b.latest.i
 function gap(b){let x=targets[b.id];if(x==null)return 'Not directly comparable';let d=b.infl-x;return (d>0?'Above target ':'Below target ')+(d>0?'+':'')+d.toFixed(1)+' pp'}
 function val(b,k){if(k==='leaderProfile')return '<div style="display:flex;gap:7px;align-items:center"><img src="'+b.photo+'" alt="'+b.head+'" style="width:58px;height:72px;object-fit:cover;object-position:center 18%;border-radius:7px;background:#F7F9FC;border:1px solid #E0E6EE;display:block;flex:0 0 58px"><div><div class="main"><b>'+b.head+'</b></div><div class="muted">'+b.position+'</div></div></div>';if(k==='infl'){const m=INFLATION_META[b.id];return '<span class="num">'+b.infl.toFixed(b.id==='rbi'?2:1)+'%</span><div class="muted">'+m.measure+'<br>'+m.reference_period+' · Published '+m.publication_date+'<br>'+m.source_name+'</div>'};if(k==='gap')return gap(b);if(k==='change')return '<span class="num">'+change(b)+'</span>';if(k==='ind')return '<div style="display:grid;gap:1px">'+KEY_INDICATOR_GROUPS[b.id].map(x=>'<div style="display:grid;grid-template-columns:56px 1fr;gap:5px;padding:3px 0;border-bottom:1px solid #EEF2F6"><span style="font-size:8px;font-weight:900;color:'+BANK_COLORS[b.id]+'">'+x[0]+'</span><span style="font-size:8px;line-height:1.3">'+x[1]+'</span></div>').join('')+'<div class="muted" style="margin-top:4px;font-size:7px">Latest verified reading where available · official-source series</div></div>';if(k==='position')return '<div class="main">'+b.position+'</div>'+(b.chair?'<div class="muted">'+b.chair+'</div>':'');if(k==='setting')return '<span class="num">'+b.setting+'</span>';return '<div class="main">'+(b[k]??'—')+'</div>'}
 function renderPolicyVisuals(){
- const pos={fed:[13,43],ecb:[43,36],boe:[34,20],boj:[84,40],pboc:[67,47],rbi:[56,70],mas:[80,76]};
- const cards=B.map(b=>{const p=pos[b.id],dir=b.dir.includes('Tight')?'↑':b.dir.includes('Holding')?'→':'◆',v=b.id==='mas'?'S$NEER':b.setting,tag=b.dir.includes('Tight')?'Tightening':b.dir.includes('Holding')?'Holding':'FX framework';return '<div class="policy-map-card" data-bank="'+b.id+'" style="position:absolute;left:'+p[0]+'%;top:'+p[1]+'%;transform:translate(-50%,-50%);background:#fff;border:1px solid #D9E3EF;border-top:3px solid '+BANK_COLORS[b.id]+';border-radius:8px;padding:6px 8px;box-shadow:0 4px 12px rgba(15,42,85,.10);min-width:92px;max-width:118px;font-size:9px;white-space:nowrap"><div style="display:flex;align-items:center;gap:4px"><span class="flag" style="width:15px;height:15px;flex-basis:15px">'+FLAGS[b.id]+'</span><b>'+b.short+'</b></div><div style="font-size:12px;font-weight:900;margin-top:3px">'+v+' <span style="color:'+BANK_COLORS[b.id]+'">'+dir+'</span></div><div style="font-size:7.5px;color:#6A7C94;margin-top:2px">'+tag+'</div></div>'}).join('');
+ const pos={fed:[17,34],boe:[43,24],ecb:[48,32],rbi:[66,55],pboc:[73,39],boj:[86,34],mas:[77,66]};
+ const cards=B.map(b=>{
+   const p=pos[b.id],dir=b.dir.includes('Tight')?'↑':b.dir.includes('Holding')?'→':'◆',
+         v=b.id==='mas'?'S$NEER':b.setting,
+         tag=b.dir.includes('Tight')?'Tightening':b.dir.includes('Holding')?'Holding':'FX framework';
+   return '<div class="policy-map-marker" data-bank="'+b.id+'" style="left:'+p[0]+'%;top:'+p[1]+'%;--bank:'+BANK_COLORS[b.id]+'">'+
+     '<span class="map-pin"></span>'+
+     '<div class="map-label"><div class="map-bankline"><span class="flag">'+FLAGS[b.id]+'</span><b>'+b.short+'</b></div>'+
+     '<div class="map-setting">'+v+' <span>'+dir+'</span></div><div class="map-tag">'+tag+'</div></div></div>'
+ }).join('');
  document.getElementById('policyMap').innerHTML=cards+'<div class="map-legend"><b>Latest stance</b><span>↑ tightening</span><span>→ unchanged</span><span>◆ exchange-rate framework</span></div>';
  const eligible=B.filter(b=>b.id!=='mas'&&b.plot!=null);
  const pts=eligible.map(b=>({x:b.infl,y:b.plot,bank:b.short,id:b.id}));
