@@ -1,0 +1,27 @@
+name: Daily Central Bank Data Refresh
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "40 1 * * *"
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Record daily refresh status
+        run: |
+          python - <<'PY'
+          import json,datetime,pathlib
+          p=pathlib.Path("data/daily-refresh-status.json")
+          out={"checked_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),"schedule":"daily","coverage":["Fed macro data","FedWatch probabilities","seven-central-bank dashboard source checks"],"note":"Dashboard source observations update only when a source publishes a newer official observation."}
+          p.parent.mkdir(exist_ok=True)
+          p.write_text(json.dumps(out,indent=2),encoding="utf-8")
+          PY
+      - name: Commit refresh status
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/daily-refresh-status.json
+          git diff --cached --quiet || (git commit -m "Daily central-bank data check" && git push)
