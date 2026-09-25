@@ -332,6 +332,96 @@ section{margin-top:15px}
   .fed-detail-btn{font-size:8px;padding:5px 8px}
 }
 
+/* Presentation layout: one content edge, readable type, and stable chart rows. */
+:root{--line:#DDE6F0}
+body{font-size:14px;line-height:1.45;background:#F4F7FB}
+.container{max-width:1480px;padding:26px 24px 44px}
+.panel{border-radius:14px;box-shadow:0 5px 22px rgba(16,42,85,.055)}
+header{padding:0 2px 20px;align-items:center}
+.title h1{font-size:clamp(27px,2.7vw,38px);line-height:1.15}
+.title p{font-size:14px;margin-top:7px}
+.header-right{font-size:11px;white-space:nowrap}
+section,.top-policy-map{margin-top:20px}
+.top-policy-map{margin-top:0}
+.top-policy-map>.chart-card,.charts-grid{max-width:none;width:100%}
+h2{font-size:21px;line-height:1.25;margin-bottom:8px}
+.sub{font-size:12px;line-height:1.4;margin:3px 0 0}
+.chart-card,.top-policy-map>.chart-card{padding:18px}
+.chart-head{gap:14px;align-items:center;margin-bottom:13px}
+.chart-head h3{font-size:16px;line-height:1.3}
+.charts-grid,.visual-story,.balance-assets-grid,.bottom-grid{gap:16px}
+.charts-grid .chart-card .chartbox{height:310px}
+.visual-story .chartbox{height:320px!important}
+.dynamic-policy-chart .chartbox{height:350px!important}
+.controls{gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.controls button{font-size:11px;padding:7px 10px;border-radius:7px;min-width:38px}
+.note,.masnote{font-size:10px;line-height:1.5;margin-top:11px}
+.quadrant-insights{gap:10px;margin-top:12px}
+.quadrant-insight{padding:11px 13px;min-height:75px}
+.quadrant-insight b{font-size:10px;margin-bottom:5px}
+.quadrant-insight span{font-size:10px;line-height:1.45}
+.balance-group{min-width:0}
+.balance-assets-grid>.chart-card{display:flex;flex-direction:column}
+.balance-assets-grid .note{margin-top:auto;padding-top:12px}
+.bottom-grid{grid-template-columns:1fr 1fr 1fr;margin-top:20px}
+.bottom-card{padding:16px 18px}
+.bottom-card h3{font-size:15px;margin-bottom:10px}
+.bottom-table{font-size:11px}.bottom-table th,.bottom-table td{padding:8px 6px}
+.bottom-table th{font-size:10px}
+.sources{font-size:10px;line-height:1.55}
+.matrix-wrap{max-width:100%;overscroll-behavior-x:contain;border-radius:14px}
+.matrix{min-width:1500px;font-size:10.5px}
+.matrix th,.matrix td{padding:9px 10px;line-height:1.35}
+.matrix thead th:first-child,.matrix tbody th{width:185px}
+.matrix .muted{font-size:9px;line-height:1.35}
+.group th,.group td{font-size:9px;padding:7px 10px}
+.top-policy-map .policy-map-viewport{height:470px;min-height:0;border-radius:10px}
+.cb-map-card{min-width:125px;max-width:145px;padding:8px 9px}
+.cb-map-title{font-size:10px}.cb-map-rate{font-size:15px}
+.cb-map-change{font-size:10px}.cb-map-dir{font-size:9px}
+.cb-map-meta{font-size:8.5px;gap:3px}
+.fed-detail-btn{font-size:11px;padding:9px 12px;border-radius:8px}
+@media(max-width:1000px){
+  .container{padding:20px 18px 36px}
+  .charts-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-areas:'visual visual' 'dynamic dynamic' 'policy inflpath' 'current infltarget' 'balance balance'!important}
+  .bottom-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .bottom-grid .sources{grid-column:1/-1}
+}
+@media(max-width:700px){
+  .container{padding:16px 12px 32px}
+  header{display:block;padding-bottom:15px}
+  .title h1{font-size:26px;line-height:1.18}
+  .title p{font-size:12px}
+  .header-right{display:block;margin-top:9px;font-size:10px}
+  section{margin-top:18px}
+  h2{font-size:19px}
+  section>div:first-child:has(>h2){display:block!important}
+  section>div:first-child:has(>h2) .sub{margin:2px 0 10px!important}
+  .chart-card,.top-policy-map>.chart-card{padding:14px}
+  .chart-head{align-items:flex-start;flex-direction:column;gap:9px}
+  .chart-head h3{font-size:15px}
+  .sub{font-size:11px}
+  .charts-grid{grid-template-columns:minmax(0,1fr)!important;grid-template-areas:'visual' 'dynamic' 'policy' 'inflpath' 'current' 'infltarget' 'balance'!important;gap:14px}
+  .balance-assets-grid,.bottom-grid{grid-template-columns:minmax(0,1fr);gap:14px}
+  .bottom-grid .sources{grid-column:auto}
+  .controls{justify-content:flex-start}
+  #dynamicBank{max-width:100%;font-size:11px}
+  .dynamic-policy-chart .chart-head>div:last-child{display:flex;flex-wrap:wrap!important;overflow:visible;gap:8px!important}
+  .quadrant-insights{grid-template-columns:1fr;gap:8px}
+  .quadrant-insight{min-height:0}
+  .charts-grid .chart-card .chartbox,.visual-story .chartbox,.dynamic-policy-chart .chartbox{height:275px!important}
+  .matrix{min-width:1420px}
+  .matrix thead th:first-child,.matrix tbody th{width:160px;min-width:160px}
+  .top-policy-map .policy-map-viewport{height:465px!important;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;overscroll-behavior-x:contain}
+  .policy-leaflet-map{position:relative;width:1050px;height:100%}
+  .cb-map-card{min-width:125px;max-width:145px;padding:8px 9px}
+  .cb-map-title{font-size:10px}.cb-map-rate{font-size:15px;margin-top:3px}
+  .cb-map-change{font-size:10px;margin-top:3px}.cb-map-dir{font-size:9px}
+  .cb-map-meta{font-size:8.5px;margin-top:5px;padding-top:5px}
+  .top-policy-map .map-legend{position:sticky;left:8px;bottom:8px;width:max-content;max-width:calc(100% - 16px);margin-top:-35px;z-index:500;pointer-events:none;font-size:9px;justify-content:flex-start}
+  .fed-detail-btn{font-size:11px;padding:8px 11px}
+}
+
 </style>
 </head>
 <body><div class="container">
