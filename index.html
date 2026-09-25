@@ -29,15 +29,19 @@ section{margin-top:11px}
 .policy-map-svg .bank-leader,
 .policy-map-svg .bank-label-bg,
 .policy-map-svg .bank-label-accent,
+.policy-map-svg .bank-label-bank,
 .policy-map-svg .bank-label-setting,
 .policy-map-svg .bank-label-tag{display:none}
-.policy-map-svg .bank-label-bank{display:block;font-size:9px;font-weight:900;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
-.mobile-policy-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:7px}
-.mobile-policy-card{border:1px solid #DFE7F1;border-left:3px solid var(--bank);border-radius:8px;background:#fff;padding:7px 8px;min-width:0}
-.mobile-policy-card .m-head{display:flex;align-items:center;gap:5px;font-size:9px;font-weight:900;color:#17305A}
-.mobile-policy-card .m-head .flag{width:15px;height:15px;flex-basis:15px}
-.mobile-policy-card .m-setting{font-size:11px;font-weight:900;color:#15315C;margin-top:3px;white-space:nowrap}
-.mobile-policy-card .m-dir{font-size:7.5px;color:#71839A;margin-top:2px}
+.policy-map-svg .mobile-pin-label{
+  display:block;
+  font-size:9px;
+  font-weight:900;
+  fill:#17305A;
+  paint-order:stroke;
+  stroke:#fff;
+  stroke-width:3px;
+  stroke-linejoin:round
+}
 
 .policy-map-svg .bank-label-bank{font-size:9px}
 .policy-map-svg .bank-label-setting{font-size:11px}
@@ -146,9 +150,10 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .policy-map-svg .bank-label-bank{font-size:11px;font-weight:800;fill:#17305A}
 .policy-map-svg .bank-label-setting{font-size:13px;font-weight:900;fill:#15315C}
 .policy-map-svg .bank-label-tag{font-size:9px;fill:#71839A}
+.policy-map-svg .mobile-pin-label{display:none}
 .map-legend{position:absolute;left:10px;bottom:8px;display:flex;gap:7px;flex-wrap:wrap;background:rgba(255,255,255,.94);border:1px solid #DFE7F1;border-radius:7px;padding:5px 7px;font-size:8px;color:#536A86;z-index:4}
 .map-legend b{color:#17305A}
-.mobile-policy-summary{display:none}
+
 .policy-map-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#71839A}
 
 .policy-tools-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
@@ -216,7 +221,6 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
         <div class="policy-map-loading" id="policyMapLoading">Loading geographic map…</div>
         <div class="map-legend"><b>Latest stance</b><span>↑ Tighten</span><span>→ Hold</span><span>◆ FX framework</span></div>
       </div>
-      <div class="mobile-policy-summary" id="mobilePolicySummary"></div>
     </div>
 </section>
 
@@ -485,7 +489,7 @@ async function renderGeoPolicyMap(){
 
      if(isMobile){
        g.append('text')
-        .attr('class','bank-label-bank')
+        .attr('class','mobile-pin-label')
         .attr('x',p[0]+12)
         .attr('y',p[1]-10)
         .text(b.short);
@@ -496,14 +500,6 @@ async function renderGeoPolicyMap(){
      g.append('text').attr('class','bank-label-bank').attr('x',lx+9).attr('y',ly+(isMobile?14:16)).text(b.short);
      g.append('text').attr('class','bank-label-setting').attr('x',lx+9).attr('y',ly+(isMobile?30:34)).text(v+' '+dir);
      g.append('text').attr('class','bank-label-tag').attr('x',lx+9).attr('y',ly+(isMobile?43:48)).text(tag);
-   }
-   const mobileSummary=document.getElementById('mobilePolicySummary');
-   if(mobileSummary){
-     mobileSummary.innerHTML=B.map(b=>{
-       const dir=b.dir.includes('Tight')?'↑ Tightening':b.dir.includes('Holding')?'→ Holding':'◆ FX framework';
-       const v=b.id==='mas'?'S$NEER':b.setting;
-       return '<div class="mobile-policy-card" style="--bank:'+BANK_COLORS[b.id]+'"><div class="m-head"><span class="flag">'+FLAGS[b.id]+'</span>'+b.short+'</div><div class="m-setting">'+v+'</div><div class="m-dir">'+dir+'</div></div>';
-     }).join('');
    }
    if(loading)loading.style.display='none';
  }catch(err){
