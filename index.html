@@ -6,6 +6,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 :root{
   --bg:#F5F7FB;--card:#FFFFFF;--ink:#10244A;--text:#233A5E;--muted:#64748B;--line:#D9E2EF;
@@ -24,103 +26,27 @@ header{display:flex;justify-content:space-between;align-items:flex-start;gap:18p
 section{margin-top:11px}
 .top-policy-map{margin-top:6px}
 .top-policy-map>.chart-card{width:100%;max-width:1330px;margin-left:auto;margin-right:auto;padding:12px}
-.top-policy-map .policy-map-viewport{min-height:360px}
+.top-policy-map .policy-map-viewport{position:relative;height:390px;border-radius:10px;background:#EEF4FA;overflow:hidden;border:1px solid #E1E9F3}
+.policy-leaflet-map{position:absolute;inset:0;z-index:1}
+.policy-leaflet-map .leaflet-control-attribution{font-size:7px}
+.policy-leaflet-map .leaflet-control-zoom a{font-size:16px}
+.cb-div-icon{background:transparent!important;border:0!important}
+.cb-flag-pin{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;border:3px solid var(--bank);box-shadow:0 2px 8px rgba(15,42,85,.24);overflow:hidden}
+.cb-flag-pin svg{width:22px;height:22px;border-radius:50%;display:block}
+.cb-popup .leaflet-popup-content-wrapper{border-radius:9px;box-shadow:0 7px 20px rgba(15,42,85,.16)}
+.cb-popup .leaflet-popup-content{margin:9px 11px;min-width:150px}
+.cb-popup-bank{font-size:11px;font-weight:900;color:#17305A}
+.cb-popup-rate{font-size:15px;font-weight:900;color:#102A55;margin-top:3px}
+.cb-popup-dir{font-size:9px;margin-top:2px;color:#64748B}
+.map-legend{position:absolute;left:10px;bottom:8px;display:flex;gap:7px;flex-wrap:wrap;background:rgba(255,255,255,.94);border:1px solid #DFE7F1;border-radius:7px;padding:5px 7px;font-size:8px;color:#536A86;z-index:500}
+.map-legend b{color:#17305A}
 @media(max-width:760px){
-.policy-map-svg .bank-leader,
-.policy-map-svg .bank-label-bg,
-.policy-map-svg .bank-label-accent,
-.policy-map-svg .bank-label-bank,
-.policy-map-svg .bank-label-setting,
-.policy-map-svg .bank-label-tag{display:none}
-.policy-map-svg .mobile-pin-label{
-  display:block;
-  font-size:9px;
-  font-weight:900;
-  fill:#17305A;
-  paint-order:stroke;
-  stroke:#fff;
-  stroke-width:3px;
-  stroke-linejoin:round
-}
-
-.policy-map-svg .bank-label-bank{font-size:9px}
-.policy-map-svg .bank-label-setting{font-size:11px}
-.policy-map-svg .bank-label-tag{font-size:7.5px}
-.map-legend{white-space:normal;line-height:1.25;padding:5px 6px}
+.policy-map-viewport{height:330px}
+.cb-flag-pin{width:28px;height:28px}
+.cb-flag-pin svg{width:20px;height:20px}
+.map-legend{left:8px;right:8px;justify-content:center;font-size:7.5px;gap:5px;line-height:1.25}
 .map-legend span{white-space:nowrap}
-.top-policy-map .policy-map-viewport{min-height:0}}
-h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
-.sub{font-size:10.5px;color:#6C7F98;margin:-2px 0 7px}
-
-.snap{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.snap .panel{padding:9px 10px 8px;border-radius:8px;border-top:3px solid var(--bank)}.snap a.panel{display:block;color:inherit;text-decoration:none;transition:transform .15s ease,box-shadow .15s ease}.snap a.panel:hover{transform:translateY(-2px);box-shadow:0 7px 18px rgba(15,42,85,.10)}
-.bankline{display:flex;align-items:center;gap:7px}.flag{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;overflow:hidden;background:#F8FAFC;border:1px solid #D9E2EF;line-height:1;flex:0 0 24px}.flag svg{width:100%;height:100%;display:block}.bankbadge{font-weight:850;font-size:11px;color:#19345F}
-.country{font-size:9px;color:#6C7F98;margin-top:1px}
-.rate{font-size:18px;font-weight:900;line-height:1.05;margin:6px 0 3px;color:#112B57}
-.mini{font-size:9px;color:#63758D;line-height:1.25}
-.status{font-size:9.5px;font-weight:800;margin-top:4px;color:var(--bank)}
-
-.summary-grid{display:grid;grid-template-columns:2.3fr .75fr;gap:8px;margin-top:8px}
-.summary-panel{padding:10px 12px;min-height:166px}
-.summary-panel h3{font-size:13px;margin:0 0 6px;color:#17305A}
-.compact-table{width:100%;border-collapse:collapse;font-size:10px}
-.compact-table td{padding:4px 5px;border-top:1px solid #E5EBF3;vertical-align:middle}
-.compact-table td:first-child{font-weight:800;color:#1D365F;width:30%}
-.compact-table .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bank);margin-right:7px}
-.compact-table .strong{font-weight:850;color:#132B54}
-.compact-table .dir{font-weight:850}.compact-table .tightening{color:#DC2626}.compact-table .holding{color:#64748B}.compact-table .framework{color:#7C3AED}
-.takeaway-list{display:grid;gap:7px}
-.takeaway-item{display:grid;grid-template-columns:34px 1fr;gap:8px;align-items:center}
-.takeaway-icon{width:31px;height:31px;border-radius:7px;background:#F3F7FC;display:flex;align-items:center;justify-content:center;font-size:18px;color:#2A64D6}
-.takeaway-item b{display:block;font-size:16px;line-height:1;color:#142D58}.takeaway-item span{font-size:9px;color:#667A95;line-height:1.25}
-
-.cards{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.profile{padding:8px;border-top:3px solid var(--bank);border-radius:8px;min-height:265px}
-.profile h3{font-size:11px;margin:0 0 4px;color:#17315B}.profile h3 .flag{margin-right:5px}.profile .fullbank{font-size:8.5px;color:#6A7C94;margin-bottom:5px}
-.photo{height:108px;border-radius:6px;overflow:hidden;background:#EEF2F6;border:1px solid #E0E6EE}.photo img{width:100%;height:100%;object-fit:contain;object-position:center top;display:block;background:#F7F9FC}
-.leader{font-size:9px;line-height:1.22;min-height:47px;margin-top:5px;color:#314966}.leader b{font-size:10.5px;color:#132B54}
-.profile-facts{margin-top:4px;display:grid;gap:3px}
-.profile-row{display:grid;grid-template-columns:42px 1fr;gap:4px;font-size:9px;line-height:1.25}
-.profile-row .k{color:#7A899D}.profile-row .v{font-weight:780;color:#1D355D}.profile-row .v.decision{color:var(--bank)}
-
-.matrix-wrap{overflow-x:auto;overflow-y:hidden}
-.matrix{border-collapse:collapse;min-width:1330px;width:100%;font-size:9px;table-layout:fixed}
-.matrix th,.matrix td{border:1px solid #DBE3EE;padding:5px 7px;vertical-align:top;background:#fff;line-height:1.22}
-.matrix thead th{background:#F8FAFD;color:#17315B;font-weight:850;text-align:center}
-.matrix thead th:first-child{text-align:left;width:175px}
-.matrix tbody th{width:175px;text-align:left;background:#FAFBFD;color:#1D355D;font-weight:760}
-.matrix tbody tr:nth-child(even):not(.group) td{background:#FCFDFE}
-.group th,.group td{background:linear-gradient(90deg,#DDE8F5,#EAF1F8)!important;color:#31547E!important;font-weight:900;text-transform:uppercase;font-size:8px;letter-spacing:.04em;padding:4px 7px}
-.group th{border-left:3px solid #2F64A3}
-.num{font-weight:900;color:#122C57}.main{font-weight:650}.muted{color:#71839A;font-size:8px}
-.pill{display:inline-block;padding:1px 4px;border:1px solid #D9E2EE;border-radius:99px;background:#F8FAFC;margin:1px;font-size:7.5px}
-
-.charts-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:'visual visual' 'dynamic dynamic' 'policy inflpath' 'current infltarget' 'balance balance';gap:8px;max-width:1330px;margin-left:auto;margin-right:auto}.charts-grid>.chart-card{width:100%;min-width:0;max-width:none;box-sizing:border-box;margin:0!important;grid-column:auto!important}.visual-story{grid-area:visual;display:grid;grid-template-columns:1fr;gap:8px;min-width:0}.visual-story>.panel{min-width:0;overflow:hidden}
-@media(max-width:900px){.visual-story{grid-template-columns:1fr!important}.visual-story .chartbox{height:270px!important}}.dynamic-policy-chart{grid-area:dynamic}.policy-rate-paths{grid-area:policy}.inflation-paths{grid-area:inflpath}.current-policy-card{grid-area:current}.inflation-target-card{grid-area:infltarget}.charts-grid .chart-card .chartbox{height:285px}.charts-grid>.balance-group{grid-area:balance}
-.chart-card{padding:10px}.chart-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:5px}.chart-head h3{font-size:13px;margin:0;color:#17305A}.chart-head .sub{margin:2px 0 0}
-.chartbox{height:220px}.chartbox.small{height:220px}
-.controls{display:flex;gap:3px}.controls button{border:1px solid #D5DEEA;background:#fff;color:#38506F;border-radius:5px;padding:5px 8px;font-size:9px;font-weight:800;cursor:pointer}.controls .active{background:#2563EB;color:#fff;border-color:#2563EB}
-.note{font-size:8.5px;color:#697C95;line-height:1.35;margin-top:5px}
-.masnote{font-size:8px;color:#6E5A73;line-height:1.3;margin-top:3px}
-
-.bottom-grid{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:8px}
-.bottom-card{padding:10px 12px}.bottom-card h3{font-size:12px;margin:0 0 6px;color:#17305A}
-.bottom-table{width:100%;border-collapse:collapse;font-size:9px}.bottom-table th,.bottom-table td{padding:4px 4px;border-top:1px solid #E2E8F0;text-align:left}.bottom-table th{color:#6D8098;font-size:8px}.bottom-table td:first-child{font-weight:780;color:#19345F}
-.sources{font-size:8.7px;color:#5F7188;line-height:1.45}.sources ul{margin:4px 0 0 14px;padding:0}.sources li{margin:3px 0}
-
-@media(max-width:1200px){
-  .snap{grid-template-columns:repeat(4,1fr)}.cards{grid-template-columns:repeat(4,1fr)}
-  .summary-grid,.bottom-grid{grid-template-columns:1fr}
 }
-@media(max-width:700px){
-  .container{padding:12px}.snap{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:repeat(2,1fr)}
-  .title h1{font-size:25px}.header-right{flex-direction:column;align-items:flex-end}
-}
-.balance-assets-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
-.balance-assets-grid .chart-card{width:100%;min-width:0;max-width:none;box-sizing:border-box;margin:0!important;grid-column:auto!important}.balance-assets-grid .chart-card:first-child,.balance-assets-grid .chart-card:last-child{width:100%}.balance-assets-grid .reserve-card{grid-column:1;width:100%}
-@media(max-width:900px){.balance-assets-grid,.charts-grid{grid-template-columns:1fr}.charts-grid{grid-template-areas:'visual' 'dynamic' 'policy' 'inflpath' 'current' 'infltarget' 'balance'}}
-.policy-visual-suite{grid-column:1/-1;display:grid;grid-template-columns:1.05fr .95fr;gap:8px;min-width:0}
-.policy-visual-suite>.panel{min-width:0;overflow:hidden}
 .policy-tools-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
 .policy-tool{border:1px solid #E0E8F2;border-top:3px solid var(--bank);border-radius:8px;background:linear-gradient(180deg,#fff,#F8FAFD);padding:8px 7px;min-height:108px}
 .policy-tool .tool-bank{font-size:9px;font-weight:900;color:#19345F}.policy-tool .tool-type{font-size:8px;color:#64748B;margin-top:2px}
@@ -136,21 +62,6 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .timeline-item::before{content:'';position:absolute;width:9px;height:9px;border-radius:50%;background:var(--bank);top:-12px;left:50%;transform:translateX(-50%);box-shadow:0 0 0 3px #fff}
 .timeline-date{font-size:8px;color:#71839A;font-weight:800}.timeline-bank{font-size:10px;color:#17305A;font-weight:900;margin-top:2px}.timeline-action{font-size:12px;color:var(--bank);font-weight:900;margin-top:6px}.timeline-setting{font-size:8px;color:#64748B;margin-top:3px;line-height:1.25}
 .policy-map-viewport{position:relative;aspect-ratio:2/1;height:auto;border-radius:10px;background:linear-gradient(180deg,#F9FBFE,#EEF4FA);overflow:hidden;border:1px solid #E1E9F3}
-.policy-map-svg{position:absolute;inset:0;width:100%;height:100%;display:block}
-.policy-map-svg .sphere{fill:#F8FBFE;stroke:#DCE6F0;stroke-width:1}
-.policy-map-svg .graticule{fill:none;stroke:#E6EDF5;stroke-width:.7}
-.policy-map-svg .country{fill:#DCE6F0;stroke:#FFFFFF;stroke-width:.8}
-.policy-map-svg .coastline{fill:none;stroke:#C2D0DF;stroke-width:.8}
-.policy-map-svg .bank-leader{stroke:#AFC0D2;stroke-width:1.2;fill:none}
-.policy-map-svg .bank-pin{stroke:#fff;stroke-width:3}
-.policy-map-svg .bank-pin-core{fill:#fff}
-.policy-map-svg .bank-marker circle{vector-effect:non-scaling-stroke}
-.policy-map-svg .bank-label-bg{fill:rgba(255,255,255,.98);stroke:#D7E2EE;stroke-width:1}
-.policy-map-svg .bank-label-accent{stroke-width:3}
-.policy-map-svg .bank-label-bank{font-size:11px;font-weight:800;fill:#17305A}
-.policy-map-svg .bank-label-setting{font-size:13px;font-weight:900;fill:#15315C}
-.policy-map-svg .bank-label-tag{font-size:9px;fill:#71839A}
-.policy-map-svg .mobile-pin-label{display:none}
 .map-legend{position:absolute;left:10px;bottom:8px;display:flex;gap:7px;flex-wrap:wrap;background:rgba(255,255,255,.94);border:1px solid #DFE7F1;border-radius:7px;padding:5px 7px;font-size:8px;color:#536A86;z-index:4}
 .map-legend b{color:#17305A}
 
@@ -189,16 +100,6 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .transmission-track{display:grid;grid-template-columns:1fr;gap:13px}
 .transmission-node{margin-right:0!important;min-height:78px}
 .transmission-node:not(:last-child)::after{content:'↓';right:auto;left:50%;top:auto;bottom:-17px;transform:translateX(-50%)}
-.policy-map-viewport{aspect-ratio:2/1;height:auto}
-.policy-map-marker .map-label{min-width:72px;padding:4px 5px}
-.policy-map-marker .map-setting{font-size:9px}
-.policy-map-marker .map-tag{font-size:6.5px}
-.policy-map-marker[data-bank="boe"]{--label-x:-78px;--label-y:-48px}
-.policy-map-marker[data-bank="ecb"]{--label-x:8px;--label-y:6px}
-.policy-map-marker[data-bank="pboc"]{--label-x:-78px;--label-y:7px}
-.policy-map-marker[data-bank="boj"]{--label-x:8px;--label-y:-34px}
-.policy-map-marker[data-bank="rbi"]{--label-x:-76px;--label-y:8px}
-.policy-map-marker[data-bank="mas"]{--label-x:8px;--label-y:6px}
 .map-legend{left:8px;right:8px;justify-content:center;font-size:7.5px;gap:5px}
 .timeline-item{flex-basis:132px}
 }
@@ -215,10 +116,9 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 
 <section class="top-policy-map">
   <div class="panel chart-card">
-      <div class="chart-head"><div><h3>Global Central Bank Policy Map</h3><div class="sub">Current policy setting and latest direction · markers placed by geographic coordinates</div></div></div>
+      <div class="chart-head"><div><h3>Global Central Bank Policy Map</h3><div class="sub">Interactive geographic view · tap a flag pin for policy details</div></div></div>
       <div class="policy-map-viewport" id="policyMapViewport">
-        <svg id="policyMapSvg" class="policy-map-svg" viewBox="0 0 960 480" role="img" aria-label="World map showing the seven central banks"></svg>
-        <div class="policy-map-loading" id="policyMapLoading">Loading geographic map…</div>
+        <div id="policyLeafletMap" class="policy-leaflet-map" aria-label="Interactive world map showing the seven central banks"></div>
         <div class="map-legend"><b>Latest stance</b><span>↑ Tighten</span><span>→ Hold</span><span>◆ FX framework</span></div>
       </div>
     </div>
@@ -408,104 +308,60 @@ const rows=[
 function change(b){if(b.latest.includes('+25'))return '↑ +25 bp';if(b.latest.includes('0 bp'))return '— 0 bp';if(b.latest.includes('FX'))return 'FX Framework';return b.latest}
 function gap(b){let x=targets[b.id];if(x==null)return 'Not directly comparable';let d=b.infl-x;return (d>0?'Above target ':'Below target ')+(d>0?'+':'')+d.toFixed(1)+' pp'}
 function val(b,k){if(k==='leaderProfile')return '<div style="display:flex;gap:7px;align-items:center"><img src="'+b.photo+'" alt="'+b.head+'" style="width:58px;height:72px;object-fit:cover;object-position:center 18%;border-radius:7px;background:#F7F9FC;border:1px solid #E0E6EE;display:block;flex:0 0 58px"><div><div class="main"><b>'+b.head+'</b></div><div class="muted">'+b.position+'</div></div></div>';if(k==='infl'){const m=INFLATION_META[b.id];return '<span class="num">'+b.infl.toFixed(b.id==='rbi'?2:1)+'%</span><div class="muted">'+m.measure+'<br>'+m.reference_period+' · Published '+m.publication_date+'<br>'+m.source_name+'</div>'};if(k==='gap')return gap(b);if(k==='change')return '<span class="num">'+change(b)+'</span>';if(k==='ind')return '<div style="display:grid;gap:1px">'+KEY_INDICATOR_GROUPS[b.id].map(x=>'<div style="display:grid;grid-template-columns:56px 1fr;gap:5px;padding:3px 0;border-bottom:1px solid #EEF2F6"><span style="font-size:8px;font-weight:900;color:'+BANK_COLORS[b.id]+'">'+x[0]+'</span><span style="font-size:8px;line-height:1.3">'+x[1]+'</span></div>').join('')+'<div class="muted" style="margin-top:4px;font-size:7px">Latest verified reading where available · official-source series</div></div>';if(k==='position')return '<div class="main">'+b.position+'</div>'+(b.chair?'<div class="muted">'+b.chair+'</div>':'');if(k==='setting')return '<span class="num">'+b.setting+'</span>';return '<div class="main">'+(b[k]??'—')+'</div>'}
-let policyMapWorld=null;
-async function renderGeoPolicyMap(){
- const svg=d3.select('#policyMapSvg'),loading=document.getElementById('policyMapLoading');
- if(!svg.node())return;
- svg.selectAll('*').remove();
- const width=960,height=480;
- try{
-   if(!policyMapWorld){
-     const world=await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
-     policyMapWorld=topojson.feature(world,world.objects.countries);
-   }
-   const projection=d3.geoNaturalEarth1().fitExtent([[18,18],[942,438]],policyMapWorld);
-   const path=d3.geoPath(projection);
-   svg.append('path').datum({type:'Sphere'}).attr('class','sphere').attr('d',path);
-   svg.append('path').datum(d3.geoGraticule10()).attr('class','graticule').attr('d',path);
-   svg.append('g').selectAll('path').data(policyMapWorld.features).join('path').attr('class','country').attr('d',path);
+let policyLeafletMap=null;
+function renderGeoPolicyMap(){
+ const el=document.getElementById('policyLeafletMap');
+ if(!el||!window.L)return;
+ if(policyLeafletMap){ policyLeafletMap.remove(); policyLeafletMap=null; }
 
-   const geo={
-     fed:{lat:38.8951,lon:-77.0364},
-     boe:{lat:51.5142,lon:-0.0885},
-     ecb:{lat:50.1095,lon:8.6737},
-     pboc:{lat:39.9075,lon:116.3913},
-     boj:{lat:35.6867,lon:139.7709},
-     rbi:{lat:18.9322,lon:72.8368},
-     mas:{lat:1.2838,lon:103.8515}
-   };
+ policyLeafletMap=L.map(el,{
+   zoomControl:true,
+   attributionControl:true,
+   scrollWheelZoom:false,
+   worldCopyJump:true,
+   minZoom:1,
+   maxZoom:7
+ });
 
-   const isMobile=window.matchMedia('(max-width:760px)').matches;
-   const offsets=isMobile ? {
-     fed:[18,-2],boe:[-102,-58],ecb:[20,10],pboc:[-108,12],boj:[-112,-46],rbi:[-102,18],mas:[-112,14]
-   } : {
-     fed:[18,-4],boe:[-115,-62],ecb:[16,18],pboc:[-120,18],boj:[18,-50],rbi:[-108,22],mas:[18,18]
-   };
+ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+   attribution:'&copy; OpenStreetMap contributors',
+   maxZoom:19
+ }).addTo(policyLeafletMap);
 
-   const labelW=isMobile?94:104,labelH=isMobile?50:55;
-   const margin=8;
-   const defs=svg.append('defs');
+ const geo={
+   fed:{lat:38.8951,lon:-77.0364},
+   boe:{lat:51.5142,lon:-0.0885},
+   ecb:{lat:50.1095,lon:8.6737},
+   pboc:{lat:39.9075,lon:116.3913},
+   boj:{lat:35.6867,lon:139.7709},
+   rbi:{lat:18.9322,lon:72.8368},
+   mas:{lat:1.2838,lon:103.8515}
+ };
 
-   for(const b of B){
-     const patternId='flag-pattern-'+b.id;
-     const encoded='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(FLAGS[b.id]);
-     const pattern=defs.append('pattern')
-       .attr('id',patternId)
-       .attr('patternUnits','objectBoundingBox')
-       .attr('width',1).attr('height',1)
-       .attr('viewBox','0 0 36 36')
-       .attr('preserveAspectRatio','xMidYMid slice');
-     pattern.append('image')
-       .attr('href',encoded)
-       .attr('x',0).attr('y',0)
-       .attr('width',36).attr('height',36)
-       .attr('preserveAspectRatio','xMidYMid slice');
-   }
-
-   for(const b of B){
-     const p=projection([geo[b.id].lon,geo[b.id].lat]); if(!p)continue;
-     const [dx,dy]=offsets[b.id];
-     let lx=p[0]+dx, ly=p[1]+dy;
-
-     // Keep every label fully inside the SVG viewport on all screen sizes.
-     lx=Math.max(margin,Math.min(width-labelW-margin,lx));
-     ly=Math.max(margin,Math.min(height-labelH-34,ly));
-
-     const dir=b.dir.includes('Tight')?'↑':b.dir.includes('Holding')?'→':'◆';
-     const v=b.id==='mas'?'S$NEER':b.setting;
-     const tag=b.dir.includes('Tight')?'Tightening':b.dir.includes('Holding')?'Holding':'FX framework';
-     const color=BANK_COLORS[b.id];
-
-     const labelIsLeft=(lx+labelW/2)<p[0];
-     const anchorX=labelIsLeft?lx+labelW:lx;
-     const anchorY=ly+labelH/2;
-
-     const g=svg.append('g').attr('class','bank-marker').attr('data-bank',b.id);
-     g.append('path').attr('class','bank-leader').attr('d','M'+p[0]+','+p[1]+' L'+anchorX+','+anchorY);
-
-     g.append('circle').attr('cx',p[0]).attr('cy',p[1]).attr('r',12).attr('fill',color).attr('opacity',0.18);
-     g.append('circle').attr('cx',p[0]).attr('cy',p[1]).attr('r',10).attr('fill','#fff').attr('stroke',color).attr('stroke-width',2.5);
-     g.append('circle').attr('cx',p[0]).attr('cy',p[1]).attr('r',7.2).attr('fill','url(#flag-pattern-'+b.id+')').attr('stroke','#fff').attr('stroke-width',1);
-
-     if(isMobile){
-       g.append('text')
-        .attr('class','mobile-pin-label')
-        .attr('x',p[0]+12)
-        .attr('y',p[1]-10)
-        .text(b.short);
-     }
-
-     g.append('rect').attr('class','bank-label-bg').attr('x',lx).attr('y',ly).attr('width',labelW).attr('height',labelH).attr('rx',8);
-     g.append('line').attr('class','bank-label-accent').attr('x1',lx+1.5).attr('x2',lx+1.5).attr('y1',ly+7).attr('y2',ly+labelH-7).attr('stroke',color);
-     g.append('text').attr('class','bank-label-bank').attr('x',lx+9).attr('y',ly+(isMobile?14:16)).text(b.short);
-     g.append('text').attr('class','bank-label-setting').attr('x',lx+9).attr('y',ly+(isMobile?30:34)).text(v+' '+dir);
-     g.append('text').attr('class','bank-label-tag').attr('x',lx+9).attr('y',ly+(isMobile?43:48)).text(tag);
-   }
-   if(loading)loading.style.display='none';
- }catch(err){
-   console.error('Policy map load failed',err);
-   if(loading)loading.textContent='Geographic map unavailable — policy data remain available in the adjacent charts.';
+ const bounds=[];
+ for(const b of B){
+   const g=geo[b.id];
+   const icon=L.divIcon({
+     className:'cb-div-icon',
+     html:'<div class="cb-flag-pin" style="--bank:'+BANK_COLORS[b.id]+'">'+FLAGS[b.id]+'</div>',
+     iconSize:[30,30],
+     iconAnchor:[15,15],
+     popupAnchor:[0,-12]
+   });
+   const marker=L.marker([g.lat,g.lon],{icon,keyboard:true}).addTo(policyLeafletMap);
+   const dir=b.dir.includes('Tight')?'↑ Tightening':b.dir.includes('Holding')?'→ Holding':'◆ FX framework';
+   const v=b.id==='mas'?'S$NEER':b.setting;
+   marker.bindPopup(
+     '<div class="cb-popup-bank">'+b.name+'</div>'+
+     '<div class="cb-popup-rate">'+v+'</div>'+
+     '<div class="cb-popup-dir">'+dir+'</div>',
+     {className:'cb-popup'}
+   );
+   marker.bindTooltip(b.short,{direction:'top',offset:[0,-12],opacity:.92,permanent:false});
+   bounds.push([g.lat,g.lon]);
  }
+ policyLeafletMap.fitBounds(bounds,{padding:[35,35],maxZoom:2});
+ setTimeout(()=>policyLeafletMap.invalidateSize(),100);
 }
 function renderPolicyVisuals(){
  renderGeoPolicyMap();
