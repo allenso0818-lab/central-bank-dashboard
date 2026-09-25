@@ -240,24 +240,55 @@ section{margin-top:15px}
     .matrix thead th:first-child,.matrix tbody th{min-width:145px}
 }
 
-/* Central-bank map popup now contains the former snapshot information */
-.cb-popup .leaflet-popup-content{margin:10px 12px;min-width:205px}
-.cb-popup-card{min-width:205px}
-.cb-popup-head{display:flex;align-items:center;gap:8px}
-.cb-popup-head .flag{width:25px;height:25px;flex:0 0 25px}
-.cb-popup-bank{font-size:11px;font-weight:900;color:#17305A;line-height:1.2}
-.cb-popup-country{font-size:8px;color:#71839A;margin-top:1px}
-.cb-popup-rate{font-size:22px;font-weight:900;color:#102A55;margin-top:9px;line-height:1}
-.cb-popup-change{font-size:12px;font-weight:900;color:var(--bank);margin-top:6px}
-.cb-popup-dir{font-size:9px;color:#64748B;margin-top:1px}
-.cb-popup-divider{height:1px;background:#E5EBF3;margin:8px 0 6px}
-.cb-popup-row{display:flex;justify-content:space-between;gap:12px;font-size:9px;line-height:1.35;padding:2px 0}
-.cb-popup-row b{color:#17305A}
-.cb-popup-row span{text-align:right;color:#415875}
+
+/* Always-visible central-bank information cards on the map */
+.cb-permanent-tooltip{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+}
+.cb-permanent-tooltip:before{display:none!important}
+.cb-map-card{
+  min-width:112px;
+  max-width:132px;
+  background:rgba(255,255,255,.97);
+  border:1px solid #DCE5EF;
+  border-left:3px solid var(--bank);
+  border-radius:8px;
+  box-shadow:0 3px 10px rgba(15,42,85,.10);
+  padding:6px 7px;
+  color:#17305A;
+  line-height:1.15;
+}
+.cb-map-title{font-size:8px;font-weight:900;letter-spacing:.01em}
+.cb-map-rate{font-size:12px;font-weight:900;color:#102A55;margin-top:3px}
+.cb-map-change{font-size:8.5px;font-weight:900;color:var(--bank);margin-top:3px}
+.cb-map-dir{font-size:7px;color:#687C94;margin-top:1px}
+.cb-map-meta{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:1px;
+  margin-top:4px;
+  padding-top:4px;
+  border-top:1px solid #E7EDF4;
+  font-size:6.8px;
+  color:#5E738C;
+}
+.cb-map-meta b{color:#294665}
 @media(max-width:760px){
-  .cb-popup .leaflet-popup-content{min-width:185px}
-  .cb-popup-card{min-width:185px}
-  .cb-popup-rate{font-size:20px}
+  .top-policy-map .policy-map-viewport{height:390px!important}
+  .cb-map-card{
+    min-width:88px;
+    max-width:98px;
+    padding:4px 5px;
+    border-radius:6px;
+  }
+  .cb-map-title{font-size:6.8px}
+  .cb-map-rate{font-size:9.5px;margin-top:2px}
+  .cb-map-change{font-size:6.8px;margin-top:2px}
+  .cb-map-dir{font-size:5.8px}
+  .cb-map-meta{font-size:5.7px;margin-top:3px;padding-top:3px}
 }
 
 </style>
@@ -494,19 +525,33 @@ function renderGeoPolicyMap(){
      ? (b.id==='pboc'?'Govt objective ~2%*':'No formal target')
      : (b.id==='rbi'?'4% (2–6% band)':m.target_value.toFixed(0)+'%');
 
-   marker.bindPopup(
-     '<div class="cb-popup-card" style="--bank:'+BANK_COLORS[b.id]+'">'+
-       '<div class="cb-popup-head"><span class="flag">'+FLAGS[b.id]+'</span><div><div class="cb-popup-bank">'+b.name+'</div><div class="cb-popup-country">'+b.country+'</div></div></div>'+
-       '<div class="cb-popup-rate">'+v+'</div>'+
-       '<div class="cb-popup-change">'+b.latest+'</div>'+
-       '<div class="cb-popup-dir">'+dir+'</div>'+
-       '<div class="cb-popup-divider"></div>'+
-       '<div class="cb-popup-row"><b>Inflation</b><span>'+b.infl.toFixed(b.id==='rbi'?2:1)+'%</span></div>'+
-       '<div class="cb-popup-row"><b>Target</b><span>'+target+'</span></div>'+
-     '</div>',
-     {className:'cb-popup',maxWidth:270}
-   );
-   marker.bindTooltip(b.short,{direction:'top',offset:[0,-12],opacity:.92,permanent:false});
+   const labelPlacement={
+     fed:{direction:'right',offset:[12,-4]},
+     boe:{direction:'left',offset:[-14,-38]},
+     ecb:{direction:'right',offset:[14,18]},
+     pboc:{direction:'left',offset:[-14,0]},
+     boj:{direction:'right',offset:[14,-28]},
+     rbi:{direction:'left',offset:[-14,22]},
+     mas:{direction:'right',offset:[14,22]}
+   }[b.id];
+
+   const infoHtml=
+     '<div class="cb-map-card" style="--bank:'+BANK_COLORS[b.id]+'">'+
+       '<div class="cb-map-title">'+b.short+'</div>'+
+       '<div class="cb-map-rate">'+v+'</div>'+
+       '<div class="cb-map-change">'+b.latest+'</div>'+
+       '<div class="cb-map-dir">'+dir+'</div>'+
+       '<div class="cb-map-meta"><span><b>Infl.</b> '+b.infl.toFixed(b.id==='rbi'?2:1)+'%</span><span><b>Target</b> '+target+'</span></div>'+
+     '</div>';
+
+   marker.bindTooltip(infoHtml,{
+     permanent:true,
+     interactive:false,
+     direction:labelPlacement.direction,
+     offset:labelPlacement.offset,
+     opacity:1,
+     className:'cb-permanent-tooltip'
+   });
    bounds.push([g.lat,g.lon]);
  }
  policyLeafletMap.fitBounds(bounds,{padding:[35,35],maxZoom:2});
