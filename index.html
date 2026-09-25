@@ -400,7 +400,6 @@ async function renderGeoPolicyMap(){
    svg.append('path').datum({type:'Sphere'}).attr('class','sphere').attr('d',path);
    svg.append('path').datum(d3.geoGraticule10()).attr('class','graticule').attr('d',path);
    svg.append('g').selectAll('path').data(policyMapWorld.features).join('path').attr('class','country').attr('d',path);
-   svg.append('path').datum(topojson.mesh({type:'Topology',objects:{}},null)).attr('d',null);
    const geo={
      fed:{lat:38.9072,lon:-77.0369},boe:{lat:51.5072,lon:-0.1276},ecb:{lat:50.1109,lon:8.6821},
      pboc:{lat:39.9042,lon:116.4074},boj:{lat:35.6895,lon:139.6917},rbi:{lat:19.0760,lon:72.8777},mas:{lat:1.3521,lon:103.8198}
