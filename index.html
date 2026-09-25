@@ -310,6 +310,14 @@ section{margin-top:15px}
   box-sizing:border-box;
 }
 
+
+/* Explicit full-row placement for Dynamics: overrides generic chart-card auto column */
+.charts-grid>.dynamic-policy-chart{
+  grid-column:1 / -1!important;
+  grid-row:auto;
+  width:100%!important;
+}
+
 </style>
 </head>
 <body><div class="container">
