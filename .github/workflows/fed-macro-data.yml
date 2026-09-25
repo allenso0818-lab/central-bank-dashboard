@@ -2,7 +2,7 @@ name: Refresh Fed Macro Data
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 0,13 * * *"
   push:
     paths:
       - ".github/workflows/fed-macro-data.yml"
