@@ -66,7 +66,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .num{font-weight:900;color:#122C57}.main{font-weight:650}.muted{color:#71839A;font-size:8px}
 .pill{display:inline-block;padding:1px 4px;border:1px solid #D9E2EE;border-radius:99px;background:#F8FAFC;margin:1px;font-size:7.5px}
 
-.charts-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:'policy inflpath' 'current infltarget' 'balance balance';gap:8px;max-width:1330px;margin-left:auto;margin-right:auto}.charts-grid>.chart-card{width:100%;min-width:0;max-width:none;box-sizing:border-box;margin:0!important;grid-column:auto!important}.policy-rate-paths{grid-area:policy}.inflation-paths{grid-area:inflpath}.current-policy-card{grid-area:current}.inflation-target-card{grid-area:infltarget}.charts-grid .chart-card .chartbox{height:285px}.charts-grid>.balance-group{grid-area:balance}
+.charts-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:'dynamic dynamic' 'policy inflpath' 'current infltarget' 'balance balance';gap:8px;max-width:1330px;margin-left:auto;margin-right:auto}.charts-grid>.chart-card{width:100%;min-width:0;max-width:none;box-sizing:border-box;margin:0!important;grid-column:auto!important}.dynamic-policy-chart{grid-area:dynamic}.policy-rate-paths{grid-area:policy}.inflation-paths{grid-area:inflpath}.current-policy-card{grid-area:current}.inflation-target-card{grid-area:infltarget}.charts-grid .chart-card .chartbox{height:285px}.charts-grid>.balance-group{grid-area:balance}
 .chart-card{padding:10px}.chart-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:5px}.chart-head h3{font-size:13px;margin:0;color:#17305A}.chart-head .sub{margin:2px 0 0}
 .chartbox{height:220px}.chartbox.small{height:220px}
 .controls{display:flex;gap:3px}.controls button{border:1px solid #D5DEEA;background:#fff;color:#38506F;border-radius:5px;padding:5px 8px;font-size:9px;font-weight:800;cursor:pointer}.controls .active{background:#2563EB;color:#fff;border-color:#2563EB}
@@ -108,6 +108,14 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 </section>
 
 <section class="charts-grid">
+  <div class="panel chart-card dynamic-policy-chart">
+    <div class="chart-head">
+      <div><h3>Inflation & Policy Rate Dynamics</h3><div class="sub">Compare one central bank’s inflation trend with its policy-rate path</div></div>
+      <div style="display:flex;gap:6px;align-items:center"><select id="dynamicBank" class="lang" style="padding:5px 8px"></select><div class="controls" id="dynamicRanges"><button data-y="1">1Y</button><button class="active" data-y="3">3Y</button><button data-y="5">5Y</button><button data-y="10">10Y</button></div></div>
+    </div>
+    <div class="chartbox" style="height:320px"><canvas id="dynamicPolicy"></canvas></div>
+    <div class="note" id="dynamicNote">Inflation and policy rate are both shown in percentage terms. Policy-rate observations are carried forward between official decisions solely to visualize the prevailing setting; inflation points remain the published observations.</div>
+  </div>
   <div class="panel chart-card policy-rate-paths">
     <div class="chart-head">
       <div><h3>Policy Rate Paths</h3><div class="sub">How major central-bank policy rates have changed over time</div></div>
@@ -346,7 +354,29 @@ function renderBalanceSheetGDP(){
  new Chart(canvas,{type:'bar',data:{labels:rows.map(x=>x.name),datasets:[{data:rows.map(x=>x.value),backgroundColor:rows.map(x=>BANK_COLORS[x.id]),borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>rows[ctx.dataIndex].value.toFixed(1)+'% of GDP',afterLabel:(ctx)=>rows[ctx.dataIndex].note}}},scales:{x:{beginAtZero:true,suggestedMax:105,title:{display:true,text:'Total assets / nominal GDP (%)'}},y:{grid:{display:false},ticks:{autoSkip:false}}}}});
  note.innerHTML='<b>Data sources:</b> central-bank balance sheets plus official nominal GDP data from BEA (US), Eurostat (euro area), ONS (UK), Japan Cabinet Office, National Bureau of Statistics of China, India MoSPI, and Singapore Department of Statistics. <b>Coverage:</b> latest directly verified comparable observations; dates differ and are disclosed in the tooltip.';
 }
+let dynamicChart=null,dynamicYears=3;
+function dynamicData(id,years){
+ const end=new Date('2026-09-30'),start=new Date(end);start.setFullYear(end.getFullYear()-years);
+ const infl=(inflationEvents[id]||[]).filter(x=>new Date(x[0]+'-01')>=start);
+ const rates=rateEvents[id]||[];
+ const labels=[...new Set([...infl.map(x=>x[0]),...rates.filter(x=>new Date(x[0]+'-01')>=start).map(x=>x[0])])].sort();
+ let last=null; const before=rates.filter(x=>new Date(x[0]+'-01')<start); if(before.length)last=before[before.length-1][1];
+ const rmap=Object.fromEntries(rates); const imap=Object.fromEntries(infl);
+ return {labels,datasets:[
+  {label:'Inflation',data:labels.map(x=>imap[x]??null),borderColor:'#dc2626',backgroundColor:'#dc2626',spanGaps:true,tension:.2,pointRadius:2},
+  {label:'Policy rate',data:labels.map(x=>{if(rmap[x]!=null)last=rmap[x];return last}),borderColor:'#2563eb',backgroundColor:'#2563eb',stepped:true,pointRadius:1.5}
+ ]};
+}
+function renderDynamic(){
+ const id=document.getElementById('dynamicBank').value;
+ if(id==='mas'){document.getElementById('dynamicNote').textContent='MAS uses the S$NEER policy band rather than a conventional policy interest rate, so a directly comparable policy-rate line is not plotted.'}
+ else document.getElementById('dynamicNote').textContent='Inflation and policy rate are both shown in percentage terms. Policy-rate observations are carried forward between official decisions solely to visualize the prevailing setting; inflation points remain the published observations.';
+ const data=id==='mas'?{labels:(inflationEvents.mas||[]).map(x=>x[0]),datasets:[{label:'Inflation',data:(inflationEvents.mas||[]).map(x=>x[1]),borderColor:'#dc2626',backgroundColor:'#dc2626',tension:.2,pointRadius:2}]}:dynamicData(id,dynamicYears);
+ if(dynamicChart)dynamicChart.destroy();
+ dynamicChart=new Chart(document.getElementById('dynamicPolicy'),{type:'line',data,options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:7,padding:14}},tooltip:{backgroundColor:'#102A55'}},scales:{x:{grid:{color:'#EEF2F6'},ticks:{maxTicksLimit:10}},y:{grid:{color:'#E6ECF3'},title:{display:true,text:'Percent (%)'}}}}});
+}
 function charts(){
+  const db=document.getElementById('dynamicBank');db.innerHTML=B.map(b=>'<option value="'+b.id+'">'+b.name+'</option>').join('');db.value='fed';renderDynamic();
   hc=new Chart(document.getElementById('history'),{
     type:'line',data:makeHistory(3),
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
@@ -373,6 +403,8 @@ function charts(){
       scales:{y:{beginAtZero:true,grid:{color:'#EDF2F7'},ticks:{font:{size:8},color:'#63758D'},title:{display:true,text:'Inflation rate (%)',font:{size:8},color:'#63758D'}},x:{grid:{display:false},ticks:{font:{size:8},color:'#526681',maxRotation:25,minRotation:25}}}}
   })
 }
+document.getElementById('dynamicBank').addEventListener('change',renderDynamic);
+document.getElementById('dynamicRanges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#dynamicRanges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');dynamicYears=+e.target.dataset.y;renderDynamic()});
 document.getElementById('inflRanges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#inflRanges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');ihc.data=makeInflHistory(+e.target.dataset.y);ihc.update()});
 document.getElementById('ranges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#ranges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');hc.data=makeHistory(+e.target.dataset.y);hc.update()});
 try{
