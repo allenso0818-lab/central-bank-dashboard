@@ -121,12 +121,6 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .balance-assets-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
 .balance-assets-grid .chart-card{width:100%;min-width:0;max-width:none;box-sizing:border-box;margin:0!important;grid-column:auto!important}.balance-assets-grid .chart-card:first-child,.balance-assets-grid .chart-card:last-child{width:100%}.balance-assets-grid .reserve-card{grid-column:1;width:100%}
 @media(max-width:900px){.balance-assets-grid,.charts-grid{grid-template-columns:1fr}.charts-grid{grid-template-areas:'visual' 'dynamic' 'policy' 'inflpath' 'current' 'infltarget' 'balance'}}
-.policy-visual-suite{grid-column:1/-1;display:grid;grid-template-columns:1.05fr .95fr;gap:8px;min-width:0}
-.policy-visual-suite>.panel{min-width:0;overflow:hidden}
-.policy-tools-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
-.policy-tool{border:1px solid #E0E8F2;border-top:3px solid var(--bank);border-radius:8px;background:linear-gradient(180deg,#fff,#F8FAFD);padding:8px 7px;min-height:108px}
-.policy-tool .tool-bank{font-size:9px;font-weight:900;color:#19345F}.policy-tool .tool-type{font-size:8px;color:#64748B;margin-top:2px}
-.policy-tool .tool-instrument{font-size:10px;font-weight:850;color:#17305A;line-height:1.25;margin-top:7px}.policy-tool .tool-setting{font-size:12px;font-weight:900;color:var(--bank);margin-top:5px}
 .policy-map-viewport{position:relative;aspect-ratio:2/1;height:auto;border-radius:10px;background:linear-gradient(180deg,#F9FBFE,#EEF4FA);overflow:hidden;border:1px solid #E1E9F3}
 .policy-map-svg{position:absolute;inset:0;width:100%;height:100%;display:block}
 .policy-map-svg .sphere{fill:#F8FBFE;stroke:#DCE6F0;stroke-width:1}
@@ -148,23 +142,8 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 
 .policy-map-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#71839A}
 
-.policy-tools-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
-.policy-tool{position:relative;border:1px solid #DFE7F1;border-radius:9px;background:linear-gradient(180deg,#FFFFFF,#F8FAFD);padding:9px 8px 8px;min-height:118px;overflow:hidden}
-.policy-tool:after{content:'';position:absolute;left:0;right:0;top:0;height:3px;background:var(--bank)}
-.tool-top{display:flex;align-items:center;justify-content:space-between;gap:5px}
-.tool-bank{font-size:9px;font-weight:900;color:#19345F;display:flex;align-items:center;gap:5px}
-.tool-bank .flag{width:16px;height:16px;flex-basis:16px}
-.tool-code{font-size:7px;font-weight:900;color:var(--bank);background:#F4F7FB;border:1px solid #E2E8F0;border-radius:999px;padding:2px 5px}
-.policy-tool .tool-type{font-size:7.5px;color:#64748B;margin-top:6px}
-.policy-tool .tool-instrument{font-size:9.5px;font-weight:850;color:#17305A;line-height:1.25;margin-top:3px}
-.policy-tool .tool-setting{font-size:12px;font-weight:900;color:var(--bank);margin-top:7px}
-.tool-direction{font-size:7px;color:#71839A;margin-top:2px}
-
-@media(max-width:1050px){.policy-tools-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:1050px){}
 @media(max-width:760px){
-.policy-visual-suite{grid-template-columns:1fr}
-.policy-tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-.policy-tool{min-height:108px}
 .policy-map-viewport{aspect-ratio:2/1;height:auto}
 .policy-map-marker .map-label{min-width:72px;padding:4px 5px}
 .policy-map-marker .map-setting{font-size:9px}
@@ -231,29 +210,15 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .quadrant-insight{border:1px solid #E1E8F1;border-radius:8px;background:#FAFCFF;padding:7px 8px;min-height:54px}
 .quadrant-insight b{display:block;font-size:8px;color:#31547E;margin-bottom:3px}
 .quadrant-insight span{font-size:8px;line-height:1.35;color:#60758F}
-.policy-tool .framework-badge{display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:3px 6px;border-radius:999px;background:#F2F6FB;border:1px solid #DCE6F0;font-size:7px;font-weight:900;color:#31547E}
-.policy-tool .framework-dot{width:6px;height:6px;border-radius:50%;background:var(--bank)}
-.policy-tool .tool-direction{padding-top:5px;border-top:1px solid #E8EDF4;margin-top:7px}
 @media(max-width:760px){
   .quadrant-insights{grid-template-columns:1fr}
   .quadrant-insight{min-height:0}
   }
 
-
 /* Pre-Work layout polish: spacing, alignment and responsive readability */
 section{margin-top:15px}
 .top-policy-map{margin-top:8px}
 .charts-grid{gap:12px}
-.policy-visual-suite{
-  grid-template-columns:1fr;
-  gap:12px;
-  width:100%;
-}
-.policy-visual-suite>.panel{width:100%}
-.policy-tools-grid{
-  grid-template-columns:repeat(7,minmax(0,1fr));
-  gap:8px;
-}
 .chart-card{padding:12px}
 .chart-head{margin-bottom:8px}
 .balance-assets-grid{gap:12px}
@@ -263,8 +228,7 @@ section{margin-top:15px}
 .matrix thead th:first-child{left:0;z-index:5}
 .matrix tbody th{position:sticky;left:0;z-index:2;box-shadow:1px 0 0 #DBE3EE}
 @media(max-width:1100px){
-  .policy-tools-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-}
+  }
 @media(max-width:760px){
   section{margin-top:12px}
   .chart-card{padding:10px}
@@ -273,11 +237,9 @@ section{margin-top:15px}
   .chart-head>div:last-child{max-width:100%;overflow-x:auto}
   .controls{flex-wrap:nowrap;overflow-x:auto;max-width:100%;padding-bottom:2px}
   .controls button{flex:0 0 auto}
-  .policy-tools-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
-  .matrix thead th:first-child,.matrix tbody th{min-width:145px}
+    .matrix thead th:first-child,.matrix tbody th{min-width:145px}
 }
 
- 
 /* Central-bank map popup now contains the former snapshot information */
 .cb-popup .leaflet-popup-content{margin:10px 12px;min-width:205px}
 .cb-popup-card{min-width:205px}
@@ -332,14 +294,6 @@ section{margin-top:15px}
       <div class="quadrant-insights" id="quadrantInsights"></div>
     </div>
   </div>
-
-  <div class="policy-visual-suite">
-    <div class="panel chart-card">
-      <div class="chart-head"><div><h3>Monetary Policy Tools</h3><div class="sub">Primary operating instrument used by each central bank</div></div></div>
-      <div class="policy-tools-grid" id="policyTools"></div>
-      <div class="note">This view compares the main policy instrument, not every facility available to each institution. MAS is shown separately because its operating framework is centred on the S$NEER policy band rather than a conventional policy rate.</div>
-    </div>
-          </div>
 
   <div class="panel chart-card dynamic-policy-chart">
     <div class="chart-head">
@@ -615,34 +569,6 @@ function renderPolicyVisuals(){
     '<div class="quadrant-insight"><b>How to read</b><span>Further right = higher inflation. Higher up = tighter nominal policy-rate setting. MAS is excluded because it uses the S$NEER framework.</span></div>';
  }
 }
-function renderPolicyTools(){
- const code={fed:'RATE',ecb:'RATE',boe:'RATE',boj:'RATE',pboc:'OMO',rbi:'REPO',mas:'FX'};
- const framework={
-   fed:'Policy-rate framework',
-   ecb:'Policy-rate framework',
-   boe:'Policy-rate framework',
-   boj:'Policy-rate framework',
-   pboc:'Open-market operations',
-   rbi:'Repo / liquidity framework',
-   mas:'Exchange-rate framework'
- };
- const channel={
-   fed:'Interest-rate corridor',ecb:'Standing-facility rate',boe:'Policy rate',
-   boj:'Short-term rate',pboc:'Open-market operations',rbi:'Liquidity / repo channel',
-   mas:'Exchange-rate band'
- };
- const el=document.getElementById('policyTools'); if(!el)return;
- el.innerHTML=B.map(b=>
-   '<div class="policy-tool" '+bankStyle(b.id)+'>'+
-   '<div class="tool-top"><div class="tool-bank"><span class="flag">'+FLAGS[b.id]+'</span>'+b.short+'</div><span class="tool-code">'+code[b.id]+'</span></div>'+
-   '<div class="framework-badge"><span class="framework-dot"></span>'+framework[b.id]+'</div>'+
-   '<div class="tool-type">'+channel[b.id]+'</div>'+
-   '<div class="tool-instrument">'+b.instrument+'</div>'+
-   '<div class="tool-setting">'+(b.id==='mas'?'S$NEER':b.setting)+'</div>'+
-   '<div class="tool-direction">'+b.dir+'</div>'+
-   '</div>'
- ).join('');
-}
 function renderMatrix(){
   let h='<thead><tr><th>Category</th>'+B.map(b=>'<th style="text-align:center"><div style="font-weight:900"><a href="'+PROFILE_URLS[b.id]+'" style="color:inherit;text-decoration:none;font-weight:900">'+b.name+'</a></div><div class="muted" style="text-align:center">'+b.country+'</div></th>').join('')+'</tr></thead><tbody>';
   for(const [label,k] of rows){
@@ -802,7 +728,7 @@ document.getElementById('inflRanges').addEventListener('click',e=>{if(e.target.t
 document.getElementById('ranges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#ranges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');hc.data=makeHistory(+e.target.dataset.y);hc.update()});
 try{
   assertDashboardData();
-  renderPolicyVisuals();renderPolicyTools();renderMatrix();renderDecisionTable();renderMeetings();charts();renderTotalAssets();renderInternationalReserves();
+  renderPolicyVisuals();renderMatrix();renderDecisionTable();renderMeetings();charts();renderTotalAssets();renderInternationalReserves();
   renderBalanceSheetGDP();
 }catch(err){
   console.error('Dashboard render failed',err);
