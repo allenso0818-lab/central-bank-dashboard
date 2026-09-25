@@ -239,6 +239,44 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
   .quadrant-insight{min-height:0}
   }
 
+
+/* Pre-Work layout polish: spacing, alignment and responsive readability */
+section{margin-top:15px}
+.top-policy-map{margin-top:8px}
+.charts-grid{gap:12px}
+.policy-visual-suite{
+  grid-template-columns:1fr;
+  gap:12px;
+  width:100%;
+}
+.policy-visual-suite>.panel{width:100%}
+.policy-tools-grid{
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:8px;
+}
+.chart-card{padding:12px}
+.chart-head{margin-bottom:8px}
+.balance-assets-grid{gap:12px}
+.bottom-grid{gap:12px;margin-top:15px}
+.matrix-wrap{scrollbar-width:thin}
+.matrix thead th{position:sticky;top:0;z-index:3}
+.matrix thead th:first-child{left:0;z-index:5}
+.matrix tbody th{position:sticky;left:0;z-index:2;box-shadow:1px 0 0 #DBE3EE}
+@media(max-width:1100px){
+  .policy-tools-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  section{margin-top:12px}
+  .chart-card{padding:10px}
+  .charts-grid{gap:10px}
+  .chart-head{flex-wrap:wrap;align-items:flex-start}
+  .chart-head>div:last-child{max-width:100%;overflow-x:auto}
+  .controls{flex-wrap:nowrap;overflow-x:auto;max-width:100%;padding-bottom:2px}
+  .controls button{flex:0 0 auto}
+  .policy-tools-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .matrix thead th:first-child,.matrix tbody th{min-width:145px}
+}
+
 </style>
 </head>
 <body><div class="container">
