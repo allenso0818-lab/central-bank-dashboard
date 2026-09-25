@@ -121,6 +121,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .policy-map-svg .bank-leader{stroke:#AFC0D2;stroke-width:1.2;fill:none}
 .policy-map-svg .bank-pin{stroke:#fff;stroke-width:3}
 .policy-map-svg .bank-pin-core{fill:#fff}
+.policy-map-svg .bank-marker circle{vector-effect:non-scaling-stroke}
 .policy-map-svg .bank-label-bg{fill:rgba(255,255,255,.98);stroke:#D7E2EE;stroke-width:1}
 .policy-map-svg .bank-label-accent{stroke-width:3}
 .policy-map-svg .bank-label-bank{font-size:11px;font-weight:800;fill:#17305A}
@@ -412,6 +413,23 @@ async function renderGeoPolicyMap(){
      fed:[18,-4],boe:[-115,-62],ecb:[16,18],pboc:[-120,18],boj:[18,-50],rbi:[-108,22],mas:[18,18]
    };
    const labelW=104,labelH=55;
+   const defs=svg.append('defs');
+
+   for(const b of B){
+     const patternId='flag-pattern-'+b.id;
+     const encoded='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(FLAGS[b.id]);
+     const pattern=defs.append('pattern')
+       .attr('id',patternId)
+       .attr('patternUnits','objectBoundingBox')
+       .attr('width',1).attr('height',1)
+       .attr('viewBox','0 0 36 36')
+       .attr('preserveAspectRatio','xMidYMid slice');
+     pattern.append('image')
+       .attr('href',encoded)
+       .attr('x',0).attr('y',0)
+       .attr('width',36).attr('height',36)
+       .attr('preserveAspectRatio','xMidYMid slice');
+   }
 
    for(const b of B){
      const p=projection([geo[b.id].lon,geo[b.id].lat]); if(!p)continue;
@@ -424,13 +442,27 @@ async function renderGeoPolicyMap(){
 
      const g=svg.append('g').attr('class','bank-marker').attr('data-bank',b.id);
      g.append('path').attr('class','bank-leader').attr('d','M'+p[0]+','+p[1]+' L'+anchorX+','+anchorY);
-     g.append('circle').attr('class','bank-pin').attr('cx',p[0]).attr('cy',p[1]).attr('r',8).attr('fill',color);
-     g.append('circle').attr('class','bank-pin-core').attr('cx',p[0]).attr('cy',p[1]).attr('r',2.5);
+
+     // Outer bank-colour halo
+     g.append('circle')
+       .attr('cx',p[0]).attr('cy',p[1]).attr('r',12)
+       .attr('fill',color).attr('opacity',0.18);
+
+     // White ring
+     g.append('circle')
+       .attr('cx',p[0]).attr('cy',p[1]).attr('r',10)
+       .attr('fill','#fff').attr('stroke',color).attr('stroke-width',2.5);
+
+     // Flag inside the pin
+     g.append('circle')
+       .attr('cx',p[0]).attr('cy',p[1]).attr('r',7.2)
+       .attr('fill','url(#flag-pattern-'+b.id+')')
+       .attr('stroke','#fff').attr('stroke-width',1);
 
      g.append('rect').attr('class','bank-label-bg').attr('x',lx).attr('y',ly).attr('width',labelW).attr('height',labelH).attr('rx',8);
      g.append('line').attr('class','bank-label-accent').attr('x1',lx+1.5).attr('x2',lx+1.5).attr('y1',ly+8).attr('y2',ly+labelH-8).attr('stroke',color);
      g.append('text').attr('class','bank-label-bank').attr('x',lx+10).attr('y',ly+16).text(b.short);
-     g.append('text').attr('class','bank-label-setting').attr('x',lx+10).attr('y',ly+34).text(v+' '+dir).attr('fill',color);
+     g.append('text').attr('class','bank-label-setting').attr('x',lx+10).attr('y',ly+34).text(v+' '+dir);
      g.append('text').attr('class','bank-label-tag').attr('x',lx+10).attr('y',ly+48).text(tag);
    }
    if(loading)loading.style.display='none';
