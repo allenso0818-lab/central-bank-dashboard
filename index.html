@@ -127,11 +127,6 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .policy-tool{border:1px solid #E0E8F2;border-top:3px solid var(--bank);border-radius:8px;background:linear-gradient(180deg,#fff,#F8FAFD);padding:8px 7px;min-height:108px}
 .policy-tool .tool-bank{font-size:9px;font-weight:900;color:#19345F}.policy-tool .tool-type{font-size:8px;color:#64748B;margin-top:2px}
 .policy-tool .tool-instrument{font-size:10px;font-weight:850;color:#17305A;line-height:1.25;margin-top:7px}.policy-tool .tool-setting{font-size:12px;font-weight:900;color:var(--bank);margin-top:5px}
-.transmission-flow{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;align-items:stretch;margin-top:8px}
-.transmission-node{position:relative;border:1px solid #DFE7F1;border-radius:9px;background:#FAFCFF;padding:12px 9px;min-height:88px;text-align:center;display:flex;flex-direction:column;justify-content:center}
-.transmission-node:not(:last-child)::after{content:'→';position:absolute;right:-13px;top:50%;transform:translateY(-50%);font-size:18px;font-weight:900;color:#8AA1BB}
-.transmission-node b{font-size:10px;color:#15315C}.transmission-node span{font-size:8px;color:#6B7F97;line-height:1.35;margin-top:4px}
-.transmission-alt{margin-top:8px;padding:7px 9px;border-radius:7px;background:#FFF6FB;border:1px solid #F4D7E8;font-size:8.5px;color:#7A4664;line-height:1.35}
 .policy-map-viewport{position:relative;aspect-ratio:2/1;height:auto;border-radius:10px;background:linear-gradient(180deg,#F9FBFE,#EEF4FA);overflow:hidden;border:1px solid #E1E9F3}
 .policy-map-svg{position:absolute;inset:0;width:100%;height:100%;display:block}
 .policy-map-svg .sphere{fill:#F8FBFE;stroke:#DCE6F0;stroke-width:1}
@@ -165,22 +160,11 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .policy-tool .tool-setting{font-size:12px;font-weight:900;color:var(--bank);margin-top:7px}
 .tool-direction{font-size:7px;color:#71839A;margin-top:2px}
 
-.transmission-track{display:flex;align-items:center;gap:0;margin-top:10px}
-.transmission-node{position:relative;flex:1;border:1px solid #DFE7F1;border-radius:9px;background:#FAFCFF;padding:10px 8px;min-height:92px;text-align:left}
-.transmission-node:not(:last-child){margin-right:20px}
-.transmission-node:not(:last-child)::after{content:'→';position:absolute;right:-16px;top:50%;transform:translateY(-50%);font-size:18px;font-weight:900;color:#8AA1BB}
-.transmission-step{width:20px;height:20px;border-radius:50%;background:#EAF2FB;color:#245A9C;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;margin-bottom:6px}
-.transmission-node b{font-size:10px;color:#15315C}.transmission-node span{display:block;font-size:8px;color:#6B7F97;line-height:1.35;margin-top:4px}
-.transmission-alt{margin-top:9px;padding:8px 9px;border-radius:8px;background:linear-gradient(90deg,#FFF7FB,#FBF4F8);border:1px solid #F0D8E6;font-size:8.5px;color:#70445F;line-height:1.4}
-
 @media(max-width:1050px){.policy-tools-grid{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:760px){
 .policy-visual-suite{grid-template-columns:1fr}
 .policy-tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 .policy-tool{min-height:108px}
-.transmission-track{display:grid;grid-template-columns:1fr;gap:13px}
-.transmission-node{margin-right:0!important;min-height:78px}
-.transmission-node:not(:last-child)::after{content:'↓';right:auto;left:50%;top:auto;bottom:-17px;transform:translateX(-50%)}
 .policy-map-viewport{aspect-ratio:2/1;height:auto}
 .policy-map-marker .map-label{min-width:72px;padding:4px 5px}
 .policy-map-marker .map-setting{font-size:9px}
@@ -298,12 +282,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
       <div class="policy-tools-grid" id="policyTools"></div>
       <div class="note">This view compares the main policy instrument, not every facility available to each institution. MAS is shown separately because its operating framework is centred on the S$NEER policy band rather than a conventional policy rate.</div>
     </div>
-    <div class="panel chart-card">
-      <div class="chart-head"><div><h3>Policy Transmission</h3><div class="sub">How policy settings pass through to financial conditions and inflation</div></div></div>
-      <div class="transmission-track" id="policyTransmission"></div>
-      <div class="transmission-alt"><b>Singapore / MAS:</b> S$NEER policy band → exchange rate → import prices & domestic cost pressures → activity and inflation. MAS notes that the peak macroeconomic impact of an exchange-rate policy change can take around four to six quarters.</div>
-    </div>
-      </div>
+          </div>
 
   <div class="panel chart-card dynamic-policy-chart">
     <div class="chart-head">
@@ -596,17 +575,6 @@ function renderPolicyTools(){
    '</div>'
  ).join('');
 }
-function renderPolicyTransmission(){
- const steps=[
-  ['1','Policy decision','Policy rate, liquidity setting or exchange-rate parameters'],
-  ['2','Market pricing','Money-market rates, bond yields, FX and asset prices'],
-  ['3','Financial conditions','Borrowing costs, credit supply and balance-sheet conditions'],
-  ['4','Activity & costs','Consumption, investment, employment, wages and import prices'],
-  ['5','Inflation','Price-setting and medium-term inflation dynamics']
- ];
- const el=document.getElementById('policyTransmission'); if(!el)return;
- el.innerHTML=steps.map(x=>'<div class="transmission-node"><div class="transmission-step">'+x[0]+'</div><b>'+x[1]+'</b><span>'+x[2]+'</span></div>').join('');
-}
 function renderMatrix(){
   let h='<thead><tr><th>Category</th>'+B.map(b=>'<th style="text-align:center"><div style="font-weight:900"><a href="'+PROFILE_URLS[b.id]+'" style="color:inherit;text-decoration:none;font-weight:900">'+b.name+'</a></div><div class="muted" style="text-align:center">'+b.country+'</div></th>').join('')+'</tr></thead><tbody>';
   for(const [label,k] of rows){
@@ -766,7 +734,7 @@ document.getElementById('inflRanges').addEventListener('click',e=>{if(e.target.t
 document.getElementById('ranges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#ranges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');hc.data=makeHistory(+e.target.dataset.y);hc.update()});
 try{
   assertDashboardData();
-  renderSnap();renderPolicyVisuals();renderPolicyTools();renderPolicyTransmission();renderMatrix();renderDecisionTable();renderMeetings();charts();renderTotalAssets();renderInternationalReserves();
+  renderSnap();renderPolicyVisuals();renderPolicyTools();renderMatrix();renderDecisionTable();renderMeetings();charts();renderTotalAssets();renderInternationalReserves();
   renderBalanceSheetGDP();
 }catch(err){
   console.error('Dashboard render failed',err);
