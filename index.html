@@ -252,6 +252,25 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
   }
   .top-policy-map .map-legend span{white-space:nowrap}
 }
+
+/* Analytical refinements */
+.quadrant-insights{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:7px}
+.quadrant-insight{border:1px solid #E1E8F1;border-radius:8px;background:#FAFCFF;padding:7px 8px;min-height:54px}
+.quadrant-insight b{display:block;font-size:8px;color:#31547E;margin-bottom:3px}
+.quadrant-insight span{font-size:8px;line-height:1.35;color:#60758F}
+.policy-tool .framework-badge{display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:3px 6px;border-radius:999px;background:#F2F6FB;border:1px solid #DCE6F0;font-size:7px;font-weight:900;color:#31547E}
+.policy-tool .framework-dot{width:6px;height:6px;border-radius:50%;background:var(--bank)}
+.policy-tool .tool-direction{padding-top:5px;border-top:1px solid #E8EDF4;margin-top:7px}
+.timeline-axis{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;margin:5px 2px 0;font-size:7px;font-weight:800;color:#8292A8;text-transform:uppercase;letter-spacing:.04em}
+.timeline-axis div{height:1px;background:linear-gradient(90deg,#E2E8F0,#9BB0C9)}
+.timeline-item.latest-decision{box-shadow:0 6px 18px rgba(15,42,85,.10);transform:translateY(-2px)}
+.timeline-item.latest-decision:after{content:'Latest';position:absolute;top:7px;right:7px;font-size:6.5px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--bank);background:#F7FAFD;border:1px solid #E1E8F0;border-radius:999px;padding:2px 5px}
+@media(max-width:760px){
+  .quadrant-insights{grid-template-columns:1fr}
+  .quadrant-insight{min-height:0}
+  .timeline-axis{display:none}
+}
+
 </style>
 </head>
 <body><div class="container">
@@ -286,6 +305,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
         <div class="panel chart-card">
       <div class="chart-head"><div><h3>Inflation vs Policy Rate Quadrant</h3><div class="sub">Latest inflation and policy-rate setting; MAS excluded because it uses S$NEER</div></div></div>
       <div class="chartbox" style="height:300px"><canvas id="policyQuadrant"></canvas></div>
+      <div class="quadrant-insights" id="quadrantInsights"></div>
     </div>
   </div>
 
@@ -302,6 +322,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
     </div>
     <div class="panel chart-card" style="grid-column:1/-1">
       <div class="chart-head"><div><h3>Policy Timeline</h3><div class="sub">Latest policy decision snapshot across the seven central banks</div></div></div>
+      <div class="timeline-axis"><span>Earlier</span><div></div><span>Latest</span></div>
       <div class="policy-timeline" id="policyTimeline"></div>
     </div>
   </div>
@@ -516,14 +537,86 @@ function renderPolicyVisuals(){
  renderGeoPolicyMap();
  const eligible=B.filter(b=>b.id!=='mas'&&b.plot!=null);
  const pts=eligible.map(b=>({x:b.infl,y:b.plot,bank:b.short,id:b.id}));
- const pointLabelPlugin={id:'pointLabels',afterDatasetsDraw(chart){const ctx=chart.ctx;ctx.save();ctx.font='800 9px Inter, Arial';ctx.fillStyle='#314966';chart.data.datasets.forEach((ds,di)=>{const m=chart.getDatasetMeta(di);if(m.hidden||!m.data[0])return;const p=m.data[0].tooltipPosition();ctx.fillText(ds.label,p.x+8,p.y-7)});ctx.restore()}};
- new Chart(document.getElementById('policyQuadrant'),{type:'scatter',data:{datasets:pts.map(p=>({label:p.bank,data:[p],backgroundColor:BANK_COLORS[p.id],borderColor:'#fff',borderWidth:2,pointRadius:8,pointHoverRadius:10}))},plugins:[pointLabelPlugin],options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:7,font:{size:8},padding:10}},tooltip:{callbacks:{label:c=>c.dataset.label+': inflation '+c.raw.x.toFixed(2)+'%, policy '+c.raw.y.toFixed(2)+'%'}}},scales:{x:{title:{display:true,text:'Latest inflation (%)'},grid:{color:'#EDF1F6'},beginAtZero:true},y:{title:{display:true,text:'Policy rate (%)'},grid:{color:'#EDF1F6'},beginAtZero:true}}}});
+
+ const pointLabelPlugin={id:'pointLabels',afterDatasetsDraw(chart){
+   const ctx=chart.ctx;ctx.save();ctx.font='800 9px Inter, Arial';ctx.fillStyle='#314966';
+   chart.data.datasets.forEach((ds,di)=>{
+     const m=chart.getDatasetMeta(di);if(m.hidden||!m.data[0])return;
+     const p=m.data[0].tooltipPosition();ctx.fillText(ds.label,p.x+8,p.y-7)
+   });ctx.restore()
+ }};
+
+ const policyBenchmarks={id:'policyBenchmarks',beforeDatasetsDraw(chart){
+   const {ctx,chartArea,scales}=chart;if(!chartArea)return;
+   const x2=scales.x.getPixelForValue(2);
+   ctx.save();
+   ctx.setLineDash([4,4]);ctx.lineWidth=1;
+   ctx.strokeStyle='#9AA9BC';
+   ctx.beginPath();ctx.moveTo(x2,chartArea.top);ctx.lineTo(x2,chartArea.bottom);ctx.stroke();
+   ctx.setLineDash([]);
+   ctx.fillStyle='#708198';ctx.font='700 8px Inter, Arial';
+   ctx.fillText('2% reference',Math.min(x2+5,chartArea.right-60),chartArea.top+11);
+   ctx.restore();
+ }};
+
+ new Chart(document.getElementById('policyQuadrant'),{
+   type:'scatter',
+   data:{datasets:pts.map(p=>({
+     label:p.bank,data:[p],backgroundColor:BANK_COLORS[p.id],
+     borderColor:'#fff',borderWidth:2,pointRadius:8,pointHoverRadius:10
+   }))},
+   plugins:[policyBenchmarks,pointLabelPlugin],
+   options:{
+     responsive:true,maintainAspectRatio:false,
+     plugins:{
+       legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:7,font:{size:8},padding:10}},
+       tooltip:{callbacks:{label:c=>c.dataset.label+': inflation '+c.raw.x.toFixed(2)+'%, policy '+c.raw.y.toFixed(2)+'%'}}
+     },
+     scales:{
+       x:{title:{display:true,text:'Latest inflation (%)'},grid:{color:'#EDF1F6'},beginAtZero:true},
+       y:{title:{display:true,text:'Policy rate (%)'},grid:{color:'#EDF1F6'},beginAtZero:true}
+     }
+   }
+ });
+
+ const above2=eligible.filter(b=>b.infl>2).map(b=>b.short);
+ const below2=eligible.filter(b=>b.infl<2).map(b=>b.short);
+ const highestRate=eligible.reduce((a,b)=>a.plot>b.plot?a:b);
+ const insights=document.getElementById('quadrantInsights');
+ if(insights){
+   insights.innerHTML=
+    '<div class="quadrant-insight"><b>Inflation benchmark</b><span>'+above2.join(', ')+' are above the 2% reference; '+below2.join(', ')+' are below it.</span></div>'+
+    '<div class="quadrant-insight"><b>Highest policy rate</b><span>'+highestRate.name+' currently has the highest plotted policy rate at '+highestRate.plot.toFixed(2)+'%.</span></div>'+
+    '<div class="quadrant-insight"><b>How to read</b><span>Further right = higher inflation. Higher up = tighter nominal policy-rate setting. MAS is excluded because it uses the S$NEER framework.</span></div>';
+ }
 }
 function renderPolicyTools(){
  const code={fed:'RATE',ecb:'RATE',boe:'RATE',boj:'RATE',pboc:'OMO',rbi:'REPO',mas:'FX'};
- const channel={fed:'Interest-rate corridor',ecb:'Standing-facility rate',boe:'Policy rate',boj:'Short-term rate',pboc:'Open-market operations',rbi:'Liquidity / repo channel',mas:'Exchange-rate band'};
+ const framework={
+   fed:'Policy-rate framework',
+   ecb:'Policy-rate framework',
+   boe:'Policy-rate framework',
+   boj:'Policy-rate framework',
+   pboc:'Open-market operations',
+   rbi:'Repo / liquidity framework',
+   mas:'Exchange-rate framework'
+ };
+ const channel={
+   fed:'Interest-rate corridor',ecb:'Standing-facility rate',boe:'Policy rate',
+   boj:'Short-term rate',pboc:'Open-market operations',rbi:'Liquidity / repo channel',
+   mas:'Exchange-rate band'
+ };
  const el=document.getElementById('policyTools'); if(!el)return;
- el.innerHTML=B.map(b=>'<div class="policy-tool" '+bankStyle(b.id)+'><div class="tool-top"><div class="tool-bank"><span class="flag">'+FLAGS[b.id]+'</span>'+b.short+'</div><span class="tool-code">'+code[b.id]+'</span></div><div class="tool-type">'+channel[b.id]+'</div><div class="tool-instrument">'+b.instrument+'</div><div class="tool-setting">'+(b.id==='mas'?'S$NEER':b.setting)+'</div><div class="tool-direction">'+b.dir+'</div></div>').join('');
+ el.innerHTML=B.map(b=>
+   '<div class="policy-tool" '+bankStyle(b.id)+'>'+
+   '<div class="tool-top"><div class="tool-bank"><span class="flag">'+FLAGS[b.id]+'</span>'+b.short+'</div><span class="tool-code">'+code[b.id]+'</span></div>'+
+   '<div class="framework-badge"><span class="framework-dot"></span>'+framework[b.id]+'</div>'+
+   '<div class="tool-type">'+channel[b.id]+'</div>'+
+   '<div class="tool-instrument">'+b.instrument+'</div>'+
+   '<div class="tool-setting">'+(b.id==='mas'?'S$NEER':b.setting)+'</div>'+
+   '<div class="tool-direction">'+b.dir+'</div>'+
+   '</div>'
+ ).join('');
 }
 function renderPolicyTransmission(){
  const steps=[
@@ -538,9 +631,28 @@ function renderPolicyTransmission(){
 }
 function renderPolicyTimeline(){
  const el=document.getElementById('policyTimeline'); if(!el)return;
- const order=['mas','rbi','pboc','ecb','fed','boe','boj'];
- const rows=order.map(id=>B.find(b=>b.id===id)).filter(Boolean);
- el.innerHTML=rows.map(b=>'<div class="timeline-item" '+bankStyle(b.id)+'><div class="timeline-date">'+b.date+'</div><div class="timeline-bank"><span class="flag">'+FLAGS[b.id]+'</span>'+b.short+'</div><div class="timeline-action">'+b.latest+'</div><div class="timeline-setting">'+b.prev+' → '+b.setting+'</div></div>').join('');
+
+ const monthNum={Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
+ function sortableDate(b){
+   const m=b.date.match(/(\d{1,2})?\s*([A-Z][a-z]{2})\s*(\d{4})/);
+   if(!m)return 0;
+   const day=Number(m[1]||1),mon=monthNum[m[2]]||1,yr=Number(m[3]||0);
+   return yr*10000+mon*100+day;
+ }
+ const rows=B.slice().sort((a,b)=>sortableDate(a)-sortableDate(b));
+ const latestValue=Math.max(...rows.map(sortableDate));
+
+ el.innerHTML=rows.map(b=>{
+   const latest=sortableDate(b)===latestValue?' latest-decision':'';
+   const stance=b.dir.includes('Tight')?'Tightening':b.dir.includes('Holding')?'Holding':'FX framework';
+   return '<div class="timeline-item'+latest+'" '+bankStyle(b.id)+'>'+
+    '<div class="timeline-date">'+b.date+'</div>'+
+    '<div class="timeline-bank"><span class="flag">'+FLAGS[b.id]+'</span>'+b.short+'</div>'+
+    '<div class="timeline-action">'+b.latest+'</div>'+
+    '<div class="timeline-setting">'+b.prev+' → '+b.setting+'</div>'+
+    '<div class="tool-direction">'+stance+'</div>'+
+    '</div>';
+ }).join('');
 }
 function renderMatrix(){
   let h='<thead><tr><th>Category</th>'+B.map(b=>'<th style="text-align:center"><div style="font-weight:900"><a href="'+PROFILE_URLS[b.id]+'" style="color:inherit;text-decoration:none;font-weight:900">'+b.name+'</a></div><div class="muted" style="text-align:center">'+b.country+'</div></th>').join('')+'</tr></thead><tbody>';
