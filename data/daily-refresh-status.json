@@ -1,0 +1,10 @@
+{
+  "checked_at": "2026-09-25T13:04:30.844555+00:00",
+  "schedule": "daily",
+  "coverage": [
+    "Fed macro data",
+    "FedWatch probabilities",
+    "seven-central-bank dashboard source checks"
+  ],
+  "note": "Dashboard source observations update only when a source publishes a newer official observation."
+}
