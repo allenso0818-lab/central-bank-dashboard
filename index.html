@@ -105,7 +105,7 @@ h2{font-size:18px;line-height:1.1;margin:0 0 7px;color:#102A55;font-weight:850}
 .note{font-size:8.5px;color:#697C95;line-height:1.35;margin-top:5px}
 .masnote{font-size:8px;color:#6E5A73;line-height:1.3;margin-top:3px}
 
-.bottom-grid{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:8px}
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .bottom-card{padding:10px 12px}.bottom-card h3{font-size:12px;margin:0 0 6px;color:#17305A}
 .bottom-table{width:100%;border-collapse:collapse;font-size:9px}.bottom-table th,.bottom-table td{padding:4px 4px;border-top:1px solid #E2E8F0;text-align:left}.bottom-table th{color:#6D8098;font-size:8px}.bottom-table td:first-child{font-weight:780;color:#19345F}
 .sources{font-size:8.7px;color:#5F7188;line-height:1.45}.sources ul{margin:4px 0 0 14px;padding:0}.sources li{margin:3px 0}
@@ -498,21 +498,15 @@ h2{font-size:21px;line-height:1.25;margin-bottom:8px}
 
 <section class="bottom-grid">
   <div class="panel bottom-card">
-    <h3>Recent Policy Decisions</h3>
-    <table class="bottom-table" id="decisionTable"></table>
-  </div>
-  <div class="panel bottom-card">
     <h3>Upcoming Meetings</h3>
     <table class="bottom-table" id="meetingTable"></table>
   </div>
   <div class="panel bottom-card sources">
-    <h3>Sources & Methodology</h3>
+    <h3>Methodology</h3>
     <ul>
-      <li>Inflation figures use official statistical/government releases and are verified separately from inflation targets. Last checked: 25 Sep 2026 HKT.</li>
-      <li>Policy rates are the headline policy instruments for each central bank.</li>
-      <li>Fed rate uses the target-range midpoint for charting purposes.</li>
-      <li>MAS is not plotted in the policy-rate chart because it uses an exchange-rate-centred framework.</li>
-      <li>This dashboard is for informational and educational purposes only.</li>
+      <li>Fed charts use the target-range midpoint for plotting only.</li>
+      <li>MAS is excluded from policy-rate charts because monetary policy is centred on the S$NEER exchange-rate band.</li>
+      <li>Chart-specific official sources are shown with the relevant visual.</li>
     </ul>
   </div>
 </section>
@@ -765,9 +759,6 @@ function renderDecisions(){document.getElementById('decisions').innerHTML=B.map(
 function renderMeetings(){
   document.getElementById('meetingTable').innerHTML='<tr><th>Bank</th><th>Date</th></tr>'+B.slice().sort((a,b)=>a.next.localeCompare(b.next)).map(b=>'<tr '+bankStyle(b.id)+'><td><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bank);margin-right:6px"></span>'+b.name+'</td><td>'+b.next+'</td></tr>').join('')
 }
-function renderDecisionTable(){
-  document.getElementById('decisionTable').innerHTML='<tr><th>Bank</th><th>Date</th><th>Decision</th></tr>'+B.map(b=>'<tr '+bankStyle(b.id)+'><td><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bank);margin-right:6px"></span>'+b.name+'</td><td>'+b.date+'</td><td style="font-weight:800;color:var(--bank)">'+b.latest+'</td></tr>').join('')
-}
 function renderTake(){let x=['RBI currently has the highest directly comparable policy rate among the six rate-based frameworks.','Fed, ECB and BoJ are shown as tightening in the latest-decision snapshot, while BoE and RBI are holding.','Inflation remains above 2% in the US, euro area and UK in this dashboard snapshot.','MAS is structurally different because monetary policy is centred on the S$NEER exchange-rate band.'];document.getElementById('take').innerHTML=x.map(v=>'<div class="panel">'+v+'</div>').join('')}
 function months(y){let a=[],e=new Date(2026,8,1),s=new Date(e);s.setFullYear(s.getFullYear()-y);for(let d=new Date(s.getFullYear(),s.getMonth(),1);d<=e;d.setMonth(d.getMonth()+1))a.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));return a}
 function at(ev,m){let v=null;for(const [d,x] of ev){if(d<=m)v=x;else break}return v}
@@ -909,7 +900,7 @@ document.getElementById('inflRanges').addEventListener('click',e=>{if(e.target.t
 document.getElementById('ranges').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#ranges button').forEach(x=>x.classList.remove('active'));e.target.classList.add('active');hc.data=makeHistory(+e.target.dataset.y);hc.update()});
 try{
   assertDashboardData();
-  renderPolicyVisuals();renderMatrix();renderDecisionTable();renderMeetings();charts();renderTotalAssets();renderInternationalReserves();
+  renderPolicyVisuals();renderMatrix();renderMeetings();charts();renderTotalAssets();renderInternationalReserves();
   renderBalanceSheetGDP();
 }catch(err){
   console.error('Dashboard render failed',err);
