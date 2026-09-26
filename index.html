@@ -422,6 +422,25 @@ h2{font-size:21px;line-height:1.25;margin-bottom:8px}
   .fed-detail-btn{font-size:11px;padding:8px 11px}
 }
 
+/* Presentation cues remain tied to the existing data and chart structure. */
+.top-policy-map .policy-map-viewport{background:#EAF3F8}
+.cb-map-card{border-left-width:4px;box-shadow:0 7px 19px rgba(15,42,85,.16)}
+.cb-map-title{color:#47617D;text-transform:uppercase;letter-spacing:.055em}
+.cb-map-rate{letter-spacing:-.025em}
+.cb-map-meta{line-height:1.3}
+.cb-map-leaders{position:absolute;inset:0;width:100%;height:100%;z-index:450;pointer-events:none;overflow:visible}
+.matrix tr.focus-row th,.matrix tr.focus-row td{background:#F2F7FD!important}
+.matrix tr.focus-row th{color:#173F76;border-left:3px solid #3974B7}
+.matrix tr.focus-row .num{font-size:12px}
+.matrix .group th,.matrix .group td{background:#E7F0FA!important}
+.charts-grid>.chart-card,.visual-story>.chart-card,.balance-assets-grid>.chart-card{border-top:2px solid #D9E7F5}
+.balance-group{padding-top:4px;border-top:1px solid #D7E2EE}
+.balance-assets-grid>.chart-card{border-top:3px solid #A8C3DF}
+@media(max-width:700px){
+  .cb-map-card{box-shadow:0 5px 13px rgba(15,42,85,.16)}
+  .matrix tr.focus-row .num{font-size:11px}
+}
+
 </style>
 </head>
 <body><div class="container">
@@ -637,7 +656,7 @@ function renderGeoPolicyMap(){
    mas:{lat:1.2838,lon:103.8515}
  };
 
- const bounds=[];
+ const bounds=[],leaderMarkers=[];
  for(const b of B){
    const g=geo[b.id];
    const icon=L.divIcon({
@@ -682,10 +701,34 @@ function renderGeoPolicyMap(){
      opacity:1,
      className:'cb-permanent-tooltip'
    });
+   leaderMarkers.push({marker,color:BANK_COLORS[b.id]});
    bounds.push([g.lat,g.lon]);
  }
+ const leaderSvg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+ leaderSvg.setAttribute('class','cb-map-leaders');
+ leaderSvg.setAttribute('aria-hidden','true');
+ el.appendChild(leaderSvg);
+ function drawMapLeaders(){
+   const root=el.getBoundingClientRect();
+   leaderSvg.setAttribute('viewBox',`0 0 ${root.width} ${root.height}`);
+   leaderSvg.replaceChildren();
+   leaderMarkers.forEach(({marker,color})=>{
+     const icon=marker.getElement(),tooltip=marker.getTooltip().getElement();
+     if(!icon||!tooltip)return;
+     const p=icon.getBoundingClientRect(),r=tooltip.getBoundingClientRect();
+     const sx=p.left+p.width/2-root.left,sy=p.top+p.height/2-root.top;
+     const ex=(sx<r.left-root.left?r.left:r.right)-root.left;
+     const ey=Math.max(r.top+9,Math.min(p.top+p.height/2,r.bottom-9))-root.top;
+     for(const [stroke,width] of [['#fff',4],[color,1.7]]){
+       const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+       for(const [key,value] of Object.entries({x1:sx,y1:sy,x2:ex,y2:ey,stroke,'stroke-width':width,'stroke-opacity':stroke==='#fff'?.9:.7}))line.setAttribute(key,value);
+       leaderSvg.appendChild(line);
+     }
+   });
+ }
+ policyLeafletMap.on('moveend zoomend resize',()=>requestAnimationFrame(drawMapLeaders));
  policyLeafletMap.fitBounds(bounds,{padding:[35,35],maxZoom:2});
- setTimeout(()=>policyLeafletMap.invalidateSize(),100);
+ setTimeout(()=>{policyLeafletMap.invalidateSize();drawMapLeaders()},100);
 }
 function renderPolicyVisuals(){
  renderGeoPolicyMap();
@@ -693,10 +736,10 @@ function renderPolicyVisuals(){
  const pts=eligible.map(b=>({x:b.infl,y:b.plot,bank:b.short,id:b.id}));
 
  const pointLabelPlugin={id:'pointLabels',afterDatasetsDraw(chart){
-   const ctx=chart.ctx;ctx.save();ctx.font='800 9px Inter, Arial';ctx.fillStyle='#314966';
+   const ctx=chart.ctx;ctx.save();ctx.font='800 11px Inter, Arial';ctx.fillStyle='#17305A';
    chart.data.datasets.forEach((ds,di)=>{
      const m=chart.getDatasetMeta(di);if(m.hidden||!m.data[0])return;
-     const p=m.data[0].tooltipPosition();ctx.fillText(ds.label,p.x+8,p.y-7)
+     const p=m.data[0].tooltipPosition();ctx.fillText(ds.label,p.x+11,p.y-9)
    });ctx.restore()
  }};
 
@@ -704,12 +747,14 @@ function renderPolicyVisuals(){
    const {ctx,chartArea,scales}=chart;if(!chartArea)return;
    const x2=scales.x.getPixelForValue(2);
    ctx.save();
+   ctx.fillStyle='#F2F8FD';ctx.fillRect(chartArea.left,chartArea.top,Math.max(0,x2-chartArea.left),chartArea.bottom-chartArea.top);
+   ctx.fillStyle='#FFF9F3';ctx.fillRect(x2,chartArea.top,Math.max(0,chartArea.right-x2),chartArea.bottom-chartArea.top);
    ctx.setLineDash([4,4]);ctx.lineWidth=1;
-   ctx.strokeStyle='#9AA9BC';
+   ctx.strokeStyle='#7892AE';
    ctx.beginPath();ctx.moveTo(x2,chartArea.top);ctx.lineTo(x2,chartArea.bottom);ctx.stroke();
    ctx.setLineDash([]);
-   ctx.fillStyle='#708198';ctx.font='700 8px Inter, Arial';
-   ctx.fillText('2% reference',Math.min(x2+5,chartArea.right-60),chartArea.top+11);
+   ctx.fillStyle='#49627C';ctx.font='700 10px Inter, Arial';
+   ctx.fillText('2% inflation reference',Math.min(x2+7,chartArea.right-125),chartArea.top+16);
    ctx.restore();
  }};
 
@@ -723,7 +768,7 @@ function renderPolicyVisuals(){
    options:{
      responsive:true,maintainAspectRatio:false,
      plugins:{
-       legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:7,font:{size:8},padding:10}},
+       legend:{display:false},
        tooltip:{callbacks:{label:c=>c.dataset.label+': inflation '+c.raw.x.toFixed(2)+'%, policy '+c.raw.y.toFixed(2)+'%'}}
      },
      scales:{
@@ -748,7 +793,7 @@ function renderMatrix(){
   let h='<thead><tr><th>Category</th>'+B.map(b=>'<th style="text-align:center"><div style="font-weight:900"><a href="'+PROFILE_URLS[b.id]+'" style="color:inherit;text-decoration:none;font-weight:900">'+b.name+'</a></div><div class="muted" style="text-align:center">'+b.country+'</div></th>').join('')+'</tr></thead><tbody>';
   for(const [label,k] of rows){
     if(!k){h+='<tr class="group"><th>'+label+'</th>'+B.map(()=>'<td></td>').join('')+'</tr>'}
-    else{h+='<tr><th>'+label+'</th>'+B.map(b=>'<td>'+val(b,k)+'</td>').join('')+'</tr>'}
+    else{h+='<tr'+(['setting','infl','dir','latest'].includes(k)?' class="focus-row"':'')+'><th>'+label+'</th>'+B.map(b=>'<td>'+val(b,k)+'</td>').join('')+'</tr>'}
   }
   h+='</tbody>';document.getElementById('matrix').innerHTML=h
 }
@@ -784,24 +829,63 @@ function makeInflHistory(y){
     return {label:b.name,data:arr,spanGaps:true,pointRadius:(ctx)=>ctx.raw==null?0:4,pointHoverRadius:6,pointBackgroundColor:BANK_COLORS[id],pointBorderColor:'#fff',pointBorderWidth:1.5,borderWidth:2.7,borderColor:BANK_COLORS[id],backgroundColor:BANK_COLORS[id],tension:.12}
   })}
 }
-const valueLabelPlugin={
-  id:'valueLabels',
-  afterDatasetsDraw(chart,args,opts){
-    if(!opts||!opts.enabled)return;
-    const {ctx}=chart; ctx.save(); ctx.font='700 10px Inter, Arial'; ctx.fillStyle='#334155';
-    chart.data.datasets.forEach((ds,di)=>{
-      const meta=chart.getDatasetMeta(di); if(meta.hidden)return;
-      meta.data.forEach((el,i)=>{
-        if(opts.onlyLast && i!==meta.data.length-1)return;
-        const v=ds.data[i]; if(v==null)return;
-        const p=el.tooltipPosition();
-        ctx.textAlign='left';ctx.textBaseline='middle';
-        ctx.fillText((Number(v)%1===0?Number(v).toFixed(1):Number(v).toFixed(2))+'%',p.x+8,p.y);
-      })
-    });ctx.restore()
-  }
+const storyLabels={
+ id:'storyLabels',
+ afterDatasetsDraw(chart){
+   const id=chart.canvas.id,ctx=chart.ctx;
+   const lines=['dynamicPolicy','history','inflHistory'];
+   const bars=['current','totalAssetsUSD','balanceSheetGDP','internationalReserves'];
+   if(!lines.includes(id)&&!bars.includes(id)&&id!=='inflation')return;
+   ctx.save();ctx.font='700 10px Inter, Arial';ctx.textBaseline='middle';
+   if(lines.includes(id)){
+     if(id==='dynamicPolicy'&&chart.data.datasets.length===2){
+       const infl=chart.data.datasets[0].data,policy=chart.data.datasets[1].data;
+       let i=infl.length-1;while(i>=0&&(infl[i]==null||policy[i]==null))i--;
+       if(i>=0){
+         const a=chart.getDatasetMeta(0).data[i].tooltipPosition(),b=chart.getDatasetMeta(1).data[i].tooltipPosition();
+         const x=a.x+7,mid=(a.y+b.y)/2,txt='Gap '+Math.abs(policy[i]-infl[i]).toFixed(1)+' pp';
+         ctx.strokeStyle='#64748B';ctx.setLineDash([3,3]);ctx.lineWidth=1.5;
+         ctx.beginPath();ctx.moveTo(x,a.y);ctx.lineTo(x,b.y);ctx.stroke();ctx.setLineDash([]);
+         ctx.fillStyle='rgba(255,255,255,.92)';ctx.fillRect(Math.min(x+6,chart.chartArea.right-76),mid-10,76,20);
+         ctx.fillStyle='#475569';ctx.textAlign='left';ctx.fillText(txt,Math.min(x+10,chart.chartArea.right-72),mid);
+       }
+     }
+     const entries=chart.data.datasets.flatMap((ds,di)=>{
+       const meta=chart.getDatasetMeta(di);if(meta.hidden)return [];
+       let i=ds.data.length-1;while(i>=0&&(ds.data[i]==null||!meta.data[i]))i--;
+       if(i<0)return [];
+       const p=meta.data[i].tooltipPosition(),bank=B.find(b=>b.name===ds.label);
+       return [{p,color:ds.borderColor,label:(bank?bank.short:ds.label)+' '+Number(ds.data[i]).toFixed(1)+'%'}];
+     }).sort((a,b)=>a.p.y-b.p.y);
+     let lastY=chart.chartArea.top-10;
+     entries.forEach(e=>{e.y=Math.max(e.p.y,lastY+18,chart.chartArea.top+10);lastY=e.y});
+     const overflow=Math.max(0,lastY-(chart.chartArea.bottom-10));
+     const labelX=chart.chartArea.right+9;
+     entries.forEach(e=>{
+       const y=e.y-overflow,w=Math.min(82,ctx.measureText(e.label).width+12);
+       ctx.strokeStyle=e.color;ctx.globalAlpha=.55;ctx.lineWidth=1.5;
+       ctx.beginPath();ctx.moveTo(e.p.x,e.p.y);ctx.lineTo(labelX-3,y);ctx.stroke();ctx.globalAlpha=1;
+       ctx.fillStyle='#fff';ctx.fillRect(labelX-2,y-8,w+4,16);
+       ctx.fillStyle=e.color;ctx.fillRect(labelX,y-7,3,14);
+       ctx.fillStyle='#17305A';ctx.textAlign='left';ctx.fillText(e.label,labelX+7,y);
+     });
+   }else if(bars.includes(id)){
+     const ds=chart.data.datasets[0],meta=chart.getDatasetMeta(0),suffix=id==='balanceSheetGDP'?'%':'tn';
+     meta.data.forEach((el,i)=>{
+       const v=Number(ds.data[i]),p=el.tooltipPosition();if(!Number.isFinite(v))return;
+       ctx.textAlign='left';ctx.fillStyle='#17305A';
+       ctx.fillText((id==='current'?v.toFixed(2)+'%':v.toFixed(id==='balanceSheetGDP'?1:2)+suffix),Math.min(p.x+7,chart.width-48),p.y);
+     });
+   }else{
+     const ds=chart.data.datasets[0],meta=chart.getDatasetMeta(0);
+     meta.data.forEach((el,i)=>{const v=Number(ds.data[i]);if(!Number.isFinite(v))return;
+       const p=el.tooltipPosition();ctx.fillStyle='#17305A';ctx.textAlign='center';ctx.fillText(v.toFixed(1)+'%',p.x,p.y-10);
+     });
+   }
+   ctx.restore();
+ }
 };
-Chart.register(valueLabelPlugin);
+Chart.register(storyLabels);
 const BS_GDP=[
   {id:'fed',name:'Federal Reserve System',value:20.8,note:'US$6.746548tn total assets (16 Sep 2026) / US$32.486066tn Q2 2026 nominal GDP at seasonally adjusted annual rate. Ratio: 20.8%.'},
   {id:'ecb',name:'Eurosystem',value:35.9,note:'€5.912tn assets (4 Sep 2026) / €16.474tn annualized Q2 2026 nominal GDP (€4.1185tn × 4).'},
@@ -823,7 +907,7 @@ const BS_TOTAL_ASSETS=[
 function renderTotalAssets(){
  const canvas=document.getElementById('totalAssetsUSD'); if(!canvas||!window.Chart)return;
  const rows=[...BS_TOTAL_ASSETS].sort((a,b)=>b.usd-a.usd);
- new Chart(canvas,{type:'bar',data:{labels:rows.map(x=>x.name),datasets:[{data:rows.map(x=>x.usd),backgroundColor:rows.map(x=>BANK_COLORS[x.id]),borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>'USD '+rows[ctx.dataIndex].usd.toFixed(3)+'tn equivalent',afterLabel:(ctx)=>'Native total: '+rows[ctx.dataIndex].native}}},scales:{x:{beginAtZero:true,title:{display:true,text:'USD equivalent (trillion)'}},y:{grid:{display:false},ticks:{autoSkip:false}}}}});
+ new Chart(canvas,{type:'bar',data:{labels:rows.map(x=>x.name),datasets:[{data:rows.map(x=>x.usd),backgroundColor:rows.map(x=>BANK_COLORS[x.id]),borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{right:57}},plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>'USD '+rows[ctx.dataIndex].usd.toFixed(3)+'tn equivalent',afterLabel:(ctx)=>'Native total: '+rows[ctx.dataIndex].native}}},scales:{x:{beginAtZero:true,title:{display:true,text:'USD equivalent (trillion)'}},y:{grid:{display:false},ticks:{autoSkip:false}}}}});
 }
 const INTERNATIONAL_RESERVES=[
  {id:'pboc',name:'People’s Bank of China / China',usd:3.4383,native:'US$3.4383tn',date:'Aug 2026'},
@@ -837,12 +921,12 @@ const INTERNATIONAL_RESERVES=[
 function renderInternationalReserves(){
  const canvas=document.getElementById('internationalReserves'); if(!canvas||!window.Chart)return;
  const rows=[...INTERNATIONAL_RESERVES].sort((a,b)=>b.usd-a.usd);
- new Chart(canvas,{type:'bar',data:{labels:rows.map(x=>x.name),datasets:[{data:rows.map(x=>x.usd),backgroundColor:rows.map(x=>BANK_COLORS[x.id]),borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>'USD '+rows[ctx.dataIndex].usd.toFixed(3)+'tn equivalent',afterLabel:(ctx)=>rows[ctx.dataIndex].native+' · '+rows[ctx.dataIndex].date}}},scales:{x:{beginAtZero:true,title:{display:true,text:'Official reserve assets (USD equivalent, trillion)'}},y:{grid:{display:false},ticks:{autoSkip:false}}}}});
+ new Chart(canvas,{type:'bar',data:{labels:rows.map(x=>x.name),datasets:[{data:rows.map(x=>x.usd),backgroundColor:rows.map(x=>BANK_COLORS[x.id]),borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{right:57}},plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>'USD '+rows[ctx.dataIndex].usd.toFixed(3)+'tn equivalent',afterLabel:(ctx)=>rows[ctx.dataIndex].native+' · '+rows[ctx.dataIndex].date}}},scales:{x:{beginAtZero:true,title:{display:true,text:'Official reserve assets (USD equivalent, trillion)'}},y:{grid:{display:false},ticks:{autoSkip:false}}}}});
 }
 function renderBalanceSheetGDP(){
  const canvas=document.getElementById('balanceSheetGDP'), note=document.getElementById('balanceSheetGDPNote'); if(!canvas||!window.Chart)return;
  const rows=[...BS_GDP].sort((a,b)=>b.value-a.value);
- new Chart(canvas,{type:'bar',data:{labels:rows.map(x=>x.name),datasets:[{data:rows.map(x=>x.value),backgroundColor:rows.map(x=>BANK_COLORS[x.id]),borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>rows[ctx.dataIndex].value.toFixed(1)+'% of GDP',afterLabel:(ctx)=>rows[ctx.dataIndex].note}}},scales:{x:{beginAtZero:true,suggestedMax:105,title:{display:true,text:'Total assets / nominal GDP (%)'}},y:{grid:{display:false},ticks:{autoSkip:false}}}}});
+ new Chart(canvas,{type:'bar',data:{labels:rows.map(x=>x.name),datasets:[{data:rows.map(x=>x.value),backgroundColor:rows.map(x=>BANK_COLORS[x.id]),borderRadius:4,barThickness:20}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{right:57}},plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>rows[ctx.dataIndex].value.toFixed(1)+'% of GDP',afterLabel:(ctx)=>rows[ctx.dataIndex].note}}},scales:{x:{beginAtZero:true,suggestedMax:105,title:{display:true,text:'Total assets / nominal GDP (%)'}},y:{grid:{display:false},ticks:{autoSkip:false}}}}});
  note.innerHTML='<b>Data sources:</b> central-bank balance sheets plus official nominal GDP data from BEA (US), Eurostat (euro area), ONS (UK), Japan Cabinet Office, National Bureau of Statistics of China, India MoSPI, and Singapore Department of Statistics. <b>Coverage:</b> latest directly verified comparable observations; dates differ and are disclosed in the tooltip.';
 }
 let dynamicChart=null,dynamicYears=3;
@@ -854,8 +938,8 @@ function dynamicData(id,years){
  let last=null; const before=rates.filter(x=>new Date(x[0]+'-01')<start); if(before.length)last=before[before.length-1][1];
  const rmap=Object.fromEntries(rates); const imap=Object.fromEntries(infl);
  return {labels,datasets:[
-  {label:'Inflation',data:labels.map(x=>imap[x]??null),borderColor:'#dc2626',backgroundColor:'#dc2626',spanGaps:true,tension:.2,pointRadius:2},
-  {label:'Policy rate',data:labels.map(x=>{if(rmap[x]!=null)last=rmap[x];return last}),borderColor:'#2563eb',backgroundColor:'#2563eb',stepped:true,pointRadius:1.5}
+  {label:'Inflation',data:labels.map(x=>imap[x]??null),borderColor:'#dc2626',backgroundColor:'#dc2626',spanGaps:true,tension:.2,borderWidth:3,pointRadius:ctx=>ctx.raw==null?0:(ctx.dataIndex===labels.length-1?5:2)},
+  {label:'Policy rate',data:labels.map(x=>{if(rmap[x]!=null)last=rmap[x];return last}),borderColor:'#2563eb',backgroundColor:'#2563eb',stepped:true,borderWidth:3,pointRadius:ctx=>ctx.dataIndex===labels.length-1?5:1.5}
  ]};
 }
 function renderDynamic(){
@@ -864,25 +948,25 @@ function renderDynamic(){
  else document.getElementById('dynamicNote').textContent='Inflation and policy rate are both shown in percentage terms. Policy-rate observations are carried forward between official decisions solely to visualize the prevailing setting; inflation points remain the published observations.';
  const data=id==='mas'?{labels:(inflationEvents.mas||[]).map(x=>x[0]),datasets:[{label:'Inflation',data:(inflationEvents.mas||[]).map(x=>x[1]),borderColor:'#dc2626',backgroundColor:'#dc2626',tension:.2,pointRadius:2}]}:dynamicData(id,dynamicYears);
  if(dynamicChart)dynamicChart.destroy();
- dynamicChart=new Chart(document.getElementById('dynamicPolicy'),{type:'line',data,options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:7,padding:14}},tooltip:{backgroundColor:'#102A55'}},scales:{x:{grid:{color:'#EEF2F6'},ticks:{maxTicksLimit:10}},y:{grid:{color:'#E6ECF3'},title:{display:true,text:'Percent (%)'}}}}});
+ dynamicChart=new Chart(document.getElementById('dynamicPolicy'),{type:'line',data,options:{responsive:true,maintainAspectRatio:false,layout:{padding:{right:100}},interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'#102A55',padding:11,cornerRadius:8}},scales:{x:{grid:{color:'#EEF2F6'},ticks:{maxTicksLimit:9}},y:{grid:{color:'#E6ECF3'},title:{display:true,text:'Percent (%)'}}}}});
 }
 function charts(){
   const db=document.getElementById('dynamicBank');db.innerHTML=B.map(b=>'<option value="'+b.id+'">'+b.name+'</option>').join('');db.value='fed';renderDynamic();
   hc=new Chart(document.getElementById('history'),{
     type:'line',data:makeHistory(3),
-    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:6,padding:11,font:{size:9},color:'#526681'}},tooltip:{backgroundColor:'#102A55',padding:8,cornerRadius:6}},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{right:100}},interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#102A55',padding:10,cornerRadius:8}},
       scales:{x:{grid:{color:'#EEF2F6'},ticks:{maxTicksLimit:8,font:{size:8},color:'#63758D'}},y:{grid:{color:'#E6ECF3'},ticks:{font:{size:8},color:'#63758D'},title:{display:true,text:'Policy rate (%)',font:{size:8},color:'#63758D'}}}}
   });
   let rb=B.filter(b=>b.plot!=null).sort((a,b)=>b.plot-a.plot);
   cc=new Chart(document.getElementById('current'),{
     type:'bar',data:{labels:rb.map(b=>b.name),datasets:[{data:rb.map(b=>b.plot),backgroundColor:rb.map(b=>BANK_COLORS[b.id]),borderRadius:3,barThickness:15}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#102A55',padding:8}},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{right:48}},plugins:{legend:{display:false},tooltip:{backgroundColor:'#102A55',padding:10}},
       scales:{x:{beginAtZero:true,grid:{color:'#EDF2F7'},ticks:{font:{size:8},color:'#63758D'}},y:{grid:{display:false},ticks:{font:{size:8,weight:'700'},color:'#304865',autoSkip:false}}}}
   });
   window.ihc=new Chart(document.getElementById('inflHistory'),{
     type:'line',data:makeInflHistory(3),
-    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:6,padding:11,font:{size:9},color:'#526681'}},tooltip:{backgroundColor:'#102A55',padding:8,cornerRadius:6}},scales:{x:{grid:{color:'#EEF2F6'},ticks:{maxTicksLimit:8,font:{size:8},color:'#63758D'}},y:{grid:{color:'#E6ECF3'},ticks:{font:{size:8},color:'#63758D'},title:{display:true,text:'Inflation (%)',font:{size:8},color:'#63758D'}}}}
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{right:100}},interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'#102A55',padding:10,cornerRadius:8}},scales:{x:{grid:{color:'#EEF2F6'},ticks:{maxTicksLimit:8,font:{size:8},color:'#63758D'}},y:{grid:{color:'#E6ECF3'},ticks:{font:{size:8},color:'#63758D'},title:{display:true,text:'Inflation (%)',font:{size:8},color:'#63758D'}}}}
   });
   ic=new Chart(document.getElementById('inflation'),{
     type:'bar',
