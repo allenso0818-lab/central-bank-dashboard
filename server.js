@@ -26,6 +26,15 @@ const server=http.createServer((req,res)=>{
  if((req.url||"").startsWith("/api/fred?"))return fred(req,res);
  let pathname=decodeURIComponent((req.url||"/").split("?")[0]);if(pathname==="/favicon.ico"){res.writeHead(204);return res.end();}if(pathname==="/")pathname="/index.html";
  const file=path.normalize(path.join(root,pathname));if(!file.startsWith(root)){res.writeHead(403);return res.end("Forbidden");}
- fs.readFile(file,(err,data)=>{if(err){res.writeHead(404,{"Content-Type":"text/plain; charset=utf-8"});return res.end("Not found");}res.writeHead(200,{"Content-Type":types[path.extname(file).toLowerCase()]||"application/octet-stream","Cache-Control":"no-cache"});res.end(data);});
+ fs.readFile(file,(err,data)=>{
+  if(err){res.writeHead(404,{"Content-Type":"text/plain; charset=utf-8"});return res.end("Not found");}
+  if(pathname==="/profiles/federal-reserve.html"){
+   let html=data.toString("utf8");
+   const tag='<script src="/profiles/fed-prediction-v2.js"></script>';
+   if(!html.includes(tag))html=html.replace("</body>",tag+"</body>");
+   data=Buffer.from(html,"utf8");
+  }
+  res.writeHead(200,{"Content-Type":types[path.extname(file).toLowerCase()]||"application/octet-stream","Cache-Control":"no-cache"});res.end(data);
+ });
 });
 server.listen(port,"0.0.0.0",()=>console.log("Dashboard running on "+port));
