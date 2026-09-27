@@ -7,7 +7,25 @@ function fred(req,res){const u=new URL(req.url,"http://localhost"),id=(u.searchP
 function refreshVerifiedDashboardHtml(html){return html.replace('Dashboard data verified: 25 Sep 2026 HKT','Dashboard data verified: 27 Sep 2026 HKT').replace("plot:null,infl:2.2,latest:'FX Framework'","plot:null,infl:2.3,latest:'FX Framework'").replace("mas:{measure:'Consumer Price Index – All Items, year-on-year',reference_period:'July 2026',publication_date:'24 Aug 2026',source_name:'Singapore Ministry of Trade and Industry / MAS',source_url:'https://www.mti.gov.sg/newsroom/consumer-price-developments-in-july-2026/'","mas:{measure:'Consumer Price Index – All Items, year-on-year',reference_period:'August 2026',publication_date:'23 Sep 2026',source_name:'Singapore Ministry of Trade and Industry / MAS',source_url:'https://www.mti.gov.sg/newsroom/consumer-price-developments-in-august-2026-/'").replace("mas:[['2024-12',1.6],['2025-12',1.2],['2026-01',1.4],['2026-02',1.5],['2026-03',1.6],['2026-04',1.7],['2026-05',1.9],['2026-06',2.0],['2026-07',2.2]]","mas:[['2024-12',1.6],['2025-12',1.2],['2026-01',1.4],['2026-02',1.5],['2026-03',1.6],['2026-04',1.7],['2026-05',1.9],['2026-06',2.0],['2026-07',2.2],['2026-08',2.3]]");}
 function keyIndicatorFullNames(html){const script=`<script id="key-indicator-full-names">(function(){
 const rules=[
-[/\\bPCE\\b/g,'Personal Consumption Expenditures'],[/\\bGDP\\b/g,'Gross Domestic Product'],[/\\bGVA\\b/g,'Gross Value Added'],[/\\bHICP\\b/g,'Harmonised Index of Consumer Prices'],[/\\bCPI\\b/g,'Consumer Price Index'],[/\\bPPI\\b/g,'Producer Price Index'],[/\\bPMI\\b/g,'Purchasing Managers’ Index'],[/\\bECI\\b/g,'Employment Cost Index'],[/\\bLFS\\b/g,'Labour Force Survey'],[/\\bTSF\\b/g,'Total Social Financing'],[/\\bM2\\b/g,'Broad Money Supply'],[/\\bRMB\\b/g,'Renminbi'],[/\\bJPY\\b/g,'Japanese yen'],[/\\bINR\\b/g,'Indian rupee'],[/S\\$NEER/g,'Singapore dollar nominal effective exchange rate'],[/\\bBEA\\b/g,'Bureau of Economic Analysis'],[/\\bONS\\b/g,'Office for National Statistics'],[/\\bNBS\\b/g,'National Bureau of Statistics'],[/\\bMoSPI\\b/g,'Ministry of Statistics and Programme Implementation'],[/\\bMTI\\b/g,'Ministry of Trade and Industry'],[/\\bDOS\\b/g,'Department of Statistics'],[/\\bMAS\\b/g,'Monetary Authority of Singapore'],[/\\bJul\\b/g,'July'],[/\\bAug\\b/g,'August']];
+[/\\bPCE\\b/g,'Personal Consumption Expenditures'],
+[/\\bHICP\\b/g,'Harmonised Index of Consumer Prices'],
+[/\\bCPI\\b/g,'Consumer Price Index'],
+[/\\bGVA\\b/g,'Gross Value Added'],
+[/\\bPPI\\b/g,'Producer Price Index'],
+[/\\bPMI\\b/g,'Purchasing Managers’ Index'],
+[/\\bECI\\b/g,'Employment Cost Index'],
+[/\\bLFS\\b/g,'Labour Force Survey'],
+[/\\bTSF\\b/g,'Total Social Financing'],
+[/\\bM2\\b/g,'Broad Money Supply'],
+[/\\bINR\\b/g,'Indian rupee'],
+[/\\bBEA\\b/g,'Bureau of Economic Analysis'],
+[/\\bONS\\b/g,'Office for National Statistics'],
+[/\\bNBS\\b/g,'National Bureau of Statistics'],
+[/\\bMoSPI\\b/g,'Ministry of Statistics and Programme Implementation'],
+[/\\bMTI\\b/g,'Ministry of Trade and Industry'],
+[/\\bDOS\\b/g,'Department of Statistics'],
+[/\\bMAS\\b/g,'Monetary Authority of Singapore']
+];
 function expand(){const table=document.getElementById('matrix');if(!table)return;for(const row of table.querySelectorAll('tr')){const first=row.querySelector('th,td');if(!first||first.textContent.trim()!=='Key Economic Indicators')continue;const walker=document.createTreeWalker(row,NodeFilter.SHOW_TEXT);let n;while(n=walker.nextNode()){let s=n.nodeValue;for(const [re,full] of rules)s=s.replace(re,full);n.nodeValue=s;}}}
 expand();new MutationObserver(expand).observe(document.getElementById('matrix')||document.body,{childList:true,subtree:true});})();</script>`;return html.includes('id="key-indicator-full-names"')?html:html.replace('</body>',script+'</body>');}
 function fitComparisonMatrix(html){const css=`<style id="matrix-viewport-fit-v2">.matrix-wrap{overflow-x:hidden!important;overflow-y:visible!important;width:100%!important;max-width:100%!important}.matrix{width:100%!important;min-width:0!important;max-width:100%!important;table-layout:fixed!important;font-size:8px!important}.matrix th,.matrix td{padding:4px 3px!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;hyphens:auto!important;min-width:0!important}.matrix thead th:first-child,.matrix tbody th{width:13%!important;min-width:0!important}.matrix thead th:not(:first-child),.matrix tbody td{width:12.43%!important;min-width:0!important}.matrix img{max-width:100%!important}.matrix .leader-profile,.matrix .leader{min-width:0!important;max-width:100%!important}@media(max-width:1200px){.matrix{font-size:7px!important}.matrix th,.matrix td{padding:3px 2px!important;line-height:1.16!important}.matrix .muted{font-size:6.4px!important}.matrix .pill{font-size:6px!important;padding:1px 2px!important}}</style>`;return html.includes('id="matrix-viewport-fit-v2"')?html:html.replace('</head>',css+'</head>');}
