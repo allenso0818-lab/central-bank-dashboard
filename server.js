@@ -30,13 +30,25 @@ function refreshVerifiedDashboardHtml(html){
   .replace("mas:{measure:'Consumer Price Index – All Items, year-on-year',reference_period:'July 2026',publication_date:'24 Aug 2026',source_name:'Singapore Ministry of Trade and Industry / MAS',source_url:'https://www.mti.gov.sg/newsroom/consumer-price-developments-in-july-2026/'","mas:{measure:'Consumer Price Index – All Items, year-on-year',reference_period:'August 2026',publication_date:'23 Sep 2026',source_name:'Singapore Ministry of Trade and Industry / MAS',source_url:'https://www.mti.gov.sg/newsroom/consumer-price-developments-in-august-2026-/'")
   .replace("mas:[['2024-12',1.6],['2025-12',1.2],['2026-01',1.4],['2026-02',1.5],['2026-03',1.6],['2026-04',1.7],['2026-05',1.9],['2026-06',2.0],['2026-07',2.2]]","mas:[['2024-12',1.6],['2025-12',1.2],['2026-01',1.4],['2026-02',1.5],['2026-03',1.6],['2026-04',1.7],['2026-05',1.9],['2026-06',2.0],['2026-07',2.2],['2026-08',2.3]]");
 }
+function fitComparisonMatrix(html){
+ const css=`<style id="matrix-viewport-fit">
+.matrix-wrap{overflow-x:hidden!important;overflow-y:visible!important;width:100%!important}
+.matrix{width:100%!important;min-width:0!important;max-width:100%!important;table-layout:fixed!important;font-size:clamp(7px,.62vw,9px)!important}
+.matrix th,.matrix td{padding:4px 4px!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;hyphens:auto}
+.matrix thead th:first-child,.matrix tbody th{width:12%!important;min-width:0!important}
+.matrix thead th:not(:first-child),.matrix tbody td{width:auto!important;min-width:0!important}
+@media(max-width:1100px){.matrix{font-size:7.5px!important}.matrix th,.matrix td{padding:3px 3px!important;line-height:1.18!important}.matrix .muted{font-size:7px!important}.matrix .pill{font-size:6.5px!important;padding:1px 3px!important}}
+@media(max-width:760px){.matrix{font-size:6.8px!important}.matrix thead th:first-child,.matrix tbody th{width:14%!important}.matrix th,.matrix td{padding:3px 2px!important}.matrix .muted{font-size:6.2px!important}.matrix .pill{font-size:6px!important}}
+</style>`;
+ return html.includes('id="matrix-viewport-fit"')?html:html.replace('</head>',css+'</head>');
+}
 const server=http.createServer((req,res)=>{
  if((req.url||"").startsWith("/api/fred?"))return fred(req,res);
  let pathname=decodeURIComponent((req.url||"/").split("?")[0]);if(pathname==="/favicon.ico"){res.writeHead(204);return res.end();}if(pathname==="/")pathname="/index.html";
  const file=path.normalize(path.join(root,pathname));if(!file.startsWith(root)){res.writeHead(403);return res.end("Forbidden");}
  fs.readFile(file,(err,data)=>{
   if(err){res.writeHead(404,{"Content-Type":"text/plain; charset=utf-8"});return res.end("Not found");}
-  if(pathname==="/index.html")data=Buffer.from(refreshVerifiedDashboardHtml(data.toString("utf8")),"utf8");
+  if(pathname==="/index.html")data=Buffer.from(fitComparisonMatrix(refreshVerifiedDashboardHtml(data.toString("utf8"))),"utf8");
   if(pathname==="/profiles/federal-reserve.html"){
    let html=data.toString("utf8");
    const tag='<script src="/profiles/fed-prediction-v2.js"></script>';
