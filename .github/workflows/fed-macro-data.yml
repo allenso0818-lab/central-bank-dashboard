@@ -17,7 +17,7 @@ jobs:
       - name: Build Fed macro cache
         run: |
           python - <<'PY'
-          import json, urllib.request, pathlib, time
+          import json, urllib.request, pathlib, time, datetime
           ids=["UNEMPLOY","CLF16OV","UNRATE","CNP16OV","CE16OV","U4RATE","CIVPART","PAYEMS","CES0500000003","AWHAETP","ICSA","GDPC1","A191RL1Q225SBEA"]
           bls={"UNEMPLOY":"LNS13000000","CLF16OV":"LNS11000000","UNRATE":"LNS14000000","CNP16OV":"LNU00000000","CE16OV":"LNS12000000","U4RATE":"LNS13327707","CIVPART":"LNS11300000","PAYEMS":"CES0000000001","CES0500000003":"CES0500000003","AWHAETP":"CES0500000002"}
           p=pathlib.Path("data/fed-macro.json")
@@ -25,31 +25,61 @@ jobs:
             old=json.loads(p.read_text())
           except Exception:
             old={"series":{}}
-          out={"updated_at":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),"source":"Official BLS public API; stale responses rejected","series":dict(old.get("series",{}))}
+          out={"updated_at":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),"source":"Official BLS public API; freshness validated by latest observation date","series":dict(old.get("series",{}))}
+          months={f"M{i:02d}":f"{i:02d}" for i in range(1,13)}
+          current_year=datetime.datetime.now(datetime.timezone.utc).year
+
+          def fetch_bls_series(series_id,startyear,endyear):
+            body=json.dumps({"seriesid":[series_id],"startyear":str(startyear),"endyear":str(endyear)}).encode()
+            req=urllib.request.Request("https://api.bls.gov/publicAPI/v2/timeseries/data/",data=body,headers={"Content-Type":"application/json","User-Agent":"central-bank-dashboard/1.0"})
+            with urllib.request.urlopen(req,timeout=20) as r:
+              doc=json.loads(r.read().decode())
+            if doc.get("status") != "REQUEST_SUCCEEDED":
+              raise ValueError("BLS request failed: "+"; ".join(doc.get("message",[]) or [str(doc.get("status"))]))
+            series=doc.get("Results",{}).get("series",[])
+            if not series:
+              raise ValueError("BLS returned no series")
+            vals=[]
+            for row in series[0].get("data",[]):
+              if row.get("period") in months:
+                raw=row.get("value","").replace(",","").strip()
+                try:
+                  value=float(raw)
+                except (ValueError,TypeError):
+                  continue
+                vals.append([f'{row["year"]}-{months[row["period"]]}-01',value])
+            return vals
+
           for sid in ids:
             vals=[]
             if sid in bls:
               try:
-                body=json.dumps({"seriesid":[bls[sid]],"startyear":"2016","endyear":"2026"}).encode()
-                req=urllib.request.Request("https://api.bls.gov/publicAPI/v2/timeseries/data/",data=body,headers={"Content-Type":"application/json","User-Agent":"central-bank-dashboard/1.0"})
-                with urllib.request.urlopen(req,timeout=15) as r:
-                  doc=json.loads(r.read().decode())
-                months={f"M{i:02d}":f"{i:02d}" for i in range(1,13)}
-                for row in doc.get("Results",{}).get("series",[{}])[0].get("data",[]):
-                  if row.get("period") in months:
-                    raw=row.get("value","").replace(",","").strip()
-                    try:
-                      value=float(raw)
-                    except (ValueError,TypeError):
-                      continue
-                    vals.append([f'{row["year"]}-{months[row["period"]]}-01',value])
-                vals.sort()
+                # The public BLS API limits unregistered requests to 10 years.
+                # Fetch historical and current windows separately so the newest
+                # release (including the current year) is never silently omitted.
+                windows=[(2016,min(2025,current_year))]
+                if current_year>=2026:
+                  windows.append((2026,current_year))
+                merged={}
+                for startyear,endyear in windows:
+                  if startyear>endyear:
+                    continue
+                  for date,value in fetch_bls_series(bls[sid],startyear,endyear):
+                    merged[date]=value
+                vals=[[d,merged[d]] for d in sorted(merged)]
               except Exception as e:
                 print("WARN",sid,e)
-            if vals and max(int(x[0][:4]) for x in vals)>=2025:
-              out["series"][sid]=vals
+            if vals:
+              latest=vals[-1][0]
+              # Monthly labor series should reach at least the prior calendar year;
+              # current-year freshness is checked explicitly below for PAYEMS.
+              if int(latest[:4])>=current_year-1:
+                out["series"][sid]=vals
+              else:
+                print("WARN",sid,"stale latest observation",latest)
+                out["series"][sid]=[]
             elif sid in bls:
-              print("WARN",sid,"no fresh observations; clearing stale cache")
+              print("WARN",sid,"no usable observations; clearing stale cache")
               out["series"][sid]=[]
             else:
               out["series"].setdefault(sid,[])
@@ -92,7 +122,24 @@ jobs:
             print("WARN GDPC1 full-history fetch failed",e)
             out["series"].setdefault("GDPC1",[])
           out["series"]["A191RL1Q225SBEA"]=[["2025-10-01",0.5],["2026-01-01",2.1],["2026-04-01",1.5]]
-          out["verified_through"]={"labor":"2026-08","ICSA":"2026-09-12","GDP":"2026-Q2"}
+
+          # Use the actual observation dates instead of a hard-coded verification stamp.
+          payroll=out["series"].get("PAYEMS",[])
+          labor_verified=payroll[-1][0][:7] if payroll else None
+          icsa_series=out["series"].get("ICSA",[])
+          icsa_verified=icsa_series[-1][0] if icsa_series else None
+          gdpc1=out["series"].get("GDPC1",[])
+          if gdpc1:
+            gd=gdpc1[-1][0]
+            q=(int(gd[5:7])-1)//3+1
+            gdp_verified=f"{gd[:4]}-Q{q}"
+          else:
+            gdp_verified=None
+          out["verified_through"]={"labor":labor_verified,"ICSA":icsa_verified,"GDP":gdp_verified}
+
+          # Guard against a successful workflow publishing an obviously stale PAYEMS cache.
+          if payroll and current_year>=2026 and int(payroll[-1][0][:4]) < current_year:
+            raise RuntimeError(f"PAYEMS freshness check failed: latest={payroll[-1][0]}")
           p.write_text(json.dumps(out,separators=(",",":")),encoding="utf-8")
           PY
       - name: Commit cache
