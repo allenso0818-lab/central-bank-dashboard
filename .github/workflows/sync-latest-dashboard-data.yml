@@ -1,0 +1,46 @@
+name: Sync Latest Dashboard Data
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/sync-latest-dashboard-data.yml"
+permissions:
+  contents: write
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update latest verified dashboard observations
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          replacements={
+            'Dashboard data verified: 25 Sep 2026 HKT':'Dashboard data verified: 3 Oct 2026 HKT',
+            "plot:3.875,infl:3.7,latest:'↑ +25 bp'":"plot:3.875,infl:3.4,latest:'↑ +25 bp'",
+            "fed:{measure:'Headline Personal Consumption Expenditures inflation, year-on-year',reference_period:'July 2026',publication_date:'26 Aug 2026',source_name:'U.S. Bureau of Economic Analysis (BEA)',source_url:'https://www.bea.gov/news/2026/personal-income-and-outlays-july-2026'":"fed:{measure:'Headline Personal Consumption Expenditures inflation, year-on-year',reference_period:'August 2026',publication_date:'30 Sep 2026',source_name:'U.S. Bureau of Economic Analysis (BEA)',source_url:'https://www.bea.gov/news/2026/personal-income-and-outlays-august-2026'",
+            "fed:[['2024-12',2.6],['2025-12',2.8],['2026-01',2.8],['2026-02',2.7],['2026-03',2.8],['2026-04',2.7],['2026-05',2.8],['2026-06',2.8],['2026-07',3.7]]":"fed:[['2024-12',2.6],['2025-12',2.8],['2026-01',2.8],['2026-02',2.7],['2026-03',2.8],['2026-04',2.7],['2026-05',2.8],['2026-06',2.8],['2026-07',3.7],['2026-08',3.4]]",
+            "plot:2.5,infl:3.2,latest:'↑ +25 bp'":"plot:2.5,infl:3.8,latest:'↑ +25 bp'",
+            "ecb:{measure:'Headline Harmonised Index of Consumer Prices, year-on-year',reference_period:'August 2026',publication_date:'17 Sep 2026',source_name:'Eurostat',source_url:'https://ec.europa.eu/eurostat/en/web/products-euro-indicators/w/2-17092026-ap'":"ecb:{measure:'Headline Harmonised Index of Consumer Prices, year-on-year (flash estimate)',reference_period:'September 2026',publication_date:'2 Oct 2026',source_name:'Eurostat',source_url:'https://ec.europa.eu/eurostat/en/web/products-euro-indicators/w/2-02102026-ap'",
+            "['2026-07',2.8],['2026-08',3.2]]":"['2026-07',2.8],['2026-08',3.2],['2026-09',3.8]]",
+            "setting:'Slightly steeper appreciation slope',plot:null,infl:2.2,latest:'FX Framework',prev:'Previous S$NEER parameters',date:'14 Apr 2026'":"setting:'Further very slight increase in appreciation slope',plot:null,infl:2.2,latest:'FX Framework',prev:'Slightly steeper appreciation slope',date:'27 Jul 2026'",
+            "const LAST_CHECKED_HKT='22 Sep 2026 08:30 HKT';":"const LAST_CHECKED_HKT='3 Oct 2026 HKT';"
+          }
+          missing=[]
+          for old,new in replacements.items():
+            if old not in s:
+              missing.append(old[:100])
+            else:
+              s=s.replace(old,new,1)
+          if missing:
+            raise SystemExit('Expected dashboard strings not found: '+repr(missing))
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit latest observations
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || (git commit -m "Update dashboard with latest verified data" && git push)
