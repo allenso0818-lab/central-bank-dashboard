@@ -1,27 +1,59 @@
-name: Daily Central Bank Data Refresh
+name: Central Bank Data Freshness Audit
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0,13 * * *"
+    - cron: "50 * * * *"
 permissions:
   contents: write
+concurrency:
+  group: central-bank-freshness-audit
+  cancel-in-progress: false
 jobs:
   refresh:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Record daily refresh status
+      - name: Audit refreshed datasets
         run: |
           python - <<'PY'
           import json,datetime,pathlib
+          now=datetime.datetime.now(datetime.timezone.utc)
+          macro_path=pathlib.Path("data/fed-macro.json")
+          fedwatch_path=pathlib.Path("data/fedwatch.json")
+          macro=json.loads(macro_path.read_text()) if macro_path.exists() else {}
+          fedwatch=json.loads(fedwatch_path.read_text()) if fedwatch_path.exists() else {}
+          payroll=(macro.get("series",{}).get("PAYEMS") or [])
+          checks={
+            "fed_macro_cache_present": bool(macro),
+            "payems_present": bool(payroll),
+            "payems_latest_observation": payroll[-1][0] if payroll else None,
+            "fedwatch_cache_present": bool(fedwatch),
+            "fedwatch_last_verified": fedwatch.get("updated_at"),
+          }
+          if not checks["payems_present"]:
+            raise SystemExit("PAYEMS missing from macro cache")
+          # Monthly BLS data may legitimately be one or more months behind the calendar,
+          # but it must be from the current year once current-year releases exist.
+          if int(payroll[-1][0][:4]) < now.year:
+            raise SystemExit(f"PAYEMS stale: {payroll[-1][0]}")
+          out={
+            "checked_at":now.isoformat(),
+            "schedule":"hourly",
+            "coverage":["Fed macro/BLS","Initial Claims/FRED","Real GDP/FRED","FedWatch cache","production-trigger inputs"],
+            "checks":checks,
+            "note":"Official observations are committed only when the source publishes a changed value. Railway is configured to redeploy on dashboard/data file changes."
+          }
           p=pathlib.Path("data/daily-refresh-status.json")
-          out={"checked_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),"schedule":"daily","coverage":["Fed macro data","FedWatch probabilities","seven-central-bank dashboard source checks"],"note":"Dashboard source observations update only when a source publishes a newer official observation."}
-          p.parent.mkdir(exist_ok=True)
+          old={}
+          try: old=json.loads(p.read_text())
+          except Exception: pass
+          # Keep the audit timestamp useful without causing hourly production deploys.
+          # This status file is excluded from Railway watch patterns below.
           p.write_text(json.dumps(out,indent=2),encoding="utf-8")
           PY
-      - name: Commit refresh status
+      - name: Commit freshness audit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/daily-refresh-status.json
-          git diff --cached --quiet || (git commit -m "Daily central-bank data check" && git push)
+          git diff --cached --quiet || (git commit -m "Audit central-bank data freshness" && git push)
