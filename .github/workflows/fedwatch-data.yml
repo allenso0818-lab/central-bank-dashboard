@@ -3,6 +3,10 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "25 1,13 * * *"
+  push:
+    paths:
+      - ".github/workflows/fedwatch-data.yml"
+      - ".github/fedwatch-trigger"
 permissions:
   contents: write
 jobs:
