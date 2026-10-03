@@ -1,10 +1,19 @@
 {
-  "checked_at": "2026-10-03T00:03:44.898216+00:00",
-  "schedule": "daily",
+  "checked_at": "2026-10-03T14:49:34.830509+00:00",
+  "schedule": "hourly",
   "coverage": [
-    "Fed macro data",
-    "FedWatch probabilities",
-    "seven-central-bank dashboard source checks"
+    "Fed macro/BLS",
+    "Initial Claims/FRED",
+    "Real GDP/FRED",
+    "FedWatch cache",
+    "production-trigger inputs"
   ],
-  "note": "Dashboard source observations update only when a source publishes a newer official observation."
+  "checks": {
+    "fed_macro_cache_present": true,
+    "payems_present": true,
+    "payems_latest_observation": "2026-09-01",
+    "fedwatch_cache_present": true,
+    "fedwatch_last_verified": "2026-09-24T18:59:00Z"
+  },
+  "note": "Official observations are committed only when the source publishes a changed value. Railway is configured to redeploy on dashboard/data file changes."
 }
