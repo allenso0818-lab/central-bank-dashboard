@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-06T09:56:20.368881+00:00",
+  "checked_at": "2026-11-06T17:42:35.898162+00:00",
   "schedule": "hourly",
   "coverage": [
     "Fed macro/BLS",
@@ -11,7 +11,7 @@
   "checks": {
     "fed_macro_cache_present": true,
     "payems_present": true,
-    "payems_latest_observation": "2026-09-01",
+    "payems_latest_observation": "2026-10-01",
     "fedwatch_cache_present": true,
     "fedwatch_last_verified": "2026-09-24T18:59:00Z"
   },
